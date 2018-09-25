@@ -177,7 +177,14 @@ void escribir_operando(FILE* fpasm, char* nombre, int es_variable) {
 }
 
 
-void asignar(FILE* fpasm, char* nombre, int es_variable);
+void asignar(FILE* fpasm, char* nombre, int es_variable) {
+	//voy a tocar esta funcion a ver si da merge comflict
+	if (!fpasm) {
+		printf("Error de fichero (asignar)");
+	}
+
+	return;
+}
 /*
 Genera el código para asignar valor a la variable de nombre nombre. 
 Se toma el valor de la cima de la pila.
