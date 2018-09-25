@@ -123,6 +123,8 @@ void escribir_inicio_main(FILE* fpasm) {
 	else if (fprintf(fpasm, "\tmov dword [%s], %s\n", PUNTERO_A_PILA, PUNTERO_A_PILA) <= 0) {
 		printf("Error guardando la variable de pila");
 	}
+
+	return;
 }
 
 /*
@@ -136,6 +138,7 @@ En el final del programa se debe:
  ·Salir del programa (ret).
 */
 void escribir_fin(FILE* fpasm) {
+
 	if (!fpasm) {
 		printf("Error de fichero (escribir_fin)\n");
 	} 
@@ -149,16 +152,30 @@ void escribir_fin(FILE* fpasm) {
 	else if (fprintf(fpasm, "\tret\n") <= 0) {
 		printf("Error al escribir el retorno");
 	}
+
+	return;
 }
 
 /** ^^^^^^^^^^^^^^^^^^^^^^^^ IMPLEMENTADO HASTA AQUI ^^^^^^^^^^^^^^^^^^^^^^^^ */
 
-void escribir_operando(FILE* fpasm, char* nombre, int es_variable);
 /*
-   Función que debe ser invocada cuando se sabe un operando de una operación aritmético-lógica y se necesita introducirlo en la pila.
-nombre es la cadena de caracteres del operando tal y como debería aparecer en el fuente NASM
-es_variable indica si este operando es una variable (como por ejemplo b1) con un 1 u otra cosa (como por ejemplo 34) con un 0. Recuerda que en el primer caso internamente se representará como _b1 y, sin embargo, en el segundo se representará tal y como esté en el argumento (34).
+   Función que debe ser invocada cuando se sabe un operando de una operación 
+aritmético-lógica y se necesita introducirlo en la pila. nombre es la cadena de 
+caracteres del operando tal y como debería aparecer en el fuente NASM 
+es_variable indica si este operando es una variable (como por ejemplo b1) con un
+1 u otra cosa (como por ejemplo 34) con un 0. Recuerda que en el primer caso 
+internamente se representará como _b1 y, sin embargo, en el segundo se 
+representará tal y como esté en el argumento (34).
 */
+void escribir_operando(FILE* fpasm, char* nombre, int es_variable) {
+
+	if (!fpasm) {
+		printf("Error de fichero (escribir_operando)\n")
+	}
+
+
+}
+
 
 void asignar(FILE* fpasm, char* nombre, int es_variable);
 /*
