@@ -170,10 +170,15 @@ representará tal y como esté en el argumento (34).
 void escribir_operando(FILE* fpasm, char* nombre, int es_variable) {
 
 	if (!fpasm) {
-		printf("Error de fichero (escribir_operando)\n")
+		printf("Error de fichero (escribir_operando)\n");
+	} 
+	else if (es_variable) {
+
+	} else {
+
 	}
 
-
+	return;
 }
 
 
@@ -194,7 +199,11 @@ Se guarda el resultado en la pila
    Los dos últimos argumentos indican respectivamente si lo que hay en la pila es una referencia a un valor o un valor explícito.
    Deben tenerse en cuenta las peculiaridades de cada operación. En este sentido sí hay que mencionar explícitamente que, en el caso de la división, se debe controlar si el divisor es “0” y en ese caso se debe saltar a la rutina de error controlado (restaurando el puntero de pila en ese caso y comprobando en el retorno que no se produce “Segmentation Fault”)
 */
-void sumar(FILE* fpasm, int es_variable_1, int es_variable_2);
+void sumar(FILE* fpasm, int es_variable_1, int es_variable_2) {
+
+	/*testeando merge conflicts*/
+	return;
+}
 void restar(FILE* fpasm, int es_variable_1, int es_variable_2);
 void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2);
 void dividir(FILE* fpasm, int es_variable_1, int es_variable_2);
