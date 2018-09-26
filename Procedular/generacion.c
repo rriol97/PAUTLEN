@@ -168,34 +168,43 @@ internamente se representará como _b1 y, sin embargo, en el segundo se
 representará tal y como esté en el argumento (34).
 */
 void escribir_operando(FILE* fpasm, char* nombre, int es_variable) {
-
+// INCOMPLETO
 	if (!fpasm) {
 		printf("Error de fichero (escribir_operando)\n");
 	} 
-	else if (es_variable) {
-
-	} else {
-
+	else if (es_variable) { /* Variable */
+		if (fprintf(fpasm, "\tlea eax, [ebp + 8]\n\tpush dword eax\n") <= 0) {
+			printf("Error al meter el operando en la pila");
+		}
+	} else { /* Valor */
+		if (fprintf(fpasm, "\tpush dword %s\n", nombre) <= 0) {
+			printf("Error al meter el operando en la pila");
+		}
 	}
 
 	return;
 }
 
-
+/*
+	Genera el código para asignar valor a la variable de nombre nombre. 
+Se toma el valor de la cima de la pila. El último argumento es el que indica si 
+lo que hay en la cima de la pila es una referencia (1) o ya un valor explícito (0).
+*/
 void asignar(FILE* fpasm, char* nombre, int es_variable) {
 	//voy a tocar esta funcion a ver si da merge comflict
 	if (!fpasm) {
 		printf("Error de fichero (asignar)");
 	}
+	else if (es_variable) {
+		fprintf(fpasm, "\tpop dword eax\n\tmov eax [eax]\n\tmov [%s], eax\n", nombre);
+	}
+	else {
+		fprintf(fpasm, "\tpop dword eax\n\tmov [%s], eax\n", nombre);
+
+	}
 
 	return;
 }
-/*
-Genera el código para asignar valor a la variable de nombre nombre. 
-Se toma el valor de la cima de la pila.
-El último argumento es el que indica si lo que hay en la cima de la pila es una referencia (1) o ya un valor explícito (0).
-*/
-
 
 /* FUNCIONES ARITMÉTICO-LÓGICAS BINARIAS */
 /*
@@ -203,16 +212,75 @@ El último argumento es el que indica si lo que hay en la cima de la pila es una
 Se extrae de la pila los operandos
 Se realiza la operación
 Se guarda el resultado en la pila
-   Los dos últimos argumentos indican respectivamente si lo que hay en la pila es una referencia a un valor o un valor explícito.
-   Deben tenerse en cuenta las peculiaridades de cada operación. En este sentido sí hay que mencionar explícitamente que, en el caso de la división, se debe controlar si el divisor es “0” y en ese caso se debe saltar a la rutina de error controlado (restaurando el puntero de pila en ese caso y comprobando en el retorno que no se produce “Segmentation Fault”)
+Los dos últimos argumentos indican respectivamente si lo que hay en la pila es una referencia a un valor o un valor explícito.
+Deben tenerse en cuenta las peculiaridades de cada operación. En este sentido sí hay que mencionar explícitamente que, en el caso de la división, se debe controlar si el divisor es “0” y en ese caso se debe saltar a la rutina de error controlado (restaurando el puntero de pila en ese caso y comprobando en el retorno que no se produce “Segmentation Fault”)
 */
 void sumar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 
-	/*testeando merge conflicts*/
+	if (!pasm) {
+		printf("Error de fichero (sumar)\n");
+	}
+	else {
+		fprintf(fpasm, "\tpop edx\n\tpop eax\n");
+
+		if(es_variable_1){
+			fprintf(fpasm, "\tmov edx, [edx]\n");
+		} 
+
+		if(es_variable_2){
+			fprintf(fpasm, "\tmov eax, [eax]\n");
+		} 
+
+		fprintf(fpasm, "\tadd edx, eax\n\tpush edx\n");
+
+	}
 	return;
 }
-void restar(FILE* fpasm, int es_variable_1, int es_variable_2);
-void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2);
+void restar(FILE* fpasm, int es_variable_1, int es_variable_2){
+
+	if (!pasm) {
+		printf("Error de fichero (restar)\n");
+	}
+	else {
+		fprintf(fpasm, "\tpop edx\n\tpop eax\n");
+
+		if(es_variable_1) {
+			fprintf(fpasm, "\tmov edx, [edx]\n");
+		} 
+
+		if (es_variable_2) {
+			fprintf(fpasm, "\tmov eax, [eax]\n");
+		} 
+
+		fprintf(fpasm, "\tsub edx, eax\n\tpush edx\n");
+
+	}
+	return;
+}	
+
+void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2){
+
+	if (!pasm) {
+		printf("Error del fichero (multiplicar\n");
+	}
+
+	else {
+
+		fprintf(fpasm, "\tpop eax\n\tpop ecx\n");
+
+		if (es_variable_1) {
+			fprintf(fpasm, "\tmov eax, [eax]\n");
+		} 
+
+		if (es_variable_2) {
+			fprintf(fpasm, "\tmov ecx, [ecx]\n");
+		} 
+
+		fprintf(fpasm, "\timul ecx\n\tpush edx\n\tpush eax");
+
+	}
+	return;
+}
 void dividir(FILE* fpasm, int es_variable_1, int es_variable_2);
 void o(FILE* fpasm, int es_variable_1, int es_variable_2);
 void y(FILE* fpasm, int es_variable_1, int es_variable_2);
@@ -261,6 +329,8 @@ int main(int argc, char* argv[]) {
 
 	/** <funcion a probar> */
 	escribir_fin(salida);
+	asignar(salida, "nombre", 0);
+	escribir_operando(salida, "nombre2", 1);
 
 	fclose(salida);
 
