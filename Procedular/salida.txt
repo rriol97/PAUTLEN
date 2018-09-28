@@ -1,6 +1,0 @@
-fin:
-	mov dword [__esp], __esp
-	ret
-	pop dword eax
-	mov [nombre], eax	lea eax, [ebp + 8]
-	push dword eax
