@@ -302,14 +302,14 @@ void o(FILE* fpasm, int es_variable_1, int es_variable_2){
 		fprintf(fpasm,"\tpop ecx\n\tpop eax\n");     //* Sacamos ambos operandos de la pila */
 
 		if (es_variable_1) {
-			fprintf(fpasm, "mov eax, [eax]\n");
+			fprintf(fpasm, "\tmov eax, [eax]\n");
 		}
 
 		if (es_variable_2) {
-			fprintf(fpasm, "mov ecx, [ecx]\n");
+			fprintf(fpasm, "\tmov ecx, [ecx]\n");
 		}
 
-		fprintf(fpasm, "or eax, ecx\n");
+		fprintf(fpasm, "\tor eax, ecx\n");
 	} 
 
 	return;
@@ -325,20 +325,37 @@ void y(FILE* fpasm, int es_variable_1, int es_variable_2){
 		fprintf(fpasm,"\tpop ecx\n\tpop eax\n");     //* Sacamos ambos operandos de la pila */
 
 		if (es_variable_1) {
-			fprintf(fpasm, "mov eax, [eax]\n");
+			fprintf(fpasm, "\tmov eax, [eax]\n");
 		}
 
 		if (es_variable_2) {
-			fprintf(fpasm, "mov ecx, [ecx]\n");
+			fprintf(fpasm, "\tmov ecx, [ecx]\n");
 		}
 
-		fprintf(fpasm, "and eax, ecx\n");
+		fprintf(fpasm, "\tand eax, ecx\n");
 	} 
 
 	return;
 }
 
-void cambiar_signo(FILE* fpasm, int es_variable);
+void cambiar_signo(FILE* fpasm, int es_variable){
+
+	if (!fpasm) {
+		printf("Error de fichero (cambiar signo)\n");
+	} 
+	else {
+		fprintf(fpasm, "\tpush -1\n");
+
+		if (es_variable){
+			multiplicar(fpasm, 1, 0);
+		}
+
+		multiplicar (fpasm, 0, 0);
+
+	}
+
+	return;
+}
 /*
    Función aritmética de cambio de signo. 
    Es análoga a las binarias, excepto que sólo requiere de un acceso a la pila ya que sólo usa un operando.
