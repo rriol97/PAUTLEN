@@ -287,14 +287,56 @@ void dividir(FILE* fpasm, int es_variable_1, int es_variable_2) {
 			fprintf(fpasm, "\tmov ecx, [ecx]\n");
 		} 
 
-		fprintf(fpasm, "\tidiv ecx\n\tpush eax");
+		fprintf(fpasm, "\tidiv ecx\n\tpush eax\n");
 	}
 	
 	return;
 }
 
-void o(FILE* fpasm, int es_variable_1, int es_variable_2);
-void y(FILE* fpasm, int es_variable_1, int es_variable_2);
+void o(FILE* fpasm, int es_variable_1, int es_variable_2){
+	if (!pasm) {
+		printf("Error de fichero (or)\n");
+	}
+
+	else {
+		fprintf(fpasm,"\tpop ecx\n\tpop eax\n");     //* Sacamos ambos operandos de la pila */
+
+		if (es_variable_1) {
+			fprintf(fpasm, "mov eax, [eax]\n");
+		}
+
+		if (es_variable_2) {
+			fprintf(fpasm, "mov ecx, [ecx]\n");
+		}
+
+		fprintf(fpasm, "or eax, ecx\n");
+	} 
+
+	return;
+}
+
+void y(FILE* fpasm, int es_variable_1, int es_variable_2){
+
+	if (!pasm) {
+		printf("Error de fichero (and)\n");
+	}
+
+	else {
+		fprintf(fpasm,"\tpop ecx\n\tpop eax\n");     //* Sacamos ambos operandos de la pila */
+
+		if (es_variable_1) {
+			fprintf(fpasm, "mov eax, [eax]\n");
+		}
+
+		if (es_variable_2) {
+			fprintf(fpasm, "mov ecx, [ecx]\n");
+		}
+
+		fprintf(fpasm, "and eax, ecx\n");
+	} 
+
+	return;
+}
 
 void cambiar_signo(FILE* fpasm, int es_variable);
 /*
