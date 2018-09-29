@@ -361,7 +361,26 @@ void cambiar_signo(FILE* fpasm, int es_variable){
    Es análoga a las binarias, excepto que sólo requiere de un acceso a la pila ya que sólo usa un operando.
 */
 
-void no(FILE* fpasm, int es_variable, int cuantos_no);
+void no(FILE* fpasm, int es_variable, int cuantos_no){
+
+	if (!fpasm) {
+		printf("Error de fichero (negacion)\n");
+	}
+
+	else {
+
+		fprintf(fpasm, "\tpush dword 0\n");
+
+		//Deja en la cima de la pila un 1 si son iguales y 0 en caso contrario
+		igual(fpasm, es_variable, 0, cuantos_no);
+		fprintf(fpasm, "\tje escribir_1\n\tpush dword 1\n\tjump fin_no_%d\nescribir_1:\n\tpush 0\nfin_no_%d\n", cuantos_no, cuantos_no);
+
+
+
+	}
+
+	return;
+}
 /*
    Función monádica lógica de negación. No hay un código de operación de la ALU 
    que realice esta operación por lo que se debe codificar un algoritmo que, si encuentra en la cima de la pila un 0 deja en la cima un 1 y al contrario.
