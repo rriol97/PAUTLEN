@@ -1,0 +1,17 @@
+obligatorio:
+-identificar nodos por string
+-almacenar tabla de ambito:
+    -nombre string
+    -tabla hash de simbolos de clase
+    -tabla hash de simbolos de funcion actual
+
+opcional recomendable:
+-bidireccional
+-acceso directo a nodos
+-almacenar padres (como?)
+
+
+
+tabla hash:
+-clave char*
+-valor generico (void*)
