@@ -209,7 +209,7 @@ Deben tenerse en cuenta las peculiaridades de cada operación. En este sentido s
 */
 void sumar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 
-	if (!pasm) {
+	if (!fpasm) {
 		printf("Error de fichero (sumar)\n");
 	}
 	else {
@@ -230,7 +230,7 @@ void sumar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 }
 void restar(FILE* fpasm, int es_variable_1, int es_variable_2){
 
-	if (!pasm) {
+	if (!fpasm) {
 		printf("Error de fichero (restar)\n");
 	}
 	else {
@@ -252,7 +252,7 @@ void restar(FILE* fpasm, int es_variable_1, int es_variable_2){
 
 void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 
-	if (!pasm) {
+	if (!fpasm) {
 		printf("Error del fichero (multiplicar)\n");
 	}
 	else {
@@ -272,7 +272,7 @@ void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 }
 void dividir(FILE* fpasm, int es_variable_1, int es_variable_2) {
 
-	if (!pasm) {
+	if (!fpasm) {
 		printf("Error del fichero (dividir)\n");
 	}
 
@@ -294,7 +294,7 @@ void dividir(FILE* fpasm, int es_variable_1, int es_variable_2) {
 }
 
 void o(FILE* fpasm, int es_variable_1, int es_variable_2){
-	if (!pasm) {
+	if (!fpasm) {
 		printf("Error de fichero (or)\n");
 	}
 
@@ -317,7 +317,7 @@ void o(FILE* fpasm, int es_variable_1, int es_variable_2){
 
 void y(FILE* fpasm, int es_variable_1, int es_variable_2){
 
-	if (!pasm) {
+	if (!fpasm) {
 		printf("Error de fichero (and)\n");
 	}
 
