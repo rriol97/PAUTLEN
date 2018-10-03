@@ -3,14 +3,13 @@
 #include "graph.h"
 
 /* Define maximum number of vertices in the graph*/
-#define N 1000
 #define MAX_CLASSES 200
 
 /* Data structure to store graph*/
 struct _Graph {
     /* An array of pointers to Node to represent adjacency list*/
-    struct Node* child_list[N];
-    struct Node* parent_list[N];
+    struct Node* child_list[MAX_CLASSES];
+    struct Node* parent_list[MAX_CLASSES];
     Class* classes[MAX_CLASSES];
     int num_classes;
 };
