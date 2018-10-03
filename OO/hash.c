@@ -4,6 +4,7 @@
 #include "hash.h"
 
 
+
 void insert_symbol(Hash **hash, char* name, void* value) {
     Hash *s;
 
