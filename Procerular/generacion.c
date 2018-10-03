@@ -367,7 +367,7 @@ void cambiar_signo(FILE* fpasm, int es_variable) {
    que realice esta operación por lo que se debe codificar un algoritmo que, si encuentra en la cima de la pila un 0 deja en la cima un 1 y al contrario.
    El último argumento es el valor de etiqueta que corresponde (sin lugar a dudas, la implementación del algoritmo requerirá etiquetas). Véase en los ejemplos de programa principal como puede gestionarse el número de etiquetas cuantos_no.
 */
-void no(FILE* fpasm, int es_variable, int cuantos_no){
+void no(FILE* fpasm, int es_variable, int cuantos_no) {
 
 	if (!fpasm) {
 		printf("Error de fichero (negacion)\n");
@@ -383,7 +383,7 @@ void no(FILE* fpasm, int es_variable, int cuantos_no){
 
 		//Comparamos con 0 el argumentoç
 		fprintf(fpasm, "\tcmp eax, 0\n");
-		fprintf(fpasm, "\tje escribir1_%d\n\tpush dword 0\n\tjmp fin_no_%d\nescribir1_%d:\n\tpush dword 1\nfin_no_%d:\n", cuantos_no, cuantos_no, cuantos_no, cuantos_no);
+		fprintf(fpasm, "\tje near escribir1_%d\n\tpush dword 0\n\tjmp near fin_no_%d\nescribir1_%d:\n\tpush dword 1\nfin_no_%d:\n", cuantos_no, cuantos_no, cuantos_no, cuantos_no);
 	}
 
 	return;
@@ -413,7 +413,7 @@ void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
 			fprintf(fpasm, "\tmov ecx, [ecx]\n");
 		}
 
-		fprintf(fpasm, "\tcmp eax, ecx\n\tje igual_%d\n\tpush dword 0\n\tjmp final_%d\nigual_%d:\n\tpush dword 1\nfinal_%d:\n", etiqueta, etiqueta, etiqueta, etiqueta);
+		fprintf(fpasm, "\tcmp eax, ecx\n\tje near igual_%d\n\tpush dword 0\n\tjmp near final_%d\nigual_%d:\n\tpush dword 1\nfinal_%d:\n", etiqueta, etiqueta, etiqueta, etiqueta);
 	}
 
 	return;
@@ -436,7 +436,7 @@ void distinto(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
 			fprintf(fpasm, "\tmov ecx, [ecx]\n");
 		}
 
-		fprintf(fpasm, "\tcmp eax, ecx\n\tje igual_%d\n\tpush dword 1\n\tjmp final_%d\nigual_%d:\n\tpush dword 0\nfinal_%d:\n", etiqueta, etiqueta, etiqueta, etiqueta);
+		fprintf(fpasm, "\tcmp eax, ecx\n\tje near igual_%d\n\tpush dword 1\n\tjmp near final_%d\nigual_%d:\n\tpush dword 0\nfinal_%d:\n", etiqueta, etiqueta, etiqueta, etiqueta);
 	}
 
 	return;
@@ -459,7 +459,7 @@ void menor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) 
 			fprintf(fpasm, "\tmov edx, [edx]\n");
 		}
 
-		fprintf(fpasm, "\tcmp eax, edx\n\tjle menor_igual_%d\n\tpush dword 0\n\tjmp final_%d\nmenor_igual_%d:\n\tpush dword 1\nfinal_%d:\n", etiqueta, etiqueta, etiqueta, etiqueta);
+		fprintf(fpasm, "\tcmp eax, edx\n\tjle near menor_igual_%d\n\tpush dword 0\n\tjmp near final_%d\nmenor_igual_%d:\n\tpush dword 1\nfinal_%d:\n", etiqueta, etiqueta, etiqueta, etiqueta);
 	}
 
 	return;
@@ -481,7 +481,7 @@ void mayor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) 
 			fprintf(fpasm, "\tmov edx, [edx]\n");
 		}
 
-		fprintf(fpasm, "\tcmp eax, edx\n\tjge mayor_igual_%d\n\tpush dword 0\n\tjmp final_%d\nmayor_igual_%d:\n\tpush dword 1\nfinal_%d:\n", etiqueta, etiqueta, etiqueta, etiqueta);
+		fprintf(fpasm, "\tcmp eax, edx\n\tjge near mayor_igual_%d\n\tpush dword 0\n\tjmp near final_%d\nmayor_igual_%d:\n\tpush dword 1\nfinal_%d:\n", etiqueta, etiqueta, etiqueta, etiqueta);
 	}
 
 	return;
@@ -504,7 +504,7 @@ void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
 			fprintf(fpasm, "\tmov edx, [edx]\n");
 		}
 
-		fprintf(fpasm, "\tcmp eax, edx\n\tjl menor_%d\n\tpush dword 0\n\tjmp final_%d\nmenor_%d:\n\tpush dword 1\nfinal_%d:\n", etiqueta, etiqueta, etiqueta, etiqueta);
+		fprintf(fpasm, "\tcmp eax, edx\n\tjl near menor_%d\n\tpush dword 0\n\tjmp near final_%d\nmenor_%d:\n\tpush dword 1\nfinal_%d:\n", etiqueta, etiqueta, etiqueta, etiqueta);
 	}
 
 	return;
@@ -527,7 +527,7 @@ void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
 			fprintf(fpasm, "\tmov edx, [edx]\n");
 		}
 
-		fprintf(fpasm, "\tcmp eax, edx\n\tjg mayor_%d\n\tpush dword 0\n\tjmp final_%d\nmayor_%d:\n\tpush dword 1\nfinal_%d:\n", etiqueta, etiqueta, etiqueta, etiqueta);
+		fprintf(fpasm, "\tcmp eax, edx\n\tjg near mayor_%d\n\tpush dword 0\n\tjmp near final_%d\nmayor_%d:\n\tpush dword 1\nfinal_%d:\n", etiqueta, etiqueta, etiqueta, etiqueta);
 	}
 
 	return;
