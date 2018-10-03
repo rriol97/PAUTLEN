@@ -7,8 +7,10 @@ Desc: En este fichero se implementan las funciones que permiten la genración de
 
 #include "generacion.h"
 
-#define LISTA_OP_EXTERNAS "scan_int, print_int, scan_float, print_float, scan_boolean, print_boolean"
+#define LISTA_OP_EXTERNAS "scan_int, print_int, scan_float, print_float, scan_boolean, print_boolean, print_endofline, print_blank, print_string"
 #define PUNTERO_A_PILA "__esp"
+#define VARIABLE 1
+#define NO_VARIABLE 0
 
 /** Funciones implementadas*/
 
@@ -46,7 +48,7 @@ mensajes para la identificación de errores en tiempo de ejecución.
 En este punto, al menos, debes ser capaz de detectar la división por 0.
 */
 void escribir_subseccion_data(FILE* fpasm){
-	char mensaje[] = "segment.data\n\tmsg_error_division_por_0\tdb \"Division por 0\", 0";
+	char mensaje[] = "segment .data\n\tmsg_error_division_por_0\tdb \"Division por 0\", 0";
 
 	if (!fpasm) {
 		printf("Error de fichero (escribir_subsection_data)\n");
@@ -69,15 +71,12 @@ Esta misma función se invocará cuando en el compilador se declaren vectores, p
 eso se adjunta un argumento final (tamano) que para esta primera práctica siempre 
 recibirá el valor 1. 
 */
-void declarar_variable(FILE* fpasm, char * nombre,  int tipo,  int tamano){
-	/** Variable donde guardaremos la declaracion de la variable en ensamblador*/
-	char *declaracion = "";
+void declarar_variable(FILE* fpasm, char * nombre,  int tipo,  int tamano) {
 
 	if (!fpasm) {
 		printf("Error de fichero (declarar_variable)");
 	} else {
-		sprintf(declaracion, "\t_%s resd %d", nombre, tamano);
-		fprintf(fpasm, "%s\n", declaracion);
+		fprintf(fpasm, "\t_%s resd %d\n", nombre, tamano);
 	}
 
 	return;
@@ -100,7 +99,7 @@ void escribir_segmento_codigo(FILE* fpasm) {
 		else if (fprintf(fpasm, "\tglobal main\n") <= 0) {
 			printf("Error declarando main\n");
 		} 
-		else if (fprintf(fpasm, "extern %s", LISTA_OP_EXTERNAS)) {
+		else if (fprintf(fpasm, "extern %s\n", LISTA_OP_EXTERNAS) <= 0) {
 			printf("Error declarando operaciones externas");
 		}
 	}
@@ -172,6 +171,9 @@ void escribir_operando(FILE* fpasm, char* nombre, int es_variable) {
 	if (!fpasm) {
 		printf("Error de fichero (escribir_operando)\n");
 	} 
+	if (es_variable) {
+		fprintf(fpasm, "\tpush dword _%s\n", nombre);
+	}
 	else if (fprintf(fpasm, "\tpush dword %s\n", nombre) <= 0) {
 			printf("Error al meter el operando en la pila");
 	}
@@ -189,10 +191,10 @@ void asignar(FILE* fpasm, char* nombre, int es_variable) {
 		printf("Error de fichero (asignar)");
 	}
 	else if (es_variable) {
-		fprintf(fpasm, "\tpop dword eax\n\tmov eax [eax]\n\tmov [%s], eax\n", nombre);
+		fprintf(fpasm, "\tpop dword eax\n\tmov eax [eax]\n\tmov [_%s], eax\n", nombre);
 	}
 	else {
-		fprintf(fpasm, "\tpop dword eax\n\tmov [%s], eax\n", nombre);
+		fprintf(fpasm, "\tpop dword eax\n\tmov [_%s], eax\n", nombre);
 	}
 
 	return;
@@ -266,7 +268,7 @@ void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 			fprintf(fpasm, "\tmov ecx, [ecx]\n");
 		} 
 
-		fprintf(fpasm, "\timul ecx\n\tpush eax");
+		fprintf(fpasm, "\timul ecx\n\tpush eax\n");
 	}
 	return;
 }
@@ -309,7 +311,7 @@ void o(FILE* fpasm, int es_variable_1, int es_variable_2){
 			fprintf(fpasm, "\tmov ecx, [ecx]\n");
 		}
 
-		fprintf(fpasm, "\tor eax, ecx\n");
+		fprintf(fpasm, "\tor eax, ecx\n\tpush eax\n");
 	} 
 
 	return;
@@ -332,13 +334,17 @@ void y(FILE* fpasm, int es_variable_1, int es_variable_2){
 			fprintf(fpasm, "\tmov ecx, [ecx]\n");
 		}
 
-		fprintf(fpasm, "\tand eax, ecx\n");
+		fprintf(fpasm, "\tand eax, ecx\n\tpush eax\n");
 	} 
 
 	return;
 }
 
-void cambiar_signo(FILE* fpasm, int es_variable){
+/*
+   Función aritmética de cambio de signo. 
+   Es análoga a las binarias, excepto que sólo requiere de un acceso a la pila ya que sólo usa un operando.
+*/
+void cambiar_signo(FILE* fpasm, int es_variable) {
 
 	if (!fpasm) {
 		printf("Error de fichero (cambiar signo)\n");
@@ -346,21 +352,21 @@ void cambiar_signo(FILE* fpasm, int es_variable){
 	else {
 		fprintf(fpasm, "\tpush -1\n");
 
-		if (es_variable){
-			multiplicar(fpasm, 1, 0);
+		if (es_variable) {
+			multiplicar(fpasm, VARIABLE, NO_VARIABLE);
+		} else {
+			multiplicar(fpasm, VARIABLE, VARIABLE);
 		}
-
-		multiplicar (fpasm, 0, 0);
-
 	}
 
 	return;
 }
-/*
-   Función aritmética de cambio de signo. 
-   Es análoga a las binarias, excepto que sólo requiere de un acceso a la pila ya que sólo usa un operando.
-*/
 
+/*
+   Función monádica lógica de negación. No hay un código de operación de la ALU 
+   que realice esta operación por lo que se debe codificar un algoritmo que, si encuentra en la cima de la pila un 0 deja en la cima un 1 y al contrario.
+   El último argumento es el valor de etiqueta que corresponde (sin lugar a dudas, la implementación del algoritmo requerirá etiquetas). Véase en los ejemplos de programa principal como puede gestionarse el número de etiquetas cuantos_no.
+*/
 void no(FILE* fpasm, int es_variable, int cuantos_no){
 
 	if (!fpasm) {
@@ -368,60 +374,310 @@ void no(FILE* fpasm, int es_variable, int cuantos_no){
 	}
 
 	else {
+		//Metemos en eax el argumento
+		fprintf(fpasm, "\tpop eax\n");
 
-		fprintf(fpasm, "\tpush dword 0\n");
+		if (es_variable) {
+			fprintf(fpasm, "\tmov eax, [eax]\n");
+		}
 
-		//Deja en la cima de la pila un 1 si son iguales y 0 en caso contrario
-		igual(fpasm, es_variable, 0, cuantos_no);
-		fprintf(fpasm, "\tje escribir_1\n\tpush dword 1\n\tjump fin_no_%d\nescribir_1:\n\tpush 0\nfin_no_%d\n", cuantos_no, cuantos_no);
-
-
-
+		//Comparamos con 0 el argumentoç
+		fprintf(fpasm, "\tcmp eax, 0\n");
+		fprintf(fpasm, "\tje escribir1_%d\n\tpush dword 0\n\tjmp fin_no_%d\nescribir1_%d:\n\tpush dword 1\nfin_no_%d:\n", cuantos_no, cuantos_no, cuantos_no, cuantos_no);
 	}
 
 	return;
 }
-/*
-   Función monádica lógica de negación. No hay un código de operación de la ALU 
-   que realice esta operación por lo que se debe codificar un algoritmo que, si encuentra en la cima de la pila un 0 deja en la cima un 1 y al contrario.
-   El último argumento es el valor de etiqueta que corresponde (sin lugar a dudas, la implementación del algoritmo requerirá etiquetas). Véase en los ejemplos de programa principal como puede gestionarse el número de etiquetas cuantos_no.
-*/
+
 
 /* FUNCIONES COMPARATIVAS */
 /* 
-   Todas estas funciones reciben como argumento si los elementos a comparar son o no variables. El resultado de las operaciones, que siempre será un booleano (“1” si se cumple la comparación y “0” si no se cumple), se deja en la pila como en el resto de operaciones. Se deben usar etiquetas para poder gestionar los saltos necesarios para implementar las comparaciones.
+   Todas estas funciones reciben como argumento si los elementos a comparar son o no variables. El resultado de las operaciones, 
+   que siempre será un booleano (“1” si se cumple la comparación y “0” si no se cumple), se deja en la pila como en el resto de 
+   operaciones. Se deben usar etiquetas para poder gestionar los saltos necesarios para implementar las comparaciones.
 */
-void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta);
-void distinto(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta);
-void menor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta);
-void mayor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta);
-void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta);
-void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta);
+void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
+	if (!fpasm) {
+		printf("Error de fichero (negacion)\n");
+	}
+
+	else {
+
+		fprintf (fpasm, "\tpop ecx\n\tpop eax\n");
+
+		if (es_variable1) {
+			fprintf(fpasm, "\tmov eax, [eax]\n");
+		}
+
+		if (es_variable2) {
+			fprintf(fpasm, "\tmov ecx, [ecx]\n");
+		}
+
+		fprintf(fpasm, "\tcmp eax, ecx\n\tje igual_%d\n\tpush dword 0\n\tjmp final_%d\nigual_%d:\n\tpush dword 1\nfinal_%d:\n", etiqueta, etiqueta, etiqueta, etiqueta);
+	}
+
+	return;
+}
+
+void distinto(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
+	if (!fpasm) {
+		printf("Error de fichero (negacion)\n");
+	}
+
+	else {
+
+		fprintf (fpasm, "\tpop ecx\n\tpop eax\n");
+
+		if (es_variable1) {
+			fprintf(fpasm, "\tmov eax, [eax]\n");
+		}
+
+		if (es_variable2) {
+			fprintf(fpasm, "\tmov ecx, [ecx]\n");
+		}
+
+		fprintf(fpasm, "\tcmp eax, ecx\n\tje igual_%d\n\tpush dword 1\n\tjmp final_%d\nigual_%d:\n\tpush dword 0\nfinal_%d:\n", etiqueta, etiqueta, etiqueta, etiqueta);
+	}
+
+	return;
+}
+
+void menor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
+	if (!fpasm) {
+		printf("Error de fichero (negacion)\n");
+	}
+
+	else {
+
+		fprintf (fpasm, "\tpop edx\n\tpop eax\n");
+
+		if (es_variable1) {
+			fprintf(fpasm, "\tmov eax, [eax]\n");
+		}
+
+		if (es_variable2) {
+			fprintf(fpasm, "\tmov edx, [edx]\n");
+		}
+
+		fprintf(fpasm, "\tcmp eax, edx\n\tjle menor_igual_%d\n\tpush dword 0\n\tjmp final_%d\nmenor_igual_%d:\n\tpush dword 1\nfinal_%d:\n", etiqueta, etiqueta, etiqueta, etiqueta);
+	}
+
+	return;
+}
+void mayor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
+	if (!fpasm) {
+		printf("Error de fichero (negacion)\n");
+	}
+
+	else {
+
+		fprintf (fpasm, "\tpop edx\n\tpop eax\n");
+
+		if (es_variable1) {
+			fprintf(fpasm, "\tmov eax, [eax]\n");
+		}
+
+		if (es_variable2) {
+			fprintf(fpasm, "\tmov edx, [edx]\n");
+		}
+
+		fprintf(fpasm, "\tcmp eax, edx\n\tjge mayor_igual_%d\n\tpush dword 0\n\tjmp final_%d\nmayor_igual_%d:\n\tpush dword 1\nfinal_%d:\n", etiqueta, etiqueta, etiqueta, etiqueta);
+	}
+
+	return;
+}
+
+void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
+	if (!fpasm) {
+		printf("Error de fichero (negacion)\n");
+	}
+
+	else {
+
+		fprintf (fpasm, "\tpop edx\n\tpop eax\n");
+
+		if (es_variable1) {
+			fprintf(fpasm, "\tmov eax, [eax]\n");
+		}
+
+		if (es_variable2) {
+			fprintf(fpasm, "\tmov edx, [edx]\n");
+		}
+
+		fprintf(fpasm, "\tcmp eax, edx\n\tjl menor_%d\n\tpush dword 0\n\tjmp final_%d\nmenor_%d:\n\tpush dword 1\nfinal_%d:\n", etiqueta, etiqueta, etiqueta, etiqueta);
+	}
+
+	return;
+}
+
+void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
+	if (!fpasm) {
+		printf("Error de fichero (negacion)\n");
+	}
+
+	else {
+
+		fprintf (fpasm, "\tpop edx\n\tpop eax\n");
+
+		if (es_variable1) {
+			fprintf(fpasm, "\tmov eax, [eax]\n");
+		}
+
+		if (es_variable2) {
+			fprintf(fpasm, "\tmov edx, [edx]\n");
+		}
+
+		fprintf(fpasm, "\tcmp eax, edx\n\tjg mayor_%d\n\tpush dword 0\n\tjmp final_%d\nmayor_%d:\n\tpush dword 1\nfinal_%d:\n", etiqueta, etiqueta, etiqueta, etiqueta);
+	}
+
+	return;
+}
 
 /* FUNCIONES DE ESCRITURA Y LECTURA */
 /*
    Se necesita saber el tipo de datos que se va a procesar (ENTERO o BOOLEANO) ya que hay diferentes funciones de librería para la lectura (idem. escritura) de cada tipo.
    Se deben insertar en la pila los argumentos necesarios, realizar la llamada (call) a la función de librería correspondiente y limpiar la pila.
 */
-void leer(FILE* fpasm, char* nombre, int tipo);
-void escribir(FILE* fpasm, int es_variable, int tipo);
+void leer(FILE* fpasm, char* nombre, int tipo){
+	if (!fpasm) {
+		printf("Error de fichero (lectura)\n");
+	}
+
+	else {
+
+		fprintf(fpasm, "\tpush dword _%s\n", nombre);
+
+		if (tipo == ENTERO) {
+			fprintf(fpasm, "\tcall scan_int\n");
+		}
+
+		else if(tipo == BOOLEANO) {
+			fprintf(fpasm, "\tcall scan_boolean\n");
+		}
+
+		else {
+			printf("Error en la lectura. Tipo no reconocido\n");
+		}
+
+		fprintf(fpasm, "\tadd esp, 4\n");
+	}
+
+	return;
+}
+
+void escribir(FILE* fpasm, int es_variable, int tipo){
+
+	if (!fpasm) {
+		printf("Error de fichero (lectura)\n");
+	}
+
+	else {
+
+		fprintf(fpasm, "\tpop eax\n");
+
+		if (es_variable){
+			fprintf(fpasm, "\tmov eax, [eax]\n");
+		}
+
+		fprintf(fpasm, "\tpush dword eax\n");
+
+		if (tipo == ENTERO) {
+			fprintf(fpasm, "\tcall print_int\n");
+		}
+
+		else if(tipo == BOOLEANO) {
+			fprintf(fpasm, "\tcall print_boolean\n");
+		}
+
+		else {
+			printf("Error en la escritura. Tipo no reconocido\n");
+		}
+
+		fprintf(fpasm, "\tadd esp, 4\n\tcall print_endofline\n");
+	}
+
+	return;
+
+}
 
 /** VVVVVVVVVVVVVVVVVVVVVVVVVVVVV MAIN DE TEST VVVVVVVVVVVVVVVVVVVVVVVVVVVVV */
 
-int main(int argc, char* argv[]) {
-	FILE* salida;
-	if (argc != 2) {
-		fprintf (stdout, "ERROR POCOS ARGUMENTOS\n"); 
-		return EXIT_FAILURE;
-	}
-	salida = fopen(argv[1], "w");
+#include <stdio.h>
+#include "generacion.h"
 
-	/** <funcion a probar> */
-	escribir_fin(salida);
-	asignar(salida, "nombre", 0);
-	escribir_operando(salida, "nombre2", 1);
+int main (int argc, char** argv)
+{
+    FILE * salida;
+    int etiqueta = 0;
 
-	fclose(salida);
+    if (argc != 2) {fprintf (stdout, "ERROR POCOS ARGUMENTOS\n"); return -1;}
 
-	return EXIT_SUCCESS;
+    salida = fopen(argv[1],"w");
+
+    escribir_subseccion_data(salida);    
+    escribir_cabecera_bss(salida);
+    declarar_variable(salida, "b1", BOOLEANO, 1);
+    declarar_variable(salida, "x", ENTERO, 1);
+
+	escribir_segmento_codigo(salida);
+    escribir_inicio_main(salida);
+
+    /* scanf b1; */
+    leer(salida,"b1",BOOLEANO);
+    /* scanf x; */
+    leer(salida,"x",ENTERO);
+
+    /* printf (x > 3); */
+    escribir_operando(salida,"x",1);
+    escribir_operando(salida,"3",0);
+    mayor(salida,1,0,etiqueta++);
+    escribir(salida,0,BOOLEANO);
+
+    /* printf (x >= 3); */
+    escribir_operando(salida,"x",1);
+    escribir_operando(salida,"3",0);
+    mayor_igual(salida,1,0,etiqueta++);
+    escribir(salida,0,BOOLEANO);
+
+    /* printf (x < 3); */
+    escribir_operando(salida,"x",1);
+    escribir_operando(salida,"3",0);
+    menor(salida,1,0,etiqueta++);
+    escribir(salida,0,BOOLEANO);
+
+    /* printf (x <= 3); */
+    escribir_operando(salida,"x",1);
+    escribir_operando(salida,"3",0);
+    menor_igual(salida,1,0,etiqueta++);
+    escribir(salida,0,BOOLEANO);
+
+    /* printf (x == 3); */
+    escribir_operando(salida,"x",1);
+    escribir_operando(salida,"3",0);
+    igual(salida,1,0,etiqueta++);
+    escribir(salida,0,BOOLEANO);
+
+    /* printf (x != 3); */
+    escribir_operando(salida,"x",1);
+    escribir_operando(salida,"3",0);
+    distinto(salida,1,0,etiqueta++);
+    escribir(salida,0,BOOLEANO);
+
+    /* printf b1&&false; */
+    escribir_operando(salida,"b1",1);
+    escribir_operando(salida,"0",0);
+    y(salida,1,0);
+    escribir(salida,0,BOOLEANO);
+
+    /* printf b1||true; */
+    escribir_operando(salida,"b1",1);
+    escribir_operando(salida,"1",0);
+    o(salida,1,0);
+    escribir(salida,0,BOOLEANO);
+
+    escribir_fin(salida);
+
+    fclose(salida);
+    return 0;
 }
+
