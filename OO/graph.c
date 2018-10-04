@@ -23,6 +23,8 @@ struct Node {
 /* A utility function to create a new adjacency list node */
 struct Node* newNode(int dest) {
     struct Node* new_node = (struct Node*) malloc(sizeof (struct Node));
+    if (new_node == NULL)
+        return NULL;
     new_node->dest = dest;
     new_node->next = NULL;
     return new_node;
@@ -30,10 +32,12 @@ struct Node* newNode(int dest) {
 
 /* A utility function that creates a graph */
 Graph* createGraph() {
-    Graph* graph = (Graph*) malloc(sizeof (Graph));
-
     int i;
-    for (i = 0; i < N; i++) {
+    Graph* graph = (Graph*) malloc(sizeof (Graph));
+    if (graph == NULL)
+        return NULL;
+
+    for (i = 0; i < MAX_CLASSES; i++) {
         graph->child_list[i] = NULL;
         graph->parent_list[i] = NULL;
     }
@@ -50,39 +54,60 @@ Graph* createGraph() {
 void freeGraph(Graph* graph) {
     int i;
 
+    if (graph == NULL)
+        return;
+
     for (i = 0; graph->child_list[i] != NULL; i++) {
         free(graph->child_list[i]);
     }
-    
+
     for (i = 0; graph->parent_list[i] != NULL; i++) {
         free(graph->parent_list[i]);
     }
+
+    free(graph);
 }
 
 /*Adds an edge to the graph*/
-void addEdge(Graph* graph, int src, int dest) {
+int addEdge(Graph* graph, int src, int dest) {
+    struct Node* new_node;
+    if (graph == NULL || src < 0 || src >= graph->num_classes || dest < 0 || dest >= graph->num_classes)
+        return -1;
     /* Add an edge from src to dest.  A new node is  
      * added to the adjacency list of src.  The node 
      * is added at the beginning */
-    struct Node* new_node = newNode(dest);
+    new_node = newNode(dest);
+    if (new_node == NULL)
+        return -1;
     new_node->next = graph->child_list[src];
     graph->child_list[src] = new_node;
 
     /* Since graph is undirected, add an edge from 
      * dest to src also */
     new_node = newNode(src);
+    if (new_node == NULL) {
+        new_node = graph->child_list[src];
+        graph->child_list[src] = new_node->next;
+        return -1;
+    }
     new_node->next = graph->parent_list[dest];
     graph->parent_list[dest] = new_node;
+    return 0;
 }
 
 /*Adds a class to the graph*/
-void addClass(Graph* graph, Class* class) {
+int addClass(Graph* graph, Class* class) {
+    if (graph == NULL || class == NULL || graph->num_classes == MAX_CLASSES)
+        return -1;
     graph->classes[graph->num_classes] = class;
     graph->num_classes++;
+    return 0;
 }
 
 /*Gets the class that a certain index represents*/
 Class* getClass(Graph* graph, int index) {
+    if (graph == NULL || index < 0 || index >= graph->num_classes)
+        return NULL;
     return graph->classes[index];
 }
 
@@ -90,8 +115,17 @@ Class* getClass(Graph* graph, int index) {
  * representation of graph */
 void printGraph(Graph* graph) {
     int i;
+    if (graph == NULL)
+        return;
     for (i = 0; i < graph->num_classes; i++) {
         struct Node* pCrawl = graph->child_list[i];
+        printf("\n Adjacency list of vertex %d\n head ", i);
+        while (pCrawl) {
+            printf("-> %d", pCrawl->dest);
+            pCrawl = pCrawl->next;
+        }
+        printf("\nParent list: ");
+        pCrawl = graph->parent_list[i];
         printf("\n Adjacency list of vertex %d\n head ", i);
         while (pCrawl) {
             printf("-> %d", pCrawl->dest);
@@ -105,6 +139,7 @@ void printGraph(Graph* graph) {
 int test() {
     /* create the graph */
     Graph* graph = createGraph();
+    graph->num_classes = 5;
     addEdge(graph, 0, 1);
     addEdge(graph, 0, 4);
     addEdge(graph, 1, 2);
@@ -112,11 +147,10 @@ int test() {
     addEdge(graph, 1, 4);
     addEdge(graph, 2, 3);
     addEdge(graph, 3, 4);
-    graph->num_classes = 5;
 
     /* print the adjacency list representation of the above graph */
     printGraph(graph);
-    
+
     freeGraph(graph);
 
     return 0;
