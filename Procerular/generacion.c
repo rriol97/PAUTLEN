@@ -2,17 +2,14 @@
 Name: generacion.c
 Author: Francisco de Vicente y Ricardo Riol 
 Desc: En este fichero se implementan las funciones que permiten la genración del 
-	código NASM
+	codigo NASM
  */
-
 #include "generacion.h"
 
 #define LISTA_OP_EXTERNAS "scan_int, print_int, scan_float, print_float, scan_boolean, print_boolean, print_endofline, print_blank, print_string"
 #define PUNTERO_A_PILA "__esp"
 #define VARIABLE 1
 #define NO_VARIABLE 0
-
-/** Funciones implementadas*/
 
 /*
 	Código para el principio de la sección .bss.
@@ -21,24 +18,12 @@ el puntero de pila extendido (esp).
 Se te sugiere el nombre __esp para esta variable.
 */
 void escribir_cabecera_bss(FILE* fpasm) {
-	char definicion[] = "segment .bss";
-	char puntero_pila[] = "\t__esp resd 1";
 
 	if (!fpasm) {
 		printf("Error de fichero (escribir_cabecera_bss)\n");
 	} else {
-
-		/** Escribimos en el fichero la definición del segmento .bss e 
-			inicializamos el puntero de pila*/
-		if (fprintf(fpasm, "%s\n", definicion) > 0) {
-			if (fprintf(fpasm, "%s\n", puntero_pila) <= 0) {
-				printf("Error inicializando el puntero de pila\n");
-			}
-		} else {
-			printf("Error definiendo el segmento .bss\n");
-		}
+		fprintf(fpasm, "segment .bss\n\t__esp resd 1\n");
 	}
-
 	return;
 }
 
@@ -47,18 +32,13 @@ void escribir_cabecera_bss(FILE* fpasm) {
 mensajes para la identificación de errores en tiempo de ejecución.
 En este punto, al menos, debes ser capaz de detectar la división por 0.
 */
-void escribir_subseccion_data(FILE* fpasm){
-	char mensaje[] = "segment .data\n\tmsg_error_division_por_0\tdb \"Division por 0\", 0";
+void escribir_subseccion_data(FILE* fpasm) {
 
 	if (!fpasm) {
 		printf("Error de fichero (escribir_subsection_data)\n");
 	} else {
-
-		if (fprintf(fpasm, "%s\n", mensaje) < 0) {
-			printf("Error declarando subseccion data\n");
-		}
+		fprintf(fpasm, "segment .data\n\tmsg_error_division_por_0\tdb \"Division por 0\", 0\n");
 	}	
-
 	return;
 }
 
@@ -78,7 +58,6 @@ void declarar_variable(FILE* fpasm, char * nombre,  int tipo,  int tamano) {
 	} else {
 		fprintf(fpasm, "\t_%s resd %d\n", nombre, tamano);
 	}
-
 	return;
 }
 
@@ -92,18 +71,8 @@ void escribir_segmento_codigo(FILE* fpasm) {
 	if (!fpasm) {
 		printf("Error de fichero (escribir_segmento_codigo)\n");
 	} else {
-
-		if (fprintf(fpasm, "segment .text\n") <= 0) {
-			printf("Error definiendo el segmento de codigo\n");
-		} 
-		else if (fprintf(fpasm, "\tglobal main\n") <= 0) {
-			printf("Error declarando main\n");
-		} 
-		else if (fprintf(fpasm, "extern %s\n", LISTA_OP_EXTERNAS) <= 0) {
-			printf("Error declarando operaciones externas");
-		}
+		fprintf(fpasm, "segment .text\n\tglobal main\nextern %s\n", LISTA_OP_EXTERNAS);
 	}
-
 	return;
 }
 
@@ -115,14 +84,9 @@ void escribir_inicio_main(FILE* fpasm) {
 
 	if (!fpasm) {
 		printf("Error de fichero (escribir_inicio_main)\n");
-	} 
-	else if (fprintf(fpasm, "main:\n") <= 0) {
-		printf("Error al escribir main");
+	} else {
+		fprintf(fpasm, "main:\n\tmov dword [%s], %s\n", PUNTERO_A_PILA, PUNTERO_A_PILA);
 	}
-	else if (fprintf(fpasm, "\tmov dword [%s], %s\n", PUNTERO_A_PILA, PUNTERO_A_PILA) <= 0) {
-		printf("Error guardando la variable de pila");
-	}
-
 	return;
 }
 
@@ -140,18 +104,9 @@ void escribir_fin(FILE* fpasm) {
 
 	if (!fpasm) {
 		printf("Error de fichero (escribir_fin)\n");
-	} 
-	// TODO: hace falta escribir el resto de etiquetas para errores de ex.?
-	else if (fprintf(fpasm, "fin:\n") <= 0) {
-		printf("Error al escribir fin");
+	} else {
+		fprintf(fpasm, "fin:\n\tmov dword [%s], %s\n\tret\n", PUNTERO_A_PILA, PUNTERO_A_PILA);
 	}
-	else if (fprintf(fpasm, "\tmov dword [%s], %s\n", PUNTERO_A_PILA, PUNTERO_A_PILA) <= 0) {
-		printf("Error reestableciendo la variable de pila");
-	}
-	else if (fprintf(fpasm, "\tret\n") <= 0) {
-		printf("Error al escribir el retorno");
-	}
-
 	return;
 }
 
