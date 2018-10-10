@@ -155,8 +155,6 @@ void escribir_fin(FILE* fpasm) {
 	return;
 }
 
-/** ^^^^^^^^^^^^^^^^^^^^^^^^ IMPLEMENTADO HASTA AQUI ^^^^^^^^^^^^^^^^^^^^^^^^ */
-
 /*
    Función que debe ser invocada cuando se sabe un operando de una operación 
 aritmético-lógica y se necesita introducirlo en la pila. nombre es la cadena de 
@@ -191,7 +189,7 @@ void asignar(FILE* fpasm, char* nombre, int es_variable) {
 		printf("Error de fichero (asignar)");
 	}
 	else if (es_variable) {
-		fprintf(fpasm, "\tpop dword eax\n\tmov eax [eax]\n\tmov [_%s], eax\n", nombre);
+		fprintf(fpasm, "\tpop dword eax\n\tmov eax, [eax]\n\tmov [_%s], eax\n", nombre);
 	}
 	else {
 		fprintf(fpasm, "\tpop dword eax\n\tmov [_%s], eax\n", nombre);

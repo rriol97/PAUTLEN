@@ -21,9 +21,9 @@ main:
 	pop eax
 	mov eax, [eax]
 	cmp eax, edx
-	jg mayor_0
+	jg near mayor_0
 	push dword 0
-	jmp final_0
+	jmp near final_0
 mayor_0:
 	push dword 1
 final_0:
@@ -38,9 +38,9 @@ final_0:
 	pop eax
 	mov eax, [eax]
 	cmp eax, edx
-	jge mayor_igual_1
+	jge near mayor_igual_1
 	push dword 0
-	jmp final_1
+	jmp near final_1
 mayor_igual_1:
 	push dword 1
 final_1:
@@ -55,9 +55,9 @@ final_1:
 	pop eax
 	mov eax, [eax]
 	cmp eax, edx
-	jl menor_2
+	jl near menor_2
 	push dword 0
-	jmp final_2
+	jmp near final_2
 menor_2:
 	push dword 1
 final_2:
@@ -72,9 +72,9 @@ final_2:
 	pop eax
 	mov eax, [eax]
 	cmp eax, edx
-	jle menor_igual_3
+	jle near menor_igual_3
 	push dword 0
-	jmp final_3
+	jmp near final_3
 menor_igual_3:
 	push dword 1
 final_3:
@@ -89,9 +89,9 @@ final_3:
 	pop eax
 	mov eax, [eax]
 	cmp eax, ecx
-	je igual_4
+	je near igual_4
 	push dword 0
-	jmp final_4
+	jmp near final_4
 igual_4:
 	push dword 1
 final_4:
@@ -106,9 +106,9 @@ final_4:
 	pop eax
 	mov eax, [eax]
 	cmp eax, ecx
-	je igual_5
+	je near igual_5
 	push dword 1
-	jmp final_5
+	jmp near final_5
 igual_5:
 	push dword 0
 final_5:
