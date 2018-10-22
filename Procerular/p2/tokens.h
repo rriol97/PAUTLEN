@@ -3,6 +3,10 @@
 
 #define MAX_LONG_ID 50
 
+#define TOK_OK 100
+#define TOK_SALTO 101 
+#define TOK_BLANCO 102
+
 
 /* PALABRAS RESERVADAS */
 #define TOK_NONE 200

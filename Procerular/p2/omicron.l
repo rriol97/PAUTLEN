@@ -1,29 +1,29 @@
 %{
 #include <stdio.h>
-#include "tokens.h"
+#include "tokens.h" 
 
-int fila;
-int columna;
+int fila = 1;
+int columna = 0;
 int yyleng;
-int yytext;
+char *yytext;
 
 %}
 %option noyywrap
 
 DIGITO [0-9]
 ENTERO  {DIGITO}+
-LETRA [A-Z]
-BALNCO [ \t]+
+BLANCO [ \t]+
 SALTO \n
 COMENTARIO "//".*\n 
 ERROR .
 IDENTIFICADOR ([a-z]|[A-Z])([A-Z][a-z][0-9])*
 
 %%
+none { columna += yyleng; return TOK_NONE;}
 class { columna += yyleng; return TOK_CLASS;}
 inherits { columna += yyleng; return TOK_INHERITS;}
 instance_of { columna += yyleng; return TOK_INSTANCE_OF;}
-dicard { columna += yyleng; return TOK_DISCARD;}
+discard { columna += yyleng; return TOK_DISCARD;}
 itself { columna += yyleng; return TOK_ITSELF;}
 flecha { columna += yyleng; return TOK_FLECHA;}
 hidden { columna += yyleng; return TOK_HIDDEN;}
@@ -36,7 +36,6 @@ return { columna += yyleng; return TOK_RETURN;}
 main { columna += yyleng; return TOK_MAIN;}
 int { columna += yyleng; return TOK_INT;}
 boolean { columna += yyleng; return TOK_BOOLEAN;}     
-none { columna += yyleng; return TOK_NONE;}
 array { columna += yyleng; return TOK_ARRAY;}
 if { columna += yyleng; return TOK_IF;}
 else { columna += yyleng; return TOK_ELSE;}
@@ -75,7 +74,7 @@ true { columna += yyleng; return TOK_TRUE;}
 
 {IDENTIFICADOR} { 
     if (yyleng > MAX_LONG_ID) {
-        fprintf(stderr, "ERROR MORFOLÓGICO :%d:%d: IDENTIFICADOR DEMASIADO LARGO (%s)\n", fila, columna, yytext);
+        fprintf(stderr, "ERROR MORFOLÓGICO :%d:%d: IDENTIFICADOR DEMASIADO LARGO (%s)", fila, columna, yytext);
         return TOK_ERROR;
     } 
     else {
@@ -93,23 +92,18 @@ true { columna += yyleng; return TOK_TRUE;}
     columna = 0;
     fila += 1;
 
-    return;
+    return TOK_OK;
 }
 
 {SALTO} {
     columna = 0;
     fila += 1;
-    return;
+    return TOK_SALTO;
 }
 
 {BLANCO} {
     columna += yyleng;
-    return;
-}
-
-{LETRA} {
-    columna += yyleng;
-    return;
+    return TOK_BLANCO;
 }
 
 {ERROR} {

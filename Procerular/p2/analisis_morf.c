@@ -3,25 +3,26 @@
 #include "tokens.h"
 
 extern int yylrx();
+extern int yylex();
 
 extern FILE *yyin;
 extern int columna;
 extern int fila;
-extern int yytext;
+extern char *yytext;
 
 int main(int argc, char *argv[])
 {
     int ret;
-    FILE *fin, *fout;
+    FILE *fout;
 
     if (argc != 3)
     {
-        printf("Formato entrada: ./%s <fin> <fout>\n", argv[0]);
+        printf("Formato entrada: %s <fin> <fout>\n", argv[0]);
         return EXIT_FAILURE;
     }
 
-    fin = fopen(argv[1], "r");
-    if (!fin)
+    yyin = fopen(argv[1], "r");
+    if (!yyin)
     {
         printf("Apertura fichero entrada fallida\n");
         return EXIT_FAILURE;
@@ -135,14 +136,26 @@ int main(int argc, char *argv[])
         case TOK_CONSTANTE_ENTERA:
             fprintf(fout, "TOK_CONSTANTE_ENTERA %d %s\n", TOK_CONSTANTE_ENTERA, yytext);
             break;
+        case TOK_SALTO:
+            break;
+        case TOK_BLANCO:
+            break;   
+        case TOK_OK:
+            fprintf(fout, "TOK_COMENTARIO %d %s", TOK_OK, yytext);
+            break;      
         case TOK_ERROR:
             fprintf(fout, "TOK_ERROR %d %s", TOK_ERROR, yytext);
-            break;
+            break;    
 
         default:
-            fprintf(fout, "SIMBOLO SIMPLE %d %c", ret, yytext);
+            fprintf(fout, "SIMBOLO SIMPLE %d %s\n", ret, yytext);
         }
 
         ret = yylex();
     }
+
+    fclose(yyin);
+    fclose(fout);
+
+    return 1;
 }
