@@ -1,6 +1,6 @@
 %{
 #include <stdio.h>
-#include "tokens.h" 
+#include "tokens.h"
 
 int fila = 1;
 int columna = 0;
@@ -14,9 +14,9 @@ DIGITO [0-9]
 ENTERO  {DIGITO}+
 BLANCO [ \t]+
 SALTO \n
-COMENTARIO "//".*\n 
+COMENTARIO "//".*\n
 ERROR .
-IDENTIFICADOR ([a-z]|[A-Z])([A-Z][a-z][0-9])*
+IDENTIFICADOR [a-zA-Z]([A-Za-z0-9])*
 
 %%
 none { columna += yyleng; return TOK_NONE;}
@@ -35,7 +35,7 @@ function { columna += yyleng; return TOK_FUNCTION;}
 return { columna += yyleng; return TOK_RETURN;}
 main { columna += yyleng; return TOK_MAIN;}
 int { columna += yyleng; return TOK_INT;}
-boolean { columna += yyleng; return TOK_BOOLEAN;}     
+boolean { columna += yyleng; return TOK_BOOLEAN;}
 array { columna += yyleng; return TOK_ARRAY;}
 if { columna += yyleng; return TOK_IF;}
 else { columna += yyleng; return TOK_ELSE;}
@@ -53,6 +53,8 @@ true { columna += yyleng; return TOK_TRUE;}
 ")" { columna += yyleng; return yytext[0];}
 "{" { columna += yyleng; return yytext[0];}
 "}" { columna += yyleng; return yytext[0];}
+"[" { columna += yyleng; return yytext[0];}
+"]" { columna += yyleng; return yytext[0];}
 ":" { columna += yyleng; return yytext[0];}
 "+" { columna += yyleng; return yytext[0];}
 "-" { columna += yyleng; return yytext[0];}
@@ -70,13 +72,14 @@ true { columna += yyleng; return TOK_TRUE;}
 ">=" { columna += yyleng; return TOK_MAYORIGUAL;}
 "||" { columna += yyleng; return TOK_OR;}
 "&&" { columna += yyleng; return TOK_AND;}
+"->" { columna += yyleng; return TOK_FLECHA;}
 
 
-{IDENTIFICADOR} { 
+{IDENTIFICADOR} {
     if (yyleng > MAX_LONG_ID) {
-        fprintf(stderr, "ERROR MORFOLÓGICO :%d:%d: IDENTIFICADOR DEMASIADO LARGO (%s)", fila, columna, yytext);
+        fprintf(stderr, "ERROR MORFOLÓGICO :%d:%d: IDENTIFICADOR DEMASIADO LARGO (%s)\n", fila, columna, yytext);
         return TOK_ERROR;
-    } 
+    }
     else {
         columna += yyleng;
         return TOK_IDENTIFICADOR;
@@ -92,7 +95,7 @@ true { columna += yyleng; return TOK_TRUE;}
     columna = 0;
     fila += 1;
 
-    return TOK_OK;
+    return TOK_COMENTARIO;
 }
 
 {SALTO} {

@@ -139,13 +139,13 @@ int main(int argc, char *argv[])
         case TOK_SALTO:
             break;
         case TOK_BLANCO:
-            break;   
-        case TOK_OK:
-            fprintf(fout, "TOK_COMENTARIO %d %s", TOK_OK, yytext);
-            break;      
+            break;
+        case TOK_COMENTARIO:
+            fprintf(fout, "TOK_COMENTARIO %d %s\n", TOK_OK, yytext);
+            break;
         case TOK_ERROR:
-            fprintf(fout, "TOK_ERROR %d %s", TOK_ERROR, yytext);
-            break;    
+            fprintf(fout, "TOK_ERROR %d %s\n", TOK_ERROR, yytext);
+            break;
 
         default:
             fprintf(fout, "SIMBOLO SIMPLE %d %s\n", ret, yytext);

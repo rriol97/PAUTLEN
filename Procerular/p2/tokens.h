@@ -3,8 +3,8 @@
 
 #define MAX_LONG_ID 50
 
-#define TOK_OK 100
-#define TOK_SALTO 101 
+#define TOK_COMENTARIO 100
+#define TOK_SALTO 101
 #define TOK_BLANCO 102
 
 
@@ -25,7 +25,7 @@
 #define TOK_MAIN 213
 #define TOK_INT 214
 #define TOK_BOOLEAN 215
-#define TOK_ARRAY 216	
+#define TOK_ARRAY 216
 #define TOK_IF 217
 #define TOK_ELSE 218
 #define TOK_WHILE 219
@@ -45,7 +45,7 @@
 
 /* CONSTANTES */
 #define TOK_CONSTANTE_ENTERA 229
-#define TOK_FALSE 230 
+#define TOK_FALSE 230
 #define TOK_TRUE 231
 
 
