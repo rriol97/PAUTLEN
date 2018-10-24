@@ -5,9 +5,8 @@
 typedef struct _Hash{
 	char* name;
 	void* value;
-	UT_hash_handle hh
-	}Hash;
-
+	UT_hash_handle hh;
+} Hash;
 
 void insert_symbol(Hash **hash, char* name, void* value);
 

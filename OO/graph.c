@@ -30,6 +30,15 @@ struct Node* newNode(int dest) {
     return new_node;
 }
 
+void freeNode(struct Node* node) {
+    struct Node* next;
+    if (node == NULL)
+        return;
+    next = node->next;
+    free(node);
+    freeNode(next);
+}
+
 /* A utility function that creates a graph */
 Graph* createGraph() {
     int i;
@@ -57,12 +66,12 @@ void freeGraph(Graph* graph) {
     if (graph == NULL)
         return;
 
-    for (i = 0; graph->child_list[i] != NULL; i++) {
-        free(graph->child_list[i]);
+    for (i = 0; i < graph->num_classes; i++) {
+        freeNode(graph->child_list[i]);
     }
 
-    for (i = 0; graph->parent_list[i] != NULL; i++) {
-        free(graph->parent_list[i]);
+    for (i = 0; i < graph->num_classes; i++) {
+        freeNode(graph->parent_list[i]);
     }
 
     free(graph);
