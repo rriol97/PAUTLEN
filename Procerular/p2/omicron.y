@@ -12,6 +12,7 @@ char *yytext;
 %}
 %option noyywrap
 
+
 DIGITO [0-9]
 ENTERO  {DIGITO}+
 BLANCO [ \t]+
@@ -112,7 +113,7 @@ true { columna += yyleng; return TOK_TRUE;}
 }
 
 {ERROR} {
-    fprintf(stderr, "\nERROR");
+    fprintf(stderr, "ERROR\n");
     return TOK_ERROR;
 }
 %%
