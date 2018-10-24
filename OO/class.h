@@ -6,8 +6,8 @@
 
 typedef struct {
     char name[MAX_NAME];
-    Hash** th_ppal;
-    Hash** th_func;
+    Hash* th_ppal; //= NULL
+    Hash* th_func; //= NULL
 } TablaAmbito;
 
 typedef struct {

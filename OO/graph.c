@@ -109,6 +109,7 @@ int addClass(Graph* graph, Class* class) {
     if (graph == NULL || class == NULL || graph->num_classes == MAX_CLASSES)
         return -1;
     graph->classes[graph->num_classes] = class;
+    class->index = graph->num_classes;
     graph->num_classes++;
     return 0;
 }
