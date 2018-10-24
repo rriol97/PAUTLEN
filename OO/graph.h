@@ -17,4 +17,6 @@ int addClass(Graph* graph, Class * class);
 
 Class* getClass(Graph* graph, int index);
 
+Graph * tablaSimbolosClasesToDot(Graph * graph);
+
 #endif

@@ -145,6 +145,33 @@ void printGraph(Graph* graph) {
     }
 }
 
+Graph * tablaSimbolosClasesToDot(Graph * graph) {
+    FILE* f;
+    int i;
+    struct Node* next;
+    f = fopen("grafo.dot", "w");
+    fprintf(f, "digraph grafo_clases  { rankdir=BT;\nedge [arrowhead = empty]\n");
+    for(i = 0; i<graph->num_classes; i++) {
+        fprintf(f, "%s [label=\"{%s|%s", graph->classes[i]->name, graph->classes[i]->name, graph->classes[i]->name);
+        /*TODO:entrar en tabla de ambitos*/
+        fprintf(f, "}\"][shape=record];\n");
+    }
+    for(i = 0; i<graph->num_classes; i++) {
+        next = graph->parent_list[i];
+        while(next != NULL) {
+            fprintf(f, "%s -> %s ;\n", graph->classes[i]->name, graph->classes[next->dest]->name);
+        }
+    }
+    fprintf(f, "edge [arrowhead = normal]\n");
+    for(i = 0; i<graph->num_classes; i++) {
+        fprintf(f, "%sN%d [label=\"%s\"][shape=record];\n", graph->classes[i]->name, i, graph->classes[i]->name);
+    }
+    for(i = 0; i < (graph->num_classes - 1); i++) {
+        fprintf(f, "%sN%d -> %sN%d ;\n",  graph->classes[i]->name, i,  graph->classes[i+1]->name, i+1);
+    }
+    fprintf(f, "\n}");
+}
+
 /* Driver program to test above functions */
 int test() {
     /* create the graph */
