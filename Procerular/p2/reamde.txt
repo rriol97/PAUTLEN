@@ -1,5 +1,0 @@
-Autores: Francisco de Vicente Lana y Ricardo Riol González
-
-Intrucciones de ejecucuión:
-Ejecutar el script analisis_morfologico.sh para genterar lex.yy.c y compilar el proyecto.
-Luego ejecutar analisi_morf con dos argumentos el fichero de entrada y y el de salida (salida.txt).

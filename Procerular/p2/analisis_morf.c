@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "tokens.h"
 
 extern int yylrx();
@@ -14,6 +15,8 @@ int main(int argc, char *argv[])
 {
     int ret;
     FILE *fout;
+    char dir_entrada[MAX_LEN] = "entradas/";
+    char dir_salida[MAX_LEN] = "salidas/";
 
     if (argc != 3)
     {
@@ -21,13 +24,15 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    yyin = fopen(argv[1], "r");
+    strcat(dir_entrada, argv[1]);
+    yyin = fopen(dir_entrada, "r");
     if (!yyin)
     {
         printf("Apertura fichero entrada fallida\n");
         return EXIT_FAILURE;
     }
-    fout = fopen(argv[2], "w");
+    strcat(dir_salida, argv[2]);
+    fout = fopen(dir_salida, "w");
     if (!fout)
     {
         printf("Apertura fichero salida fallida\n");
@@ -141,7 +146,7 @@ int main(int argc, char *argv[])
         case TOK_BLANCO:
             break;
         case TOK_COMENTARIO:
-            fprintf(fout, "TOK_COMENTARIO %d %s\n", TOK_OK, yytext);
+            fprintf(fout, "TOK_COMENTARIO %d %s\n", TOK_COMENTARIO, yytext);
             break;
         case TOK_ERROR:
             fprintf(fout, "TOK_ERROR %d %s\n", TOK_ERROR, yytext);

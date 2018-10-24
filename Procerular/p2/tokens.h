@@ -2,6 +2,7 @@
 #define TOKENS_H
 
 #define MAX_LONG_ID 50
+#define MAX_LEN 100
 
 #define TOK_COMENTARIO 100
 #define TOK_SALTO 101
