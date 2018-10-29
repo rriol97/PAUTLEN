@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "uthash.h"
 
-typedef struct _Hash{
+typedef struct _Hash {
 	char* name;
 	void* value;
 	UT_hash_handle hh;

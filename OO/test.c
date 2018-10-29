@@ -14,8 +14,10 @@ int main() {
     strcpy(class[2].name, "Adulto");
     strcpy(class[3].name, "Anciano");
     strcpy(class[4].name, "Depotista");
-    for(i = 0; i < 5; i++)
+    for(i = 0; i < 5; i++) {
+        tablaInit(&class[i].tabla, class[i].name);
         addClass(graph, &class[i]);
+    }
     addEdge(graph, 0, 1);
     addEdge(graph, 0, 2);
     addEdge(graph, 0, 3);

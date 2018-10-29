@@ -16,6 +16,4 @@ typedef struct {
     TablaAmbito tabla;
 } Class;
 
-TablaAmbito* tablaInit(char* name);
-
-void tablaFree(TablaAmbito* tabla);
+void tablaInit(TablaAmbito* tabla, char* name);

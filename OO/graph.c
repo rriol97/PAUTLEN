@@ -149,11 +149,16 @@ Graph * tablaSimbolosClasesToDot(Graph * graph) {
     FILE* f;
     int i;
     struct Node* next;
+    Hash *s;
+
     f = fopen("grafo.dot", "w");
     fprintf(f, "digraph grafo_clases  { rankdir=BT;\nedge [arrowhead = empty]\n");
     for(i = 0; i<graph->num_classes; i++) {
         fprintf(f, "%s [label=\"{%s|%s", graph->classes[i]->name, graph->classes[i]->name, graph->classes[i]->name);
-        /*TODO:entrar en tabla de ambitos*/
+
+        for(s=graph->classes[i]->tabla.th_ppal; s != NULL; s=s->hh.next) {
+            fprintf(f, "|%s", s->name);
+        }
         fprintf(f, "}\"][shape=record];\n");
     }
     for(i = 0; i<graph->num_classes; i++) {
