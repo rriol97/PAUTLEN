@@ -160,11 +160,12 @@ Graph * tablaSimbolosClasesToDot(Graph * graph) {
         next = graph->parent_list[i];
         while(next != NULL) {
             fprintf(f, "%s -> %s ;\n", graph->classes[i]->name, graph->classes[next->dest]->name);
+            next = next->next;
         }
     }
     fprintf(f, "edge [arrowhead = normal]\n");
     for(i = 0; i<graph->num_classes; i++) {
-        fprintf(f, "%sN%d [label=\"%s\"][shape=record];\n", graph->classes[i]->name, i, graph->classes[i]->name);
+        fprintf(f, "%sN%d [label=\"%s\"][shape=oval];\n", graph->classes[i]->name, i, graph->classes[i]->name);
     }
     for(i = 0; i < (graph->num_classes - 1); i++) {
         fprintf(f, "%sN%d -> %sN%d ;\n",  graph->classes[i]->name, i,  graph->classes[i+1]->name, i+1);

@@ -3,8 +3,6 @@
 #include "uthash.h"
 #include "hash.h"
 
-
-
 void insert_symbol(Hash **hash, char* name, void* value) {
     Hash *s;
 
@@ -35,8 +33,8 @@ void clear_symbols(Hash **hash){
   struct Hash *point, *tmp;
 
   HASH_ITER(hh, *hash, point, tmp) {
-  HASH_DEL(*hash,point);  
-  free(point);            
+    HASH_DEL(*hash,point);  
+    free(point);            
   }
 }
 

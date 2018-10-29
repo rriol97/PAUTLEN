@@ -6,8 +6,8 @@
 
 typedef struct {
     char name[MAX_NAME];
-    Hash* th_ppal; //= NULL
-    Hash* th_func; //= NULL
+    Hash* th_ppal;
+    Hash* th_func;
 } TablaAmbito;
 
 typedef struct {
@@ -15,3 +15,7 @@ typedef struct {
     char name[MAX_NAME];
     TablaAmbito tabla;
 } Class;
+
+TablaAmbito* tablaInit(char* name);
+
+void tablaFree(TablaAmbito* tabla);
