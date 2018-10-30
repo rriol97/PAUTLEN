@@ -18,6 +18,11 @@ int main() {
         tablaInit(&class[i].tabla, class[i].name);
         addClass(graph, &class[i]);
     }
+    insert_symbol(&(class[0].tabla.th_ppal), "esmujer", NULL);
+    insert_symbol(&(class[0].tabla.th_ppal), "edad", NULL);
+    insert_symbol(&(class[1].tabla.th_ppal), "percentil", NULL);
+    insert_symbol(&(class[2].tabla.th_ppal), "percentil", NULL);
+    insert_symbol(&(class[3].tabla.th_ppal), "sumar()", NULL);
     addEdge(graph, 0, 1);
     addEdge(graph, 0, 2);
     addEdge(graph, 0, 3);

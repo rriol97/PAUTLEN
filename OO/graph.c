@@ -80,7 +80,7 @@ void freeGraph(Graph* graph) {
 /*Adds an edge to the graph*/
 int addEdge(Graph* graph, int src, int dest) {
     struct Node* new_node;
-    if (graph == NULL || src < 0 || src >= graph->num_classes || dest < 0 || dest >= graph->num_classes)
+    if (graph == NULL || src < 0 || src >= dest || dest >= graph->num_classes)
         return -1;
     /* Add an edge from src to dest.  A new node is  
      * added to the adjacency list of src.  The node 
@@ -97,6 +97,7 @@ int addEdge(Graph* graph, int src, int dest) {
     if (new_node == NULL) {
         new_node = graph->child_list[src];
         graph->child_list[src] = new_node->next;
+        freeNode(new_node);
         return -1;
     }
     new_node->next = graph->parent_list[dest];
@@ -111,7 +112,7 @@ int addClass(Graph* graph, Class* class) {
     graph->classes[graph->num_classes] = class;
     class->index = graph->num_classes;
     graph->num_classes++;
-    return 0;
+    return class->index;
 }
 
 /*Gets the class that a certain index represents*/
@@ -154,10 +155,10 @@ Graph * tablaSimbolosClasesToDot(Graph * graph) {
     f = fopen("grafo.dot", "w");
     fprintf(f, "digraph grafo_clases  { rankdir=BT;\nedge [arrowhead = empty]\n");
     for(i = 0; i<graph->num_classes; i++) {
-        fprintf(f, "%s [label=\"{%s|%s", graph->classes[i]->name, graph->classes[i]->name, graph->classes[i]->name);
+        fprintf(f, "%s [label=\"{%s|%s\\l", graph->classes[i]->name, graph->classes[i]->name, graph->classes[i]->name);
 
         for(s=graph->classes[i]->tabla.th_ppal; s != NULL; s=s->hh.next) {
-            fprintf(f, "|%s", s->name);
+            fprintf(f, "%s\\l", s->name);
         }
         fprintf(f, "}\"][shape=record];\n");
     }
@@ -176,6 +177,21 @@ Graph * tablaSimbolosClasesToDot(Graph * graph) {
         fprintf(f, "%sN%d -> %sN%d ;\n",  graph->classes[i]->name, i,  graph->classes[i+1]->name, i+1);
     }
     fprintf(f, "\n}");
+    return graph;
+}
+
+Class** getParentList(Graph* graph, int src, int* size) {
+    int i;
+    Class** list = malloc(graph->num_classes*sizeof(Class*));
+    struct Node* aux;
+    if(list == NULL)
+        return NULL;
+    i = 0;
+    for(aux=graph->parent_list[src]; aux->next != NULL; i++) {
+        list[i] = graph->classes[aux->dest];
+    }
+    *size = i;
+    return list;
 }
 
 /* Driver program to test above functions */
