@@ -1,7 +1,7 @@
 #include <stdio.h> 
 #include <stdlib.h> 
 #include <string.h>
-#include "graph.h"
+#include "tabla.h"
 
 int dotTest() {
     Class class[5];
@@ -39,15 +39,30 @@ int dotTest() {
     return 0;
 }
 
+int testTabla() {
+    tablaSimbolosClases * ej_tabla_clases=NULL;
+    /* Inicializar la tabla de las clases */
+    iniciarTablaSimbolosClases(&ej_tabla_clases, "ej_clases");
+    /* Cerrar las tablas de simbolos */
+    abrirClase(ej_tabla_clases,"AA");
+    cerrarClase(ej_tabla_clases,"AA",0,0,0,0);       
+    cerrarTablaSimbolosClases(ej_tabla_clases);
+    /*fclose(fsalida);*/
+
+    return 0;
+}
+
 /* Driver program to test above functions */
 int main(int argc, char* argv[]) {
     /* create the graph */
     if(argc < 2) {
-        printf("help: %s graph|dot\ngraph: test graph\ndot: test function to create .dot file\n", argv[0]);
+        printf("help: %s graph|dot|tabla\ngraph: test graph\ndot: test function to create .dot file\ntabla: test tablaSimbolosClases", argv[0]);
     } else if(strcmp(argv[1], "graph") == 0) {
         return test();
     } else if (strcmp(argv[1], "dot") == 0) {
         return dotTest();
+    } else if (strcmp(argv[1], "tabla") == 0) {
+        return testTabla();
     } else {
         printf("Unknown command.\nhelp: %s graph|dot\ngraph: test graph\ndot: test function to create .dot file\n", argv[0]);
     }

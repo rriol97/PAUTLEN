@@ -12,11 +12,14 @@ hash.o: hash.c hash.h
 graph.o: graph.c graph.h
 	$(CC) $(FLAGS) graph.c -c
 
+tabla.o: tabla.c tabla.h
+	$(CC) $(FLAGS) tabla.c -c
+
 test.o: test.c
 	$(CC) $(FLAGS) test.c -c
 
-test: class.o hash.o graph.o test.o
-	$(CC) $(FLAGS) -o test class.o hash.o graph.o test.o
+test: class.o hash.o graph.o tabla.o test.o
+	$(CC) $(FLAGS) -o test class.o hash.o graph.o tabla.o test.o
 
 clean:
 	rm -f *.o test
