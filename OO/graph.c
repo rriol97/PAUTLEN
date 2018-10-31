@@ -49,9 +49,6 @@ Graph* createGraph() {
     for (i = 0; i < MAX_CLASSES; i++) {
         graph->child_list[i] = NULL;
         graph->parent_list[i] = NULL;
-    }
-
-    for (i = 0; i < MAX_CLASSES; i++) {
         graph->classes[i] = NULL;
     }
 
@@ -68,9 +65,6 @@ void freeGraph(Graph* graph) {
 
     for (i = 0; i < graph->num_classes; i++) {
         freeNode(graph->child_list[i]);
-    }
-
-    for (i = 0; i < graph->num_classes; i++) {
         freeNode(graph->parent_list[i]);
     }
 
@@ -80,8 +74,12 @@ void freeGraph(Graph* graph) {
 /*Adds an edge to the graph*/
 int addEdge(Graph* graph, int src, int dest) {
     struct Node* new_node;
-    if (graph == NULL || src < 0 || src >= dest || dest >= graph->num_classes)
+    if (graph == NULL || src < 0 || src == dest || dest >= graph->num_classes)
         return -1;
+
+    if(src > dest)
+        return addEdge(graph, dest, src);
+
     /* Add an edge from src to dest.  A new node is  
      * added to the adjacency list of src.  The node 
      * is added at the beginning */
@@ -177,6 +175,7 @@ Graph * tablaSimbolosClasesToDot(Graph * graph) {
         fprintf(f, "%sN%d -> %sN%d ;\n",  graph->classes[i]->name, i,  graph->classes[i+1]->name, i+1);
     }
     fprintf(f, "\n}");
+    fclose(f);
     return graph;
 }
 

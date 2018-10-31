@@ -3,9 +3,7 @@
 #include <string.h>
 #include "graph.h"
 
-/* Driver program to test above functions */
-int main() {
-    /* create the graph */
+int dotTest() {
     Class class[5];
     int i;
     Graph* graph = createGraph();
@@ -32,8 +30,27 @@ int main() {
 
     /* print the adjacency list representation of the above graph */
     tablaSimbolosClasesToDot(graph);
+    for(i = 0; i < 5; i++) {
+        clear_symbols(&(class[i].tabla.th_ppal));
+    }
 
     freeGraph(graph);
 
     return 0;
+}
+
+/* Driver program to test above functions */
+int main(int argc, char* argv[]) {
+    /* create the graph */
+    if(argc < 2) {
+        printf("help: %s graph|dot\ngraph: test graph\ndot: test function to create .dot file\n", argv[0]);
+    } else if(strcmp(argv[1], "graph") == 0) {
+        return test();
+    } else if (strcmp(argv[1], "dot") == 0) {
+        return dotTest();
+    } else {
+        printf("Unknown command.\nhelp: %s graph|dot\ngraph: test graph\ndot: test function to create .dot file\n", argv[0]);
+    }
+    return 0;
+
 }

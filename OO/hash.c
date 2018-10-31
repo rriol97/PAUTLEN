@@ -20,15 +20,18 @@ void insert_symbol(Hash **hash, char* name, void* value) {
         return;
     }
     strcpy(s->name, name);
-    HASH_ADD_INT( *hash, name, s );
+    HASH_ADD_PTR( *hash, name, s );
 }
 
+/*TODO: no funciona*/
 void delete_symbol(Hash **hash, char* name){
     Hash *point = NULL;
 
     HASH_FIND_PTR( *hash, &name, point );
-   
-    HASH_DEL(*hash, point);  
+    if(point == NULL)
+        return;
+    HASH_DEL(*hash, point);
+    free(point->name);
     free(point);             
 }
 
@@ -36,17 +39,20 @@ void* find_symbol(Hash **hash, char* name){
     Hash *point = NULL;
 
     HASH_FIND_PTR( *hash, &name, point );
+    if(point == NULL)
+        return NULL;
     return point->value;
 
 }
 
 void clear_symbols(Hash **hash){
-  Hash *point, *tmp;
+    Hash *point, *tmp;
 
-  HASH_ITER(hh, *hash, point, tmp) {
-    HASH_DEL(*hash,point);  
-    free(point);            
-  }
+    HASH_ITER(hh, *hash, point, tmp) {
+        HASH_DEL(*hash,point);  
+        free(point->name);
+        free(point);            
+    }
 }
 
 
