@@ -7,22 +7,23 @@
 
 /* Data structure to store graph*/
 struct _Graph {
-    /* An array of pointers to Node to represent adjacency list*/
-    struct Node* child_list[MAX_CLASSES];
-    struct Node* parent_list[MAX_CLASSES];
-    Class* classes[MAX_CLASSES];
+    /* An array of pointers to NodoLista to represent adjacency list*/
+    struct NodoLista* child_list[MAX_CLASSES];  /*represents arrows that start on the node*/
+    struct NodoLista* parent_list[MAX_CLASSES]; /*represents arrows that end on the node*/
+    NodoGrafo* nodos[MAX_CLASSES];
     int num_classes;
+    int* antecessors[MAX_CLASSES]; /*list of all the antecessor nodes, including non direct parents*/
 };
 
 /* A data structure to store adjacency list nodes of the graph*/
-struct Node {
+struct NodoLista {
     int dest;
-    struct Node* next;
+    struct NodoLista* next;
 };
 
 /* A utility function to create a new adjacency list node */
-struct Node* newNode(int dest) {
-    struct Node* new_node = (struct Node*) malloc(sizeof (struct Node));
+struct NodoLista* newNode(int dest) {
+    struct NodoLista* new_node = (struct NodoLista*) malloc(sizeof (struct NodoLista));
     if (new_node == NULL)
         return NULL;
     new_node->dest = dest;
@@ -30,8 +31,8 @@ struct Node* newNode(int dest) {
     return new_node;
 }
 
-void freeNode(struct Node* node) {
-    struct Node* next;
+void freeNode(struct NodoLista* node) {
+    struct NodoLista* next;
     if (node == NULL)
         return;
     next = node->next;
@@ -39,7 +40,41 @@ void freeNode(struct Node* node) {
     freeNode(next);
 }
 
-/* A utility function that creates a graph */
+int addAntecessors(Graph* graph, int src, int dest) {
+    int indexes_in[MAX_CLASSES] = {0}; /*lista que guarda si un indice esta ya en la lista*/
+    int i;
+    struct NodoLista* aux;
+    
+    /*recorremos la lista ya existente hasta encontrar un -1*/
+    for(i = 0; graph->antecessors[src][i] != -1; i++) {
+        indexes_in[graph->antecessors[src][i]] = 1;
+    }
+    
+    /*recorrer lista de padres de dest*/
+    for(aux = graph->parent_list[dest]i; aux != NULL; aux = aux->next) {
+        /*si la clase no esta en la lista*/
+        if(indexes_in[aux->dest] == 0) {
+            /*añade la clase a la lista de padres de src*/
+            graph->antecessors[src][i] = aux->dest;
+            indexes_in[aux->dest] = 1;
+            i++;
+        }
+    }     
+    /*añade dest a la lista de padres*/
+    graph->antecessors[src][i] = dest;
+    indexes_in[dest] = 1;
+    return 0;
+}
+
+void tablaInit(TablaAmbito* tabla, char* name) {
+    if(tabla == NULL || name == NULL)
+        return;
+    strcpy(tabla->name, name);
+    tabla->th_ppal = NULL;
+    tabla->th_func = NULL;
+    return;
+}
+
 Graph* createGraph() {
     int i;
     Graph* graph = (Graph*) malloc(sizeof (Graph));
@@ -50,6 +85,7 @@ Graph* createGraph() {
         graph->child_list[i] = NULL;
         graph->parent_list[i] = NULL;
         graph->classes[i] = NULL;
+        graph->antecessors[i] = NULL;
     }
 
     graph->num_classes = 0;
@@ -66,6 +102,7 @@ void freeGraph(Graph* graph) {
     for (i = 0; i < graph->num_classes; i++) {
         freeNode(graph->child_list[i]);
         freeNode(graph->parent_list[i]);
+        free(graph->antecessors[i]);
     }
 
     free(graph);
@@ -73,7 +110,7 @@ void freeGraph(Graph* graph) {
 
 /*Adds an edge to the graph*/
 int addEdge(Graph* graph, int src, int dest) {
-    struct Node* new_node;
+    struct NodoLista* new_node;
     if (graph == NULL || src < 0 || src == dest || dest >= graph->num_classes)
         return -1;
 
@@ -100,13 +137,20 @@ int addEdge(Graph* graph, int src, int dest) {
     }
     new_node->next = graph->parent_list[dest];
     graph->parent_list[dest] = new_node;
-    return 0;
+    return addAntecessors(graph, src, dest);
 }
 
 /*Adds a class to the graph*/
-int addClass(Graph* graph, Class* class) {
+int addClass(Graph* graph, NodoGrafo* nodo) {
     if (graph == NULL || class == NULL || graph->num_classes == MAX_CLASSES)
         return -1;
+    /*Reserva memoria para la lista de padres*/
+    graph->antecessors[graph->num_classes] = malloc(num_classes*sizeof(int));
+    if(graph->antecessors[graph->num_classes] == NULL) {
+        return -1;
+    }
+    /*Inicializa la lista de padres a -1*/
+    memset(graph->antecessors[graph->num_classes], -1, num_classes*sizeof(int));
     graph->classes[graph->num_classes] = class;
     class->index = graph->num_classes;
     graph->num_classes++;
@@ -114,7 +158,7 @@ int addClass(Graph* graph, Class* class) {
 }
 
 /*Gets the class that a certain index represents*/
-Class* getClass(Graph* graph, int index) {
+NodoGrafo* getClass(Graph* graph, int index) {
     if (graph == NULL || index < 0 || index >= graph->num_classes)
         return NULL;
     return graph->classes[index];
@@ -127,7 +171,7 @@ void printGraph(Graph* graph) {
     if (graph == NULL)
         return;
     for (i = 0; i < graph->num_classes; i++) {
-        struct Node* pCrawl = graph->child_list[i];
+        struct NodoLista* pCrawl = graph->child_list[i];
         printf("\n Adjacency list of vertex %d\n head ", i);
         while (pCrawl) {
             printf("-> %d", pCrawl->dest);
@@ -147,7 +191,7 @@ void printGraph(Graph* graph) {
 Graph * tablaSimbolosClasesToDot(Graph * graph) {
     FILE* f;
     int i;
-    struct Node* next;
+    struct NodoLista* next;
     Hash *s;
 
     f = fopen("grafo.dot", "w");
@@ -179,18 +223,10 @@ Graph * tablaSimbolosClasesToDot(Graph * graph) {
     return graph;
 }
 
-Class** getParentList(Graph* graph, int src, int* size) {
-    int i;
-    Class** list = malloc(graph->num_classes*sizeof(Class*));
-    struct Node* aux;
-    if(list == NULL)
+int* getParentList(Graph* graph, int src) {
+    if (graph == NULL || src < 0 || src >= graph->num_classes)
         return NULL;
-    i = 0;
-    for(aux=graph->parent_list[src]; aux->next != NULL; i++) {
-        list[i] = graph->classes[aux->dest];
-    }
-    *size = i;
-    return list;
+    return graph->antecessors[src];
 }
 
 /* Driver program to test above functions */

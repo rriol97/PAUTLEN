@@ -31,20 +31,20 @@ int iniciarTablaSimbolosClases(tablaSimbolosClases** t, char * nombre) {
 }
 
 int abrirClase(tablaSimbolosClases* t, char* id_clase) {
-    Class* class;
+    NodoGrafo* nodo;
     if(t == NULL || id_clase == NULL)
         return -1;
-    class = malloc(sizeof(Class));
-    if(class == NULL)
+    nodo = malloc(sizeof(NodoGrafo));
+    if(nodo == NULL)
         return -1;
-    strcpy(class->name, id_clase);
-    tablaInit(&class->tabla, id_clase);
-    return addClass(t->graph, class);
+    strcpy(nodo->name, id_clase);
+    tablaInit(&nodo->tabla, id_clase);
+    return addClass(t->graph, nodo);
 }
 
 int abrirClaseHereda(tablaSimbolosClases* t, char* id_clase, ...) {
     va_list ap;
-    Class *parent;
+    NodoGrafo *parent;
     char* next;
     int i;
     int cid = abrirClase(t, id_clase);
@@ -72,31 +72,31 @@ int cerrarClase(tablaSimbolosClases* t,
                 int num_metodos_sobreescribibles, 
                 int num_metodos_no_sobreescribibles) {
     int i;
-    Class *class;
+    NodoGrafo *nodo;
     if(t == NULL || id_clase == NULL)
         return -1;
-    for(i = 0; (class=getClass(t->graph, i)) != NULL; i++) {
-        if(strcmp(id_clase, class->name) == 0) {
+    for(i = 0; (nodo=getClass(t->graph, i)) != NULL; i++) {
+        if(strcmp(id_clase, nodo->name) == 0) {
             break;
         }
     }
-    if(class == NULL)
+    if(nodo == NULL)
         return -1;
-    class->num_at_c = num_atributos_clase;
-    class->num_at_i = num_atributos_instancia;
-    class->num_me_s = num_metodos_sobreescribibles;
-    class->num_me_ns = num_metodos_no_sobreescribibles;
+    nodo->num_at_c = num_atributos_clase;
+    nodo->num_at_i = num_atributos_instancia;
+    nodo->num_me_s = num_metodos_sobreescribibles;
+    nodo->num_me_ns = num_metodos_no_sobreescribibles;
     return 0;
 }
 
 int cerrarTablaSimbolosClases(tablaSimbolosClases* t) {
     int i;
-    Class* class;
+    NodoGrafo* nodo;
     if(t == NULL)
         return -1;
     free(t->name);
-    for(i = 0; (class=getClass(t->graph, i)) != NULL; i++) {
-        free(class);
+    for(i = 0; (nodo=getClass(t->graph, i)) != NULL; i++) {
+        free(nodo);
     }
     freeGraph(t->graph);
     free(t);

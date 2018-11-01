@@ -4,7 +4,7 @@
 #include "tabla.h"
 
 int dotTest() {
-    Class class[5];
+    NodoGrafo class[5];
     int i;
     Graph* graph = createGraph();
     strcpy(class[0].name, "Persona");
