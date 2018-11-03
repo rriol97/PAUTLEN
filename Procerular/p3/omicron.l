@@ -113,7 +113,7 @@ true { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext), return TOK_TRUE;}
 }
 
 {ERROR} {
-    fprintf(stderr, "\nERROR");
+    fprintf(stderr, "\nERROR MORFOLÓGICO: %d: %d: CARÁCTER INVÁLIDO (%d)", fila, columna, TOK_ERROR);
     return TOK_ERROR;
 }
 %%
