@@ -21,7 +21,6 @@ typedef struct {
     int num_me_ns;
 } NodoGrafo;
 
-
 /* Initializes a TablaAmbito correctly.
  * Input: 
  * 	    tabla: pointer to the TablaAmbito to initialize
@@ -31,6 +30,22 @@ typedef struct {
 void tablaInit(TablaAmbito* tabla, char* name);
 
 /*TODO: funciones para insertar atributos de clase y instancia, metodos sobre y no sobres*/
+
+typedef struct _NodoLista NodoLista;
+
+/* Gets the index that a NodoLista stores
+ * Input:
+ * 	    nodo: pointer to the NodoLista
+ * Output: the index that it stores
+ */
+int nodoListaGetIndex(NodoLista * nodo);
+
+/* Gets the next NodoLista
+ * Input:
+ * 	    nodo: pointer to the current NodoLista
+ * Output: the next NodoLista on the linked list
+ */
+NodoLista* nodoListaGetNext(NodoLista* nodo);
 
 typedef struct _Graph Graph;
 
@@ -79,13 +94,29 @@ NodoGrafo* getClass(Graph* graph, int index);
  */
 Graph * tablaSimbolosClasesToDot(Graph * graph);
 
-/* Returns a list of the parent of a class.
+/* Returns a list of the childs of a class.
+ * Input: 
+ * 	    Graph: the Graph to get the parents from
+ *      index: the index of the class
+ * Output: Pointer to the list of childs
+ */
+NodoLista* getChildList(Graph* graph, int src);
+
+/* Returns a list of the parents of a class.
  * Input: 
  * 	    Graph: the Graph to get the parents from
  *      index: the index of the class
  * Output: Pointer to the list of parents
  */
-int* getParentList(Graph* graph, int src);
+NodoLista* getParentList(Graph* graph, int src);
+
+/* Returns a list of the antecessors of a class (classes inherited from).
+ * Input: 
+ * 	    Graph: the Graph to get the parents from
+ *      index: the index of the class
+ * Output: Pointer to the list of parents
+ */
+NodoLista* getAntecessorList(Graph* graph, int src);
 
 /* Tests the functionality of Graph.
  * Input: None
