@@ -9,8 +9,8 @@ int error_morfologico = 0;
 int yyleng;
 char *yytext;
 File *fout;
-
 %}
+
 %option noyywrap
 
 DIGITO [0-9]
