@@ -57,66 +57,74 @@ Graph* createGraph();
 
 /* Frees a graph.
  * Input: 
- * 	    graph: the Graph to free
+ *      graph: the Graph to free
  * Output: None
  */
 void freeGraph(Graph* graph);
 
 /* Adds an edge to a graph.
  * Input:
- * 	    Graph: the Graph to add the edge to
+ *      Graph: the Graph to add the edge to
  *      src: index of the parent class
  *      dest: index of the child class
  * Output: 0 if succesful, -1 if error
  */
-int addEdge(Graph* graph, int src, int dest);
+int graphAddEdge(Graph* graph, int src, int dest);
 
 /* Adds a class to a graph.
  * Input:
- * 	    Graph: the Graph to add the class to
+ *      Graph: the Graph to add the class to
  *      class: pointer to the new class
  * Output: index assigned to class if succesful, -1 if error
  */
-int addClass(Graph* graph, NodoGrafo * class);
+int graphAddClass(Graph* graph, NodoGrafo * class);
 
 /* Returns the class that an index refers to.
  * Input: 
- * 	    Graph: the Graph to get the class from
+ *      Graph: the Graph to get the class from
  *      index: the index of the class
  * Output: Pointer to the class with the index on the graph
  */
-NodoGrafo* getClass(Graph* graph, int index);
+NodoGrafo* graphGetClass(Graph* graph, int index);
+
+/* Returns the class that a name refers to.
+ * Input: 
+ *      Graph: the Graph to get the class from
+ *      name: the name of the class
+ * Output: Pointer to the class with the name on the graph
+ */
+NodoGrafo* graphGetClassFromName(Graph* graph, char* name);
 
 /* Creates the .dot file for the graph.
  * Input: 
- * 	    Graph: the Graph to turn into a .dot file
+ *      Graph: the Graph to turn into a .dot file
  * Output: The inputted graph
  */
 Graph * tablaSimbolosClasesToDot(Graph * graph);
 
 /* Returns a list of the childs of a class.
  * Input: 
- * 	    Graph: the Graph to get the parents from
+ *      Graph: the Graph to get the parents from
  *      index: the index of the class
  * Output: Pointer to the list of childs
  */
-NodoLista* getChildList(Graph* graph, int src);
+NodoLista* graphGetChildList(Graph* graph, int src);
 
 /* Returns a list of the parents of a class.
  * Input: 
- * 	    Graph: the Graph to get the parents from
+ *      Graph: the Graph to get the parents from
  *      index: the index of the class
  * Output: Pointer to the list of parents
  */
-NodoLista* getParentList(Graph* graph, int src);
+NodoLista* graphGetParentList(Graph* graph, int src);
 
 /* Returns a list of the antecessors of a class (classes inherited from).
  * Input: 
- * 	    Graph: the Graph to get the parents from
+ *      Graph: the Graph to get the parents from
  *      index: the index of the class
  * Output: Pointer to the list of parents
  */
-NodoLista* getAntecessorList(Graph* graph, int src);
+NodoLista* graphGetAntecessorList(Graph* graph, int src);
 
 /* Tests the functionality of Graph.
  * Input: None

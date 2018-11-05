@@ -131,13 +131,13 @@ void freeGraph(Graph* graph) {
 }
 
 /*Adds an edge to the graph*/
-int addEdge(Graph* graph, int src, int dest) {
+int graphAddEdge(Graph* graph, int src, int dest) {
     NodoLista* new_node;
     if (graph == NULL || src < 0 || src == dest || dest >= graph->num_classes)
         return -1;
 
     if(src > dest)
-        return addEdge(graph, dest, src);
+        return graphAddEdge(graph, dest, src);
 
     /* Add an edge from src to dest.  A new node is  
      * added to the adjacency list of src.  The node 
@@ -165,7 +165,7 @@ int addEdge(Graph* graph, int src, int dest) {
 }
 
 /*Adds a class to the graph*/
-int addClass(Graph* graph, NodoGrafo* nodo) {
+int graphAddClass(Graph* graph, NodoGrafo* nodo) {
     if (graph == NULL || nodo == NULL || graph->num_classes == MAX_CLASSES)
         return -1;
     graph->nodos[graph->num_classes] = nodo;
@@ -175,10 +175,21 @@ int addClass(Graph* graph, NodoGrafo* nodo) {
 }
 
 /*Gets the class that a certain index represents*/
-NodoGrafo* getClass(Graph* graph, int index) {
+NodoGrafo* graphGetClass(Graph* graph, int index) {
     if (graph == NULL || index < 0 || index >= graph->num_classes)
         return NULL;
     return graph->nodos[index];
+}
+
+NodoGrafo* graphGetClassFromName(Graph* graph, char* name) {
+    int i;
+    if (graph == NULL || name == NULL)
+        return NULL;
+    for(i = 0; i < graph->num_classes; i++) {
+        if(strcmp(graph->nodos[i]->name, name) == 0)
+            return graph->nodos[i];
+    }
+    return NULL;
 }
 
 /* A utility function to print the adjacency list  
@@ -247,19 +258,19 @@ Graph * tablaSimbolosClasesToDot(Graph * graph) {
     return graph;
 }
 
-NodoLista* getChildList(Graph* graph, int src) {
+NodoLista* graphGetChildList(Graph* graph, int src) {
     if (graph == NULL || src < 0 || src >= graph->num_classes)
         return NULL;
     return graph->child_list[src];
 }
 
-NodoLista* getParentList(Graph* graph, int src) {
+NodoLista* graphGetParentList(Graph* graph, int src) {
     if (graph == NULL || src < 0 || src >= graph->num_classes)
         return NULL;
     return graph->parent_list[src];
 }
 
-NodoLista* getAntecessorList(Graph* graph, int src) {
+NodoLista* graphGetAntecessorList(Graph* graph, int src) {
     if (graph == NULL || src < 0 || src >= graph->num_classes)
         return NULL;
     return graph->antecessors[src];
@@ -270,13 +281,13 @@ int test() {
     /* create the graph */
     Graph* graph = createGraph();
     graph->num_classes = 5;
-    addEdge(graph, 0, 1);
-    addEdge(graph, 0, 4);
-    addEdge(graph, 1, 2);
-    addEdge(graph, 1, 3);
-    addEdge(graph, 1, 4);
-    addEdge(graph, 2, 3);
-    addEdge(graph, 3, 4);
+    graphAddEdge(graph, 0, 1);
+    graphAddEdge(graph, 0, 4);
+    graphAddEdge(graph, 1, 2);
+    graphAddEdge(graph, 1, 3);
+    graphAddEdge(graph, 1, 4);
+    graphAddEdge(graph, 2, 3);
+    graphAddEdge(graph, 3, 4);
 
     /* print the adjacency list representation of the above graph */
     printGraph(graph);

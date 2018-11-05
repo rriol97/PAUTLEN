@@ -39,26 +39,21 @@ int abrirClase(tablaSimbolosClases* t, char* id_clase) {
         return -1;
     strcpy(nodo->name, id_clase);
     tablaInit(&nodo->tabla, id_clase);
-    return addClass(t->graph, nodo);
+    return graphAddClass(t->graph, nodo);
 }
 
 int abrirClaseHereda(tablaSimbolosClases* t, char* id_clase, ...) {
     va_list ap;
     NodoGrafo *parent;
     char* next;
-    int i;
     int cid = abrirClase(t, id_clase);
     if(cid == -1)
         return -1;
     va_start(ap, id_clase);
     while( (next=va_arg(ap, char*)) != NULL) {
-        for(i = 0; (parent=getClass(t->graph, i)) != NULL; i++) {
-            if(strcpy(next, parent->name) == 0) {
-                break;
-            }
-        }
+        parent = graphGetClassFromName(t->graph, next);
         if(parent != NULL) {
-            addEdge(t->graph, parent->index, cid);
+            graphAddEdge(t->graph, parent->index, cid);
         }
     }
     va_end(ap);
@@ -71,15 +66,10 @@ int cerrarClase(tablaSimbolosClases* t,
                 int num_atributos_instancia, 
                 int num_metodos_sobreescribibles, 
                 int num_metodos_no_sobreescribibles) {
-    int i;
     NodoGrafo *nodo;
     if(t == NULL || id_clase == NULL)
         return -1;
-    for(i = 0; (nodo=getClass(t->graph, i)) != NULL; i++) {
-        if(strcmp(id_clase, nodo->name) == 0) {
-            break;
-        }
-    }
+    nodo = graphGetClassFromName(t->graph, id_clase);
     if(nodo == NULL)
         return -1;
     nodo->num_at_c = num_atributos_clase;
@@ -100,7 +90,7 @@ int liberarTablaSimbolosClases(tablaSimbolosClases* t) {
     if(t == NULL)
         return -1;
     free(t->name);
-    for(i = 0; (nodo=getClass(t->graph, i)) != NULL; i++) {
+    for(i = 0; (nodo=graphGetClass(t->graph, i)) != NULL; i++) {
         free(nodo);
     }
     freeGraph(t->graph);
