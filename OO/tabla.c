@@ -90,6 +90,11 @@ int cerrarClase(tablaSimbolosClases* t,
 }
 
 int cerrarTablaSimbolosClases(tablaSimbolosClases* t) {
+    /*TODO: comprobar si necesitamos hacer alguna operacion aqui*/
+    return 0;
+}
+
+int liberarTablaSimbolosClases(tablaSimbolosClases* t) {
     int i;
     NodoGrafo* nodo;
     if(t == NULL)

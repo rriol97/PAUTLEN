@@ -20,6 +20,8 @@ int cerrarClase(tablaSimbolosClases* t,
 
 int cerrarTablaSimbolosClases(tablaSimbolosClases* t);
 
+int liberarTablaSimbolosClases(tablaSimbolosClases* t);
+
 void graph_enrouteParentsLastNode(tablaSimbolosClases * g);
 
 #endif

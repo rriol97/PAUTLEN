@@ -40,35 +40,39 @@ void freeNode(NodoLista* node) {
     freeNode(next);
 }
 
-int addAntecessor(Graph* graph, int src, int dest, int* indexes_in) {
-    new_node = newNode(dest);
-    if (new_node != NULL)
-        return -1;
-    new_node->next = graph->antecessors[src];
-    graph->antecessors[src] = new_node;
-    indexes_in[dest] = 1;
-}
-
 int addAntecessors(Graph* graph, int src, int dest) {
     int indexes_in[MAX_CLASSES] = {0}; /*lista que guarda si un indice esta ya en la lista*/
     NodoLista* aux;
-    NodoLista* new_node;
+    NodoLista* new_node, *head, *tail;
     
     /*recorremos la lista ya existente hasta el final*/
-    for(aux = graph->antecessors[src]; aux != NULL; aux = aux->next) {
+    for(aux = graph->antecessors[dest]; aux != NULL; aux = aux->next) {
         indexes_in[aux->dest] = 1;
     }
+    /*crea una lista para almacenar los nuevos padres de mas reciente a mas antiguo*/
+    /*empezando por src*/
+    head = newNode(src);
+    if (head == NULL)
+        return -1;
+    tail = head;
     
-    /*recorrer lista de padres de dest*/
-    for(aux = graph->parent_list[dest]i; aux != NULL; aux = aux->next) {
+    /*recorrer lista de padres de src*/
+    for(aux = graph->parent_list[src]; aux != NULL; aux = aux->next) {
         /*si la clase no esta en la lista*/
         if(indexes_in[aux->dest] == 0) {
-            /*añade la clase a la lista de padres de src*/
-            addAntecessor(graph, src, aux->dest, indexes_in);
+            /*añade la clase a la nueva lista*/
+            new_node = newNode(aux->dest);
+            if (new_node == NULL) {
+                freeNode(head);
+                return -1;
+            }
+            tail->next = new_node;
+            tail = new_node;
         }
     }     
-    /*añade dest a la lista de padres*/
-    addAntecessor(graph, src, dest, indexes_in);
+    /*añade la lista a la lista de padres de dest*/
+    tail->next = graph->antecessors[dest];
+    graph->antecessors[dest] = head;
     return 0;
 }
 
@@ -102,7 +106,7 @@ Graph* createGraph() {
     for (i = 0; i < MAX_CLASSES; i++) {
         graph->child_list[i] = NULL;
         graph->parent_list[i] = NULL;
-        graph->classes[i] = NULL;
+        graph->nodos[i] = NULL;
         graph->antecessors[i] = NULL;
     }
 
@@ -162,19 +166,19 @@ int addEdge(Graph* graph, int src, int dest) {
 
 /*Adds a class to the graph*/
 int addClass(Graph* graph, NodoGrafo* nodo) {
-    if (graph == NULL || class == NULL || graph->num_classes == MAX_CLASSES)
+    if (graph == NULL || nodo == NULL || graph->num_classes == MAX_CLASSES)
         return -1;
-    graph->classes[graph->num_classes] = class;
-    class->index = graph->num_classes;
+    graph->nodos[graph->num_classes] = nodo;
+    nodo->index = graph->num_classes;
     graph->num_classes++;
-    return class->index;
+    return nodo->index;
 }
 
 /*Gets the class that a certain index represents*/
 NodoGrafo* getClass(Graph* graph, int index) {
     if (graph == NULL || index < 0 || index >= graph->num_classes)
         return NULL;
-    return graph->classes[index];
+    return graph->nodos[index];
 }
 
 /* A utility function to print the adjacency list  
@@ -198,6 +202,13 @@ void printGraph(Graph* graph) {
             pCrawl = pCrawl->next;
         }
         printf("\n");
+        printf("\nAntecessors of %d: ", i);
+        pCrawl = graph->antecessors[i];
+        while (pCrawl) {
+            printf(" %d", pCrawl->dest);
+            pCrawl = pCrawl->next;
+        }
+        printf("\n");
     }
 }
 
@@ -210,9 +221,9 @@ Graph * tablaSimbolosClasesToDot(Graph * graph) {
     f = fopen("grafo.dot", "w");
     fprintf(f, "digraph grafo_clases  { rankdir=BT;\nedge [arrowhead = empty]\n");
     for(i = 0; i<graph->num_classes; i++) {
-        fprintf(f, "%s [label=\"{%s|%s\\l", graph->classes[i]->name, graph->classes[i]->name, graph->classes[i]->name);
+        fprintf(f, "%s [label=\"{%s|%s\\l", graph->nodos[i]->name, graph->nodos[i]->name, graph->nodos[i]->name);
 
-        for(s=graph->classes[i]->tabla.th_ppal; s != NULL; s=s->hh.next) {
+        for(s=graph->nodos[i]->tabla.th_ppal; s != NULL; s=s->hh.next) {
             fprintf(f, "%s\\l", s->name);
         }
         fprintf(f, "}\"][shape=record];\n");
@@ -220,16 +231,16 @@ Graph * tablaSimbolosClasesToDot(Graph * graph) {
     for(i = 0; i<graph->num_classes; i++) {
         next = graph->parent_list[i];
         while(next != NULL) {
-            fprintf(f, "%s -> %s ;\n", graph->classes[i]->name, graph->classes[next->dest]->name);
+            fprintf(f, "%s -> %s ;\n", graph->nodos[i]->name, graph->nodos[next->dest]->name);
             next = next->next;
         }
     }
     fprintf(f, "edge [arrowhead = normal]\n");
     for(i = 0; i<graph->num_classes; i++) {
-        fprintf(f, "%sN%d [label=\"%s\"][shape=oval];\n", graph->classes[i]->name, i, graph->classes[i]->name);
+        fprintf(f, "%sN%d [label=\"%s\"][shape=oval];\n", graph->nodos[i]->name, i, graph->nodos[i]->name);
     }
     for(i = 0; i < (graph->num_classes - 1); i++) {
-        fprintf(f, "%sN%d -> %sN%d ;\n",  graph->classes[i]->name, i,  graph->classes[i+1]->name, i+1);
+        fprintf(f, "%sN%d -> %sN%d ;\n",  graph->nodos[i]->name, i,  graph->nodos[i+1]->name, i+1);
     }
     fprintf(f, "\n}");
     fclose(f);

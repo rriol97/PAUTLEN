@@ -47,6 +47,7 @@ int testTabla() {
     abrirClase(ej_tabla_clases,"AA");
     cerrarClase(ej_tabla_clases,"AA",0,0,0,0);       
     cerrarTablaSimbolosClases(ej_tabla_clases);
+    liberarTablaSimbolosClases(ej_tabla_clases);
     /*fclose(fsalida);*/
 
     return 0;
@@ -56,7 +57,7 @@ int testTabla() {
 int main(int argc, char* argv[]) {
     /* create the graph */
     if(argc < 2) {
-        printf("help: %s graph|dot|tabla\ngraph: test graph\ndot: test function to create .dot file\ntabla: test tablaSimbolosClases", argv[0]);
+        printf("help: %s graph|dot|tabla\ngraph: test graph\ndot: test function to create .dot file\ntabla: test tablaSimbolosClases\n", argv[0]);
     } else if(strcmp(argv[1], "graph") == 0) {
         return test();
     } else if (strcmp(argv[1], "dot") == 0) {
