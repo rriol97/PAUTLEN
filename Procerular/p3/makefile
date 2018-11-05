@@ -35,6 +35,11 @@ analisis_morf.o: analisis_morf.c tokens.h
 lex.yy.o: lex.yy.o tokens.h
 	$(CC) $(CFLAGS) -c lex.yy.c tokens.h
 
+# bison -dyv omicron.y
+# flex omicron.l
+# gcc -Wall -o omicron pruebaSintactica.c lex.yy.c y.tab.c
+
+
 #	$(CC) $^ -o $@ $(LDLIBS) $(REDLIB) $(PICOLIB)
 
 # obj/red.o: srclib/red.c includes/red.h
