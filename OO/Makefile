@@ -19,4 +19,4 @@ test: hash.o graph.o tabla.o test.o
 	$(CC) $(FLAGS) -o test hash.o graph.o tabla.o test.o
 
 clean:
-	rm -f *.o test
+	rm -f *.o test grafo.dot
