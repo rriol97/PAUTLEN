@@ -79,7 +79,7 @@ programa: TOK_MAIN '{' declaraciones funciones sentencias '}'
         fprintf(fout, ";R:\tprograma: TOK_MAIN '{' declaraciones funciones sentencias '}'\n");
     }
     |
-programa: TOK_MAIN '{' funciones sentencias '}'
+    TOK_MAIN '{' funciones sentencias '}'
     {
         fprintf(fout, ";R:\tprograma: TOK_MAIN '{' funciones sentencias '}'\n");
     }    
@@ -90,7 +90,7 @@ declaraciones: declaracion
         fprintf(fout, ";R:\tdeclaraciones: declaracion\n");
     }
     |
-declaraciones: declaracion declaraciones
+    declaracion declaraciones
     {
         fprintf(fout, ";R:\tdeclaraciones: declaracion declaraciones\n");
     }
@@ -101,7 +101,7 @@ declaracion: modificadores_acceso clase identificadores ';'
         fprintf(fout, ";R:\tdeclaracion: modificadores_acceso clase identificadores ';'\n");
     }
     |
-declaracion: modificadores_acceso declaracion_clase ';'
+    modificadores_acceso declaracion_clase ';'
     {
         fprintf(fout, ";R:\tdeclaracion: modificadores_acceso declaracion_clase ';'\n");
     }
@@ -553,9 +553,9 @@ lista_expresiones: exp resto_lista_expresiones
     } 
 ;
 
-resto_lista_funciones: ',' exp resto_lista_funciones
+resto_lista_expresiones: ',' exp resto_lista_expresiones
     {
-        fprintf(fout, ";R:\tresto_lista_funciones: ',' exp resto_lista_funciones\n");
+        fprintf(fout, ";R:\tresto_lista_expresiones: ',' exp resto_lista_expresiones\n");
     }
     |
     /*vacio*/
@@ -617,65 +617,17 @@ constante_logica: TOK_TRUE
     }
 ;
 
-constante_entera: numero
+constante_entera: TOK_CONSTANTE_ENTERA
     {
-        fprintf(fout, ";R:\tconstante_entera: numero\n");
+        fprintf(fout, ";R:\tconstante_entera: TOK_CONSTANTE_ENTERA\n");
     }
 ;
 
-numero: digito
+identificador: TOK_IDENTIFICADOR
     {
-        fprintf(fout, ";R:\tnumero: digito\n");
-    }
-    |
-    numero digito
-    {
-        fprintf(fout, ";R:\tnumero: numero digito\n");
+        fprintf(fout, ";R:\tidentificador: TOK_IDENTIFICADORa\n");
     }
 ;
-
-identificador: letra
-    {
-        fprintf(fout, ";R:\tidentificador: letra\n");
-    }
-    |
-    letra cola_identificador
-    {
-        fprintf(fout, ";R:\tidentificador: letra cola_identificador\n");
-    }
-;
-
-cola_identificador: alfanumerico
-    {
-        fprintf(fout, ";R:\tcola_identificador: alfanumerico\n");
-    }
-    |
-    alfanumerico cola_identificador
-    {
-        fprintf(fout, ";R:\tcola_identificador: alfanumerico cola_identificador\n");
-    }
-;
-
-alfanumerico: letra
-    {
-        fprintf(fout, ";R:\talfanumerico: letra\n");
-    }
-    |
-    digito
-    {
-        fprintf(fout, ";R:\talfanumerico: digito\n");
-    }
-;
-
-letra: [a-zA-Z]
-    {
-        fprintf(fout, ";R:\tletra:\n");
-    }
-    |
-letra: [0-9]
-    {
-        fprintf(fout, ";R:\tdigito:\n");
-    }
 
 %%
 
