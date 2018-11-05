@@ -62,10 +62,7 @@ clean:
 	rm -f *.o
 	rm -f test
 	rm -f *.gch
-	rm analisis_morf
-#	mkdir -p obj
-#	mkdir -p lib
-# rm -f obj/*.o
-# rm -f lib/*.a
-# rm -f server
-# rm -f *.txt
+	rm omicron
+	rm -f y.tab.*
+	rm -f lex.yy.c
+	rm -f y.output

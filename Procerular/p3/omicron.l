@@ -1,14 +1,16 @@
 %{
 #include <stdio.h>
-#include "tokens.h"
 #include "y.tab.h"
+
+#define MAX_LONG_ID 50
+#define MAX_LEN 100
 
 int fila = 1;
 int columna = 0;
 int error_morfologico = 0;
 int yyleng;
 char *yytext;
-File *fout;
+FILE *fout;
 %}
 
 %option noyywrap
@@ -34,19 +36,19 @@ secret { columna += yyleng;fprintf(fout, "D:\t%s\n", yytext); return TOK_SECRET;
 exposed { columna += yyleng;fprintf(fout, "D:\t%s\n", yytext); return TOK_EXPOSED;}
 unique { columna += yyleng;fprintf(fout, "D:\t%s\n", yytext); return TOK_UNIQUE;}
 
-function { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext), return TOK_FUNCTION;}
-return { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext), return TOK_RETURN;}
-main { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext), return TOK_MAIN;}
-int { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext), return TOK_INT;}
-boolean { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext), return TOK_BOOLEAN;}
-array { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext), return TOK_ARRAY;}
-if { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext), return TOK_IF;}
-else { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext), return TOK_ELSE;}
-while { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext), return TOK_WHILE;}
-scanf { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext), return TOK_SCANF;}
-printf { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext), return TOK_PRINTF;}
-false { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext), return TOK_FALSE;}
-true { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext), return TOK_TRUE;}
+function { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext); return TOK_FUNCTION;}
+return { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext); return TOK_RETURN;}
+main { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext); return TOK_MAIN;}
+int { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext); return TOK_INT;}
+boolean { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext); return TOK_BOOLEAN;}
+array { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext); return TOK_ARRAY;}
+if { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext); return TOK_IF;}
+else { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext); return TOK_ELSE;}
+while { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext); return TOK_WHILE;}
+scanf { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext); return TOK_SCANF;}
+printf { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext); return TOK_PRINTF;}
+false { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext); return TOK_FALSE;}
+true { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext); return TOK_TRUE;}
 
 ";" { columna += yyleng; return yytext[0];}
 "#" { columna += yyleng; return yytext[0];}
@@ -69,18 +71,18 @@ true { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext), return TOK_TRUE;}
 "!" { columna += yyleng; return yytext[0];}
 "." { columna += yyleng; return yytext[0];}
 
-"==" { columna += yyleng; fprintf(fout, ";D:\t%s\n", yytext), return TOK_IGUAL;}
-"!=" { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext), return TOK_DISTINTO;}
-"<=" { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext), return TOK_MENORIGUAL;}
-">=" { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext), return TOK_MAYORIGUAL;}
-"||" { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext), return TOK_OR;}
-"&&" { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext), return TOK_AND;}
-"->" { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext), return TOK_FLECHA;}
+"==" { columna += yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_IGUAL;}
+"!=" { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext); return TOK_DISTINTO;}
+"<=" { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext); return TOK_MENORIGUAL;}
+">=" { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext); return TOK_MAYORIGUAL;}
+"||" { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext); return TOK_OR;}
+"&&" { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext); return TOK_AND;}
+"->" { columna += yyleng; fprintf(fout, "D:\t%s\n", yytext); return TOK_FLECHA;}
 
 
 {IDENTIFICADOR} {
     if (yyleng > MAX_LONG_ID) {
-        fprintf(stderr, "ERROR MORFOLÓGICO :%d:%D:\tIDENTIFICADOR DEMASIADO LARGO (%s)\n", fila, columna, yytext);
+        fprintf(stderr, "ERROR MORFOLÓGICO :%d:%d:\tIDENTIFICADOR DEMASIADO LARGO (%s)\n", fila, columna, yytext);
         return TOK_ERROR;
     }
     else {

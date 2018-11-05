@@ -1,10 +1,10 @@
 %{
 #include <stdio.h>
-#include "tokens.h"
-#include "y.tab.h"
 
 extern int columna;
 extern int fila;
+extern int yylex();
+FILE *fout;
 %}
 
 %union{
@@ -624,7 +624,7 @@ constante_entera: TOK_CONSTANTE_ENTERA
 
 identificador: TOK_IDENTIFICADOR
     {
-        fprintf(fout, ";R:\tidentificador: TOK_IDENTIFICADORa\n");
+        fprintf(fout, ";R:\tidentificador: TOK_IDENTIFICADOR\n");
     }
 ;
 

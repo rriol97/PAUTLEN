@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "tokens.h"
 
 extern int yylrx();
 extern int yylex();
@@ -15,12 +14,11 @@ extern char *yytext;
 
 int main(int argc, char *argv[])
 {
-    int ret;
     FILE *fout;
 
     if (argc != 3)
     {
-        printf("Formato entrada: pruebaSintactico <fin> <fout>\n", argv[0]);
+        printf("Formato entrada: pruebaSintactico <fin> <fout>\n");
         return EXIT_FAILURE;
     }
 
