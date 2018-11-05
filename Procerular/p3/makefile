@@ -6,53 +6,22 @@
 
 # Banderas de compilacion
 CC = gcc
-CFLAGS = -Wall -g -I .
-#LDLIBS = -lm -lconfuse -pthread -fPIC
-#REDLIB = -Llib/ -lred
-#PICOLIB = -Llib/ -lpico
-
-# Macros
-#SERVER = obj/server.o obj/http.o
-#OBJREDLIB = obj/red.o
-#OBJPICOLIB = obj/picohttpparser.o
-
-
-# Creacion libreria
-# lib/libred.a: $(OBJREDLIB)
-# 	ar -rv lib/libred.a $(OBJREDLIB)
-
-# Creacion libreria
-# lib/libpico.a: $(OBJPICOLIB)
-# 	ar -rv lib/libpico.a $(OBJPICOLIB)
+CFLAGS = -Wall
 
 # Creacion objetos
-analisis_morf: analisis_morf.o lex.yy.o
-	$(CC) -o analisis_morf analisis_morf.o lex.yy.o
+all: pruebaSintactico.c lex.yy.c y.tab.c
+	$(CC) $(CFLAGS) -o omicron pruebaSintactico.c lex.yy.c y.tab.c
 
-analisis_morf.o: analisis_morf.c tokens.h
-	$(CC) $(CFLAGS) -c analisis_morf.c tokens.h
+lex.yy.c: omicron.l
+	$ flex omicron.l
 
-lex.yy.o: lex.yy.o tokens.h
-	$(CC) $(CFLAGS) -c lex.yy.c tokens.h
+y.tab.c: omicron.y
+	$ bison -dyv omicron.y
 
 # bison -dyv omicron.y
 # flex omicron.l
 # gcc -Wall -o omicron pruebaSintactica.c lex.yy.c y.tab.c
 
-
-#	$(CC) $^ -o $@ $(LDLIBS) $(REDLIB) $(PICOLIB)
-
-# obj/red.o: srclib/red.c includes/red.h
-# 	$(CC) $(CFLAGS) -c -o $@ $<
-
-# obj/picohttpparser.o: srclib/picohttpparser.c includes/picohttpparser.h
-# 	$(CC) $(CFLAGS) -c -o $@ $<
-
-# obj/http.o: src/http.c includes/http.h
-# 	$(CC) $(CFLAGS) -c -o $@ $< $(LDLIBS) $(REDLIB) $(PICOLIB)
-
-# obj/server.o: src/server.c includes/server.h includes/http.h
-# 	$(CC) $(CFLAGS) -c -o $@ $< $(LDLIBS) $(REDLIB) $(PICOLIB)
 
 .PHONY: clean
 

@@ -39,10 +39,10 @@ int main(int argc, char *argv[])
 
     if (yyparse() != 0) {
         /* Error sintactico */
-        printf("bien");
+        printf("mal");
     }
     else {
-        printf("mal");
+        printf("okey");
     }
 
     fclose(yyin);
