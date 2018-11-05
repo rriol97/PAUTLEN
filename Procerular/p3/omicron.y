@@ -3,7 +3,6 @@
 #include "tokens.h"
 #include "y.tab.h"
 
-extern int yylex();
 extern int columna;
 extern int fila;
 %}

@@ -3,9 +3,6 @@ FLAGS = -g -Wall -ansi -pedantic
 
 all: test
 
-class.o: class.c class.h
-	$(CC) $(FLAGS) class.c -c
-
 hash.o: hash.c hash.h
 	$(CC) $(FLAGS) hash.c -c
 
@@ -18,8 +15,8 @@ tabla.o: tabla.c tabla.h
 test.o: test.c
 	$(CC) $(FLAGS) test.c -c
 
-test: class.o hash.o graph.o tabla.o test.o
-	$(CC) $(FLAGS) -o test class.o hash.o graph.o tabla.o test.o
+test: hash.o graph.o tabla.o test.o
+	$(CC) $(FLAGS) -o test hash.o graph.o tabla.o test.o
 
 clean:
-	rm -f *.o test
+	rm -f *.o test grafo.dot
