@@ -24,4 +24,6 @@ int liberarTablaSimbolosClases(tablaSimbolosClases* t);
 
 void graph_enrouteParentsLastNode(tablaSimbolosClases * g);
 
+void cerrarAmbito(TablaAmbito* tabla);
+
 #endif
