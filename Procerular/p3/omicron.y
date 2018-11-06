@@ -7,6 +7,7 @@ extern int fila;
 extern int yylex();
 extern FILE *yyin;
 extern FILE *fout;
+extern int flag_error;
 %}
 
 %token TOK_COMENTARIO
@@ -160,9 +161,14 @@ clase: clase_escalar
     }
 ;
 
-declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones funciones '}'
+declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR inherits identificadores '{' declaraciones funciones '}'
     {
-        fprintf(fout, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones funciones '}'\n");
+        fprintf(fout, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR inherits identificadores '{' declaraciones funciones '}'\n");
+    }
+    |
+    modificadores_clase TOK_CLASS TOK_IDENTIFICADOR inherits identificadores '{' funciones '}'
+    {
+        fprintf(fout, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR inherits identificadores '{' declaraciones funciones '}'\n");
     }
     |
     modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones funciones '}'
@@ -249,6 +255,11 @@ tipo_retorno: TOK_NONE
         fprintf(fout, ";R:\ttipo_retorno: clase_objeto\n");
     }
 ;
+
+inherits: TOK_INHERITS
+    {
+        fprintf(fout, ";R:\tinherits: TOK_INHERITS\n");
+    }
 
 parametros_funcion: parametro_funcion resto_parametros_funcion
     {
@@ -619,10 +630,12 @@ constante_entera: TOK_CONSTANTE_ENTERA
     }
 ;
 
-
 %%
 
 int yyerror(char* s) {
-    fprintf(stderr, "ERROR SINTÁCTICO:%d:%d\n", fila, columna);
+    if (!flag_error) {
+        fprintf(stderr, "ERROR SINTÁCTICO:%d:%d\n", fila, columna);
+    }
+    flag_error = 0;
     return -1;
 }

@@ -35,14 +35,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-
-    if (yyparse() != 0) {
-        /* Error sintactico */
-        printf("mal");
-    }
-    else {
-        printf("okey");
-    }
+    yyparse() != 0
 
     fclose(yyin);
     fclose(fout);

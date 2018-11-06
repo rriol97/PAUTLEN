@@ -11,6 +11,7 @@ int error_morfologico = 0;
 int yyleng;
 char *yytext;
 extern FILE *fout;
+int flag_error = 0;
 %}
 
 %option noyywrap
@@ -24,7 +25,7 @@ ERROR .
 IDENTIFICADOR [a-zA-Z]([A-Za-z0-9])*
 
 %%
-none { columna += yyleng; fprintf(fout, ";;D:\t%s\n", yytext); return TOK_NONE;}
+none { columna += yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_NONE;}
 class { columna += yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_CLASS;}
 inherits { columna += yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_INHERITS;}
 instance_of { columna += yyleng;fprintf(fout, ";D:\t%s\n", yytext); return TOK_INSTANCE_OF;}
@@ -71,7 +72,7 @@ true { columna += yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_TRUE;}
 "!" { columna += yyleng;  fprintf(fout, ";D:\t%c\n", yytext[0]); return yytext[0];}
 "." { columna += yyleng;  fprintf(fout, ";D:\t%c\n", yytext[0]); return yytext[0];}
 
-"==" { columna += yyleng; fprintf(fout, ";;D:\t%s\n", yytext); return TOK_IGUAL;}
+"==" { columna += yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_IGUAL;}
 "!=" { columna += yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_DISTINTO;}
 "<=" { columna += yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_MENORIGUAL;}
 ">=" { columna += yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_MAYORIGUAL;}
@@ -82,7 +83,7 @@ true { columna += yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_TRUE;}
 
 {IDENTIFICADOR} {
     if (yyleng > MAX_LONG_ID) {
-        fprintf(stderr, "ERROR MORFOLÓGICO :%d:%d:\tIDENTIFICADOR DEMASIADO LARGO (%s)\n", fila, columna, yytext);
+        fprintf(stderr, "ERROR MORFOLÓGICO:%d:%d:IDENTIFICADOR DEMASIADO LARGO (%s)\n", fila, columna, yytext);
         return TOK_ERROR;
     }
     else {
@@ -113,7 +114,8 @@ true { columna += yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_TRUE;}
 }
 
 {ERROR} {
-    fprintf(stderr, "\nERROR MORFOLÓGICO: %d: %d: CARÁCTER INVÁLIDO (%d)", fila, columna, TOK_ERROR);
+    fprintf(stderr, "ERROR MORFOLÓGICO:%d:%d:CARÁCTER INVÁLIDO (%s)\n", fila, columna, yytext);
+    flag_error = 1;
     return TOK_ERROR;
 }
 %%
