@@ -98,3 +98,11 @@ int liberarTablaSimbolosClases(tablaSimbolosClases* t) {
     return 0;
 }
 
+void graph_enrouteParentsLastNode(tablaSimbolosClases * g) {
+    return;
+}
+
+void cerrarAmbito(TablaAmbito* tabla) {
+    return;
+}
+
