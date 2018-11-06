@@ -2,19 +2,18 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern int yylrx();
 extern int yylex();
 extern int yyparse();
 //extern int yyval;
 
 extern FILE *yyin;
+FILE *fout;
 extern int columna;
 extern int fila;
 extern char *yytext;
 
 int main(int argc, char *argv[])
 {
-    FILE *fout;
 
     if (argc != 3)
     {

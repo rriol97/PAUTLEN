@@ -1,16 +1,13 @@
 %{
 #include <stdio.h>
+#include "y.tab.h"
 
 extern int columna;
 extern int fila;
 extern int yylex();
-FILE *fout;
+extern FILE *yyin;
+extern FILE *fout;
 %}
-
-%union{
-    char* cadena;
-    float numero;
-}
 
 %token TOK_COMENTARIO
 %token TOK_SALTO
@@ -91,7 +88,7 @@ declaraciones: declaracion
     |
     declaracion declaraciones
     {
-        fprintf(fout, ";R:\tdeclaraciones: declaracion declaraciones\n");
+        fprintf(fout, ";R:\tdeclaraciones: declaracion, declaraciones\n");
     }
 ;
 
@@ -163,14 +160,14 @@ clase: clase_escalar
     }
 ;
 
-declaracion_clase: modificadores_clase TOK_CLASS identificador TOK_INHERITS identificadores '{' declaraciones funciones '}'
+declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones funciones '}'
     {
-        fprintf(fout, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS identificador TOK_INHERITS identificadores '{' declaraciones funciones '}'\n");
+        fprintf(fout, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR TOK_INHERITS identificadores '{' declaraciones funciones '}'\n");
     }
     |
-    modificadores_clase TOK_CLASS identificador '{' declaraciones funciones '}'
+    modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones funciones '}'
     {
-        fprintf(fout, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS identificador '{' declaraciones funciones '}'\n");
+        fprintf(fout, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones funciones '}'\n");
     }    
 ;
 
@@ -197,9 +194,9 @@ tipo: TOK_INT
     }
 ;
 
-clase_objeto: '{' identificador '}'
+clase_objeto: '{' TOK_IDENTIFICADOR '}'
     {
-        fprintf(fout, ";R:\tclase_objeto: '{' identificador '}'\n");
+        fprintf(fout, ";R:\tclase_objeto: '{' TOK_IDENTIFICADOR '}'\n");
     }
 ;
 
@@ -209,14 +206,14 @@ clase_vector: TOK_ARRAY tipo '[' constante_entera ']'
     }
 ;
 
-identificadores: identificador
+identificadores: TOK_IDENTIFICADOR
     {
-        fprintf(fout, ";R:\tidentificadores: identificador\n");
+        fprintf(fout, ";R:\tidentificadores: TOK_IDENTIFICADOR\n");
     }
     |
-    identificador identificadores
+    TOK_IDENTIFICADOR ',' identificadores
     {
-        fprintf(fout, ";R:\tidentificadores: identificador identificadores\n");
+        fprintf(fout, ";R:\tidentificadores: TOK_IDENTIFICADOR ',' identificadores\n");
     }
 ;
 
@@ -231,9 +228,9 @@ funciones: funcion funciones
     }
 ;
 
-funcion: TOK_FUNCTION modificadores_acceso tipo_retorno identificador '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'
+funcion: TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'
     {
-        fprintf(fout, ";R:\tfuncion: TOK_FUNCTION modificadores_acceso tipo_retorno identificador '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'\n");
+        fprintf(fout, ";R:\tfuncion: TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'\n");
     }
 ;
 
@@ -275,14 +272,14 @@ resto_parametros_funcion: ';' parametro_funcion resto_parametros_funcion
     }
 ;
 
-parametro_funcion: tipo identificador
+parametro_funcion: tipo TOK_IDENTIFICADOR
     {
-        fprintf(fout, ";R:\tparametro_funcion: tipo identificador\n");
+        fprintf(fout, ";R:\tparametro_funcion: tipo TOK_IDENTIFICADOR\n");
     }
     |
-    clase_objeto identificador
+    clase_objeto TOK_IDENTIFICADOR
     {
-        fprintf(fout, ";R:\tparametro_funcion: clase_objeto identificador\n");   
+        fprintf(fout, ";R:\tparametro_funcion: clase_objeto TOK_IDENTIFICADOR\n");   
     }
 ;
 
@@ -339,14 +336,14 @@ sentencia_simple: asignacion
         fprintf(fout, ";R:\tsentencia_simple: retorno_funcion\n");
     }
     |
-    identificador_clase '.' identificador '(' lista_expresiones ')'
+    identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'
     {
-        fprintf(fout, ";R:\tsentencia_simple: identificador_clase '.' identificador '(' lista_expresiones ')'\n");
+        fprintf(fout, ";R:\tsentencia_simple: identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
     }
     |
-    identificador '(' lista_expresiones ')'
+    TOK_IDENTIFICADOR '(' lista_expresiones ')'
     {
-        fprintf(fout, ";R:\tsentencia_simple: identificador '(' lista_expresiones ')'\n");
+        fprintf(fout, ";R:\tsentencia_simple: TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
     }
     |
     destruir_objeto
@@ -355,9 +352,9 @@ sentencia_simple: asignacion
     }          
 ;
 
-destruir_objeto: TOK_DISCARD identificador
+destruir_objeto: TOK_DISCARD TOK_IDENTIFICADOR
     {
-        fprintf(fout, ";R:\tdestruir_objeto: TOK_DISCARD identificador\n");
+        fprintf(fout, ";R:\tdestruir_objeto: TOK_DISCARD TOK_IDENTIFICADOR\n");
     }
 ;
 
@@ -372,9 +369,9 @@ bloque: condicional
     } 
 ;
 
-asignacion: identificador '=' exp
+asignacion: TOK_IDENTIFICADOR '=' exp
     {
-        fprintf(fout, ";R:\tasignacion: identificador '=' exp\n");
+        fprintf(fout, ";R:\tasignacion: TOK_IDENTIFICADOR '=' exp\n");
     }
     |
     elemento_vector '=' exp
@@ -382,25 +379,25 @@ asignacion: identificador '=' exp
         fprintf(fout, ";R:\tasignacion: elemento_vector '=' exp\n");
     }
     |
-    elemento_vector '=' TOK_INSTANCE_OF identificador '(' lista_expresiones ')'
+    elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'
     {
-        fprintf(fout, ";R:\tasignacion: elemento_vector '=' TOK_INSTANCE_OF identificador '(' lista_expresiones ')'\n");
+        fprintf(fout, ";R:\tasignacion: elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
     }
     |
-    identificador '=' TOK_INSTANCE_OF identificador '(' lista_expresiones ')'
+    TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'
     {
-        fprintf(fout, ";R:\tasignacion: identificador '=' TOK_INSTANCE_OF identificador '(' lista_expresiones ')'\n");
+        fprintf(fout, ";R:\tasignacion: TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
     }  
     |
-    identificador_clase '.' identificador '=' exp
+    identificador_clase '.' TOK_IDENTIFICADOR '=' exp
     {
-        fprintf(fout, ";R:\tasignacion: identificador_clase '.' identificador '=' exp\n");
+        fprintf(fout, ";R:\tasignacion: identificador_clase '.' TOK_IDENTIFICADOR '=' exp\n");
     }
 ;
 
-elemento_vector: identificador '[' exp ']'
+elemento_vector: TOK_IDENTIFICADOR '[' exp ']'
     {
-        fprintf(fout, ";R:\telemento_vector: identificador '[' exp ']'\n");
+        fprintf(fout, ";R:\telemento_vector: TOK_IDENTIFICADOR '[' exp ']'\n");
     }
 ;
 
@@ -421,9 +418,9 @@ bucle: TOK_WHILE '(' exp ')' '{' sentencias '}'
     }
 ;
 
-lectura: TOK_SCANF identificador
+lectura: TOK_SCANF TOK_IDENTIFICADOR
     {
-        fprintf(fout, ";R:\tlectura: TOK_SCANF identificador\n");
+        fprintf(fout, ";R:\tlectura: TOK_SCANF TOK_IDENTIFICADOR\n");
     }
     |
     TOK_SCANF elemento_vector
@@ -469,7 +466,7 @@ exp: exp '+' exp
         fprintf(fout, ";R:\texp: exp '*' exp\n");
     }
     |
-    '-' exp
+    '-' %prec UNARIO exp
     {
         fprintf(fout, ";R:\texp: '-' exp\n");
     }
@@ -489,9 +486,9 @@ exp: exp '+' exp
         fprintf(fout, ";R:\texp: '!' exp\n");
     }
     |
-    identificador
+    TOK_IDENTIFICADOR
     {
-        fprintf(fout, ";R:\texp: identificador\n");
+        fprintf(fout, ";R:\texp: TOK_IDENTIFICADOR\n");
     }
     |
     constante
@@ -514,25 +511,25 @@ exp: exp '+' exp
         fprintf(fout, ";R:\texp: elemento_vector\n");
     }
     |
-    identificador '(' lista_expresiones ')'
+    TOK_IDENTIFICADOR '(' lista_expresiones ')'
     {
-        fprintf(fout, ";R:\texp: identificador '(' lista_expresiones ')'\n");
+        fprintf(fout, ";R:\texp: TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
     }
     |
-    identificador_clase '.' identificador '(' lista_expresiones ')'
+    identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'
     {
-        fprintf(fout, ";R:\texp: identificador_clase '.' identificador '(' lista_expresiones ')'\n");
+        fprintf(fout, ";R:\texp: identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
     }
     |
-    identificador_clase '.' identificador
+    identificador_clase '.' TOK_IDENTIFICADOR
     {
-        fprintf(fout, ";R:\texp: identificador_clase '.' identificador\n");
+        fprintf(fout, ";R:\texp: identificador_clase '.' TOK_IDENTIFICADOR\n");
     }                   
 ;
 
-identificador_clase: identificador
+identificador_clase: TOK_IDENTIFICADOR
     {
-        fprintf(fout, ";R:\tidentificador_clase: identificador\n");
+        fprintf(fout, ";R:\tidentificador_clase: TOK_IDENTIFICADOR\n");
     }
     |
     TOK_ITSELF
@@ -622,11 +619,6 @@ constante_entera: TOK_CONSTANTE_ENTERA
     }
 ;
 
-identificador: TOK_IDENTIFICADOR
-    {
-        fprintf(fout, ";R:\tidentificador: TOK_IDENTIFICADOR\n");
-    }
-;
 
 %%
 

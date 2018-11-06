@@ -10,17 +10,13 @@ CFLAGS = -Wall
 
 # Creacion objetos
 all: pruebaSintactico.c lex.yy.c y.tab.c
-	$(CC) $(CFLAGS) -o omicron pruebaSintactico.c lex.yy.c y.tab.c
+	$(CC) $(CFLAGS) -o pruebaSintactico pruebaSintactico.c lex.yy.c y.tab.c
 
 lex.yy.c: omicron.l
 	$ flex omicron.l
 
 y.tab.c: omicron.y
 	$ bison -dyv omicron.y
-
-# bison -dyv omicron.y
-# flex omicron.l
-# gcc -Wall -o omicron pruebaSintactica.c lex.yy.c y.tab.c
 
 
 .PHONY: clean
