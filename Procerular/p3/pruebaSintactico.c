@@ -1,26 +1,31 @@
+/*
+Autores: Francisco de Vicente Lana y Ricardo Riol Gonzalez
+Numero de grupo: 1311
+Grupo de trabajo: 4
+
+Desc: programa principal que se encarga de analizar morfologica y sintacticamente
+    cierta entrada segun las normas y patrones del lenguaje omicron.
+*/
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
+/* Globales externas de flex y bison */
 extern int yylex();
 extern int yyparse();
-//extern int yyval;
 
 extern FILE *yyin;
 FILE *fout;
-extern int columna;
-extern int fila;
-extern char *yytext;
 
 int main(int argc, char *argv[])
 {
-
+    /* Comprobacion args de entrada */
     if (argc != 3)
     {
         printf("Formato entrada: pruebaSintactico <fin> <fout>\n");
         return EXIT_FAILURE;
     }
 
+    /* Apertura dichero entrada */
     yyin = fopen(argv[1], "r");
     if (!yyin)
     {
@@ -28,6 +33,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+    /* Apertura fichero salida */
     fout = fopen(argv[2], "w");
     if (!fout)
     {
@@ -35,8 +41,15 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    yyparse() != 0
+    /* Llamada a la funcion que realiza el analisis */
+    if (yyparse() != 0)
+    {
+        fclose(yyin);
+        fclose(fout);
+        return EXIT_FAILURE;
+    }
 
+    /* Cierre de ficheros */
     fclose(yyin);
     fclose(fout);
 

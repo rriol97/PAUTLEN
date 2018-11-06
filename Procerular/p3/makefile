@@ -4,13 +4,8 @@
 #		   Ricardo Riol Gonzalez - ricardo.riol@estudiante.uam.es
 ################################################################################
 
-# Banderas de compilacion
-CC = gcc
-CFLAGS = -Wall
-
-# Creacion objetos
 all: pruebaSintactico.c lex.yy.c y.tab.c
-	$(CC) $(CFLAGS) -o pruebaSintactico pruebaSintactico.c lex.yy.c y.tab.c
+	gcc -Wall -o pruebaSintactico pruebaSintactico.c lex.yy.c y.tab.c
 
 lex.yy.c: omicron.l
 	$ flex omicron.l
@@ -18,16 +13,13 @@ lex.yy.c: omicron.l
 y.tab.c: omicron.y
 	$ bison -dyv omicron.y
 
-
 .PHONY: clean
 
-# limpieza
 clean:	
 	rm -f *.out
 	rm -f *.o
-	rm -f test
 	rm -f *.gch
-	rm omicron
 	rm -f y.tab.*
 	rm -f lex.yy.c
 	rm -f y.output
+	rm -f pruebaSintactico
