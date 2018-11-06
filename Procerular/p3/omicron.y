@@ -91,7 +91,7 @@ declaraciones: declaracion
     |
     declaracion declaraciones
     {
-        fprintf(fout, ";R:\tdeclaraciones: declaracion, declaraciones\n");
+        fprintf(fout, ";R:\tdeclaraciones: declaracion declaraciones\n");
     }
 ;
 
