@@ -3,17 +3,17 @@
 #include <stdio.h>
 #include "graph.h"
 
-typedef struct _tablaSimbolosClases tablaSimbolosClases;
+typedef struct _TablaSimbolosClases TablaSimbolosClases;
 
-int iniciarTablaSimbolosClases(tablaSimbolosClases** t, char * nombre);
+int iniciarTablaSimbolosClases(TablaSimbolosClases** t, char * nombre);
 
-int abrirAmbitoClase(tablaAmbito** t, char* id_clase, int tamanio);
+int abrirAmbitoClase(TablaAmbito** t, char* id_clase, int tamanio);
 
-int abrirClase(tablaSimbolosClases* t, char* id_clase);
+int abrirClase(TablaSimbolosClases* t, char* id_clase);
 
-int abrirClaseHereda(tablaSimbolosClases* t, char* id_clase, ...);
+int abrirClaseHereda(TablaSimbolosClases* t, char* id_clase, ...);
 
-int insertarTablaSimbolosClases(tablaSimbolosClases * grafo, char * id_clase,
+int insertarTablaSimbolosClases(TablaSimbolosClases * grafo, char * id_clase,
     char* id,                        int clase,
     int tipo,                        int estructura,
     int direcciones,                    int numero_parametros,
@@ -30,7 +30,7 @@ int insertarTablaSimbolosClases(tablaSimbolosClases * grafo, char * id_clase,
     int posicion_acumulada_metodos_sobreescritura,
     int * tipo_args);
 
-int tablaSimbolosClasesAbrirAmbitoEnClase(    tablaSimbolosClases * grafo,
+int TablaSimbolosClasesAbrirAmbitoEnClase(    TablaSimbolosClases * grafo,
                                     char * id_clase,
                                     char* id_ambito,
                                     int categoria_ambito,
@@ -39,21 +39,23 @@ int tablaSimbolosClasesAbrirAmbitoEnClase(    tablaSimbolosClases * grafo,
                                     int posicion_metodo_sobre,
                                     int tamanio);
 
-int tablaSimbolosClasesCerrarAmbitoEnClase(    tablaSimbolosClases * grafo,
+int TablaSimbolosClasesCerrarAmbitoEnClase(    TablaSimbolosClases * grafo,
                                                                 char * id_clase);
-int cerrarClase(tablaSimbolosClases* t,
+int cerrarClase(TablaSimbolosClases* t,
                 char* id_clase,
                 int num_atributos_clase,
                 int num_atributos_instancia,
                 int num_metodos_sobreescribibles,
                 int num_metodos_no_sobreescribibles);
 
-int cerrarTablaSimbolosClases(tablaSimbolosClases* t);
+int cerrarTablaSimbolosClases(TablaSimbolosClases* t);
 
-int liberarTablaSimbolosClases(tablaSimbolosClases* t);
+int liberarTablaSimbolosClases(TablaSimbolosClases* t);
 
-void graph_enrouteParentsLastNode(tablaSimbolosClases * g);
+void graph_enrouteParentsLastNode(TablaSimbolosClases * g);
 
 void cerrarAmbito(TablaAmbito* tabla);
+
+void tablaSimbolosClasesToDot(TablaSimbolosClases* tabla, FILE* fsalida);
 
 #endif

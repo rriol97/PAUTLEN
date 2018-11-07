@@ -3,16 +3,16 @@
 #include <stdarg.h>
 #include "tabla.h"
 
-struct _tablaSimbolosClases {
+struct _TablaSimbolosClases {
     char* name;
     Graph* graph;
 } ;
 
-int iniciarTablaSimbolosClases(tablaSimbolosClases** t, char * nombre) {
+int iniciarTablaSimbolosClases(TablaSimbolosClases** t, char * nombre) {
     if(t == NULL || nombre == NULL) {
         return -1;
     }
-    *t = (tablaSimbolosClases *) malloc(sizeof(tablaSimbolosClases));
+    *t = (TablaSimbolosClases *) malloc(sizeof(TablaSimbolosClases));
     if(*t == NULL)
         return -1;
     (*t)->name = malloc((strlen(nombre)+1)*sizeof(char));
@@ -30,14 +30,15 @@ int iniciarTablaSimbolosClases(tablaSimbolosClases** t, char * nombre) {
     return 0;
 }
 
-int abrirAmbitoClase(tablaAmbito** t, char* id_clase, int tamanio){
-  int i;
-  for(i = 0 ; i < tamanio; i++){
-    tablaInit(t[i], id_clase[i]);
-  }
+int abrirAmbitoClase(TablaAmbito** t, char* id_clase, int tamanio){
+    int i;
+    for(i = 0 ; i < tamanio; i++){
+        tablaInit(t[i], id_clase);
+    }
+    return 0;
 }
 
-int abrirClase(tablaSimbolosClases* t, char* id_clase) {
+int abrirClase(TablaSimbolosClases* t, char* id_clase) {
     NodoGrafo* nodo;
     if(t == NULL || id_clase == NULL)
         return -1;
@@ -49,7 +50,7 @@ int abrirClase(tablaSimbolosClases* t, char* id_clase) {
     return graphAddClass(t->graph, nodo);
 }
 
-int abrirClaseHereda(tablaSimbolosClases* t, char* id_clase, ...) {
+int abrirClaseHereda(TablaSimbolosClases* t, char* id_clase, ...) {
     va_list ap;
     NodoGrafo *parent;
     char* next;
@@ -67,61 +68,61 @@ int abrirClaseHereda(tablaSimbolosClases* t, char* id_clase, ...) {
     return 0;
 }
 
-int insertarTablaSimbolosClases(tablaSimbolosClases * grafo, char * id_clase,
-    char* id, int clase,
-    int tipo, int estructura,
-    int direcciones, int numero_parametros,
-    int numero_variables_locales,int posicion_variable_local,
-    int posicion_parametro,int dimension,
-    int tamanio,int filas,
-    int columnas, int capacidad,
-    int numero_atributos_clase,int numero_atributos_instancia,
-    int numero_metodos_sobreescribibles, int numero_metodos_no_sobreescribibles,
-    int tipo_acceso,nt tipo_miembro,
-    int posicion_atributo_instancia,int posicion_metodo_sobreescribible,
-    int num_acumulado_atributos_instancia,int num_acumulado_metodos_sobreescritura,
-    int posicion_acumulada_atributos_instancia,
-    int posicion_acumulada_metodos_sobreescritura,
-    int * tipo_args){
-  NodoGrafo* nodo;
-  nodo = graphGetClassFromName(grafo, id_clase);
-  if(nodo == NULL)
-    return -1;
-/*TODO no me queda claro si esta funcion es para insertar en la hash o para que*/
+int insertarTablaSimbolosClases(TablaSimbolosClases * grafo, char * id_clase,
+        char* id, int clase,
+        int tipo, int estructura,
+        int direcciones, int numero_parametros,
+        int numero_variables_locales,int posicion_variable_local,
+        int posicion_parametro,int dimension,
+        int tamanio,int filas,
+        int columnas, int capacidad,
+        int numero_atributos_clase,int numero_atributos_instancia,
+        int numero_metodos_sobreescribibles, int numero_metodos_no_sobreescribibles,
+        int tipo_acceso,int tipo_miembro,
+        int posicion_atributo_instancia,int posicion_metodo_sobreescribible,
+        int num_acumulado_atributos_instancia,int num_acumulado_metodos_sobreescritura,
+        int posicion_acumulada_atributos_instancia,
+        int posicion_acumulada_metodos_sobreescritura,
+        int * tipo_args) {
+    NodoGrafo* nodo;
+    nodo = graphGetClassFromName(grafo->graph, id_clase);
+    if(nodo == NULL)
+        return -1;
+    /*TODO no me queda claro si esta funcion es para insertar en la hash o para que*/
 
-  return 0;
+    return 0;
 }
 
-int tablaSimbolosClasesAbrirAmbitoEnClase(tablaSimbolosClases * grafo,
+int TablaSimbolosClasesAbrirAmbitoEnClase(TablaSimbolosClases * grafo,
                                   char * id_clase,
                                   char* id_ambito,
                                   int categoria_ambito,
                                   int acceso_metodo,
                                   int tipo_metodo,
                                   int posicion_metodo_sobre, int tamanio){
-/*TODO para que demonios sirve el resto de cosas?¿?¿*/
-  NodoGrafo * nodo;
-  nodo = graphGetClassFromName(grafo, id_clase);
-  if(nodo == NULL)
-    return -1;
+    /*TODO para que demonios sirve el resto de cosas?¿?¿*/
+    NodoGrafo * nodo;
+    nodo = graphGetClassFromName(grafo->graph, id_clase);
+    if(nodo == NULL)
+        return -1;
 
-  tablaInit(nodo->tabla, id_ambito);
+    tablaInit(&(nodo->tabla), id_ambito);
 
-  return 0;
+    return 0;
 }
 
-int tablaSimbolosClasesCerrarAmbitoEnClase(tablaSimbolosClases * grafo, char * id_clase){
-  /*TODO Revisar*/
-  NodoGrafo *nodo;
-  nodo = graphGetClassFromName(graph, id_clase);
-  if(nodo == NULL)
-    return -1;
-  cerrarAmbito(nodo->tabla);
-  return 0;
+int TablaSimbolosClasesCerrarAmbitoEnClase(TablaSimbolosClases * grafo, char * id_clase){
+    /*TODO Revisar*/
+    NodoGrafo *nodo;
+    nodo = graphGetClassFromName(grafo->graph, id_clase);
+    if(nodo == NULL)
+        return -1;
+    cerrarAmbito(&(nodo->tabla));
+    return 0;
 }
 
 
-int cerrarClase(tablaSimbolosClases* t,
+int cerrarClase(TablaSimbolosClases* t,
                 char* id_clase,
                 int num_atributos_clase,
                 int num_atributos_instancia,
@@ -143,12 +144,12 @@ int cerrarClase(tablaSimbolosClases* t,
     return 0;
 }
 
-int cerrarTablaSimbolosClases(tablaSimbolosClases* t) {
+int cerrarTablaSimbolosClases(TablaSimbolosClases* t) {
     /*TODO: comprobar si necesitamos hacer alguna operacion aqui*/
     return 0;
 }
 
-int liberarTablaSimbolosClases(tablaSimbolosClases* t) {
+int liberarTablaSimbolosClases(TablaSimbolosClases* t) {
     int i;
     NodoGrafo* nodo;
     if(t == NULL)
@@ -162,10 +163,14 @@ int liberarTablaSimbolosClases(tablaSimbolosClases* t) {
     return 0;
 }
 
-void graph_enrouteParentsLastNode(tablaSimbolosClases * g) {
+void graph_enrouteParentsLastNode(TablaSimbolosClases * g) {
     return;
 }
 
 void cerrarAmbito(TablaAmbito* tabla) {
     return;
+}
+
+void tablaSimbolosClasesToDot(TablaSimbolosClases* tabla, FILE* fsalida) {
+    graphToDot(tabla->graph, fsalida);
 }

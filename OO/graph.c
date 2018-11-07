@@ -223,38 +223,36 @@ void printGraph(Graph* graph) {
     }
 }
 
-Graph * tablaSimbolosClasesToDot(Graph * graph) {
+Graph * graphToDot(Graph * graph, FILE* fsalida) {
     FILE* f;
     int i;
     NodoLista* next;
     Hash *s;
 
-    f = fopen("grafo.dot", "w");
-    fprintf(f, "digraph grafo_clases  { rankdir=BT;\nedge [arrowhead = empty]\n");
+    fprintf(fsalida, "digraph grafo_clases  { rankdir=BT;\nedge [arrowhead = empty]\n");
     for(i = 0; i<graph->num_classes; i++) {
-        fprintf(f, "%s [label=\"{%s|%s\\l", graph->nodos[i]->name, graph->nodos[i]->name, graph->nodos[i]->name);
+        fprintf(fsalida, "%s [label=\"{%s|%s\\l", graph->nodos[i]->name, graph->nodos[i]->name, graph->nodos[i]->name);
 
         for(s=graph->nodos[i]->tabla.th_ppal; s != NULL; s=s->hh.next) {
-            fprintf(f, "%s\\l", s->name);
+            fprintf(fsalida, "%s\\l", s->name);
         }
-        fprintf(f, "}\"][shape=record];\n");
+        fprintf(fsalida, "}\"][shape=record];\n");
     }
     for(i = 0; i<graph->num_classes; i++) {
         next = graph->parent_list[i];
         while(next != NULL) {
-            fprintf(f, "%s -> %s ;\n", graph->nodos[i]->name, graph->nodos[next->dest]->name);
+            fprintf(fsalida, "%s -> %s ;\n", graph->nodos[i]->name, graph->nodos[next->dest]->name);
             next = next->next;
         }
     }
-    fprintf(f, "edge [arrowhead = normal]\n");
+    fprintf(fsalida, "edge [arrowhead = normal]\n");
     for(i = 0; i<graph->num_classes; i++) {
-        fprintf(f, "%sN%d [label=\"%s\"][shape=oval];\n", graph->nodos[i]->name, i, graph->nodos[i]->name);
+        fprintf(fsalida, "%sN%d [label=\"%s\"][shape=oval];\n", graph->nodos[i]->name, i, graph->nodos[i]->name);
     }
     for(i = 0; i < (graph->num_classes - 1); i++) {
-        fprintf(f, "%sN%d -> %sN%d ;\n",  graph->nodos[i]->name, i,  graph->nodos[i+1]->name, i+1);
+        fprintf(fsalida, "%sN%d -> %sN%d ;\n",  graph->nodos[i]->name, i,  graph->nodos[i+1]->name, i+1);
     }
-    fprintf(f, "\n}");
-    fclose(f);
+    fprintf(fsalida, "\n}");
     return graph;
 }
 

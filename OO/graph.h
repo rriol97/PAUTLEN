@@ -101,7 +101,7 @@ NodoGrafo* graphGetClassFromName(Graph* graph, char* name);
  *      Graph: the Graph to turn into a .dot file
  * Output: The inputted graph
  */
-Graph * tablaSimbolosClasesToDot(Graph * graph);
+Graph * graphToDot(Graph * graph, FILE* fsalida);
 
 /* Returns a list of the childs of a class.
  * Input:

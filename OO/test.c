@@ -6,7 +6,18 @@
 int dotTest() {
     NodoGrafo class[5];
     int i;
+    FILE* fsalida;
     Graph* graph = createGraph();
+    if(graph == NULL) {
+        fprintf(stderr, "Error while creating graph");
+        return 1;
+    }
+    fsalida = fopen("grafo.dot", "w");
+    if(fsalida == NULL) {
+        freeGraph(graph);
+        fprintf(stderr, "Error while opening file");
+        return 1;
+    }
     strcpy(class[0].name, "Persona");
     strcpy(class[1].name, "Infante");
     strcpy(class[2].name, "Adulto");
@@ -29,11 +40,12 @@ int dotTest() {
     graphAddEdge(graph, 3, 4);
 
     /* print the adjacency list representation of the above graph */
-    tablaSimbolosClasesToDot(graph);
+    graphToDot(graph, fsalida);
     for(i = 0; i < 5; i++) {
         clear_symbols(&(class[i].tabla.th_ppal));
     }
 
+    fclose(fsalida);
     freeGraph(graph);
 
     return 0;
@@ -42,9 +54,9 @@ int dotTest() {
 int testTabla(char* fname) {
     TablaAmbito tabla_main; /* Tabla de simbolos de main*/
 
-    tablaSimbolosClases * ej_tabla_clases=NULL;
+    TablaSimbolosClases * ej_tabla_clases=NULL;
 
-    FILE* fsalida=fopen(fname, "w");
+    FILE* fsalida = fopen(fname, "w");
     /* Inicializar la tabla de simbolos del main (ambito por defecto) */
     tablaInit(&tabla_main, "main");
 
@@ -62,12 +74,10 @@ int testTabla(char* fname) {
 
     cerrarClase(ej_tabla_clases,"BB",0,0,0,0);
 
-
-
     /* Cerrar las tablas de simbolos */
     cerrarTablaSimbolosClases(ej_tabla_clases);
 
-    cerrarAmbito(&tabla_main);
+    tablaSimbolosClasesToDot(ej_tabla_clases, fsalida);
 
     /*liberarTablaSimbolosAmbitos(&tabla_main);*/
     clear_symbols(&(tabla_main.th_ppal));
