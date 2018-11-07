@@ -76,13 +76,25 @@ int addAntecessors(Graph* graph, int src, int dest) {
     return 0;
 }
 
-void tablaInit(TablaAmbito* tabla, char* name) {
-    if(tabla == NULL || name == NULL)
-        return;
+TablaAmbito* tablaInit(char* name) {
+    TablaAmbito* tabla;
+    if(name == NULL)
+        return NULL;
+    tabla = malloc(sizeof(TablaAmbito));
+    if(tabla == NULL)
+        return NULL;
     strcpy(tabla->name, name);
     tabla->th_ppal = NULL;
     tabla->th_func = NULL;
-    return;
+    return tabla;
+}
+
+void tablaFree(TablaAmbito* tabla) {
+    if(tabla == NULL)
+        return;
+    clear_symbols(&(tabla->th_ppal));
+    clear_symbols(&(tabla->th_func));
+    free(tabla);
 }
 
 int nodoListaGetIndex(NodoLista * nodo) {
@@ -223,38 +235,35 @@ void printGraph(Graph* graph) {
     }
 }
 
-Graph * tablaSimbolosClasesToDot(Graph * graph) {
-    FILE* f;
+Graph * graphToDot(Graph * graph, FILE* fsalida) {
     int i;
     NodoLista* next;
     Hash *s;
 
-    f = fopen("grafo.dot", "w");
-    fprintf(f, "digraph grafo_clases  { rankdir=BT;\nedge [arrowhead = empty]\n");
+    fprintf(fsalida, "digraph grafo_clases  { rankdir=BT;\nedge [arrowhead = empty]\n");
     for(i = 0; i<graph->num_classes; i++) {
-        fprintf(f, "%s [label=\"{%s|%s\\l", graph->nodos[i]->name, graph->nodos[i]->name, graph->nodos[i]->name);
+        fprintf(fsalida, "%s [label=\"{%s|%s\\l", graph->nodos[i]->name, graph->nodos[i]->name, graph->nodos[i]->name);
 
-        for(s=graph->nodos[i]->tabla.th_ppal; s != NULL; s=s->hh.next) {
-            fprintf(f, "%s\\l", s->name);
+        for(s=graph->nodos[i]->tabla->th_ppal; s != NULL; s=s->hh.next) {
+            fprintf(fsalida, "%s\\l", s->name);
         }
-        fprintf(f, "}\"][shape=record];\n");
+        fprintf(fsalida, "}\"][shape=record];\n");
     }
     for(i = 0; i<graph->num_classes; i++) {
         next = graph->parent_list[i];
         while(next != NULL) {
-            fprintf(f, "%s -> %s ;\n", graph->nodos[i]->name, graph->nodos[next->dest]->name);
+            fprintf(fsalida, "%s -> %s ;\n", graph->nodos[i]->name, graph->nodos[next->dest]->name);
             next = next->next;
         }
     }
-    fprintf(f, "edge [arrowhead = normal]\n");
+    fprintf(fsalida, "edge [arrowhead = normal]\n");
     for(i = 0; i<graph->num_classes; i++) {
-        fprintf(f, "%sN%d [label=\"%s\"][shape=oval];\n", graph->nodos[i]->name, i, graph->nodos[i]->name);
+        fprintf(fsalida, "%sN%d [label=\"%s\"][shape=oval];\n", graph->nodos[i]->name, i, graph->nodos[i]->name);
     }
     for(i = 0; i < (graph->num_classes - 1); i++) {
-        fprintf(f, "%sN%d -> %sN%d ;\n",  graph->nodos[i]->name, i,  graph->nodos[i+1]->name, i+1);
+        fprintf(fsalida, "%sN%d -> %sN%d ;\n",  graph->nodos[i]->name, i,  graph->nodos[i+1]->name, i+1);
     }
-    fprintf(f, "\n}");
-    fclose(f);
+    fprintf(fsalida, "\n}");
     return graph;
 }
 
