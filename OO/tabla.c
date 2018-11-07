@@ -68,6 +68,57 @@ int abrirClaseHereda(TablaSimbolosClases* t, char* id_clase, ...) {
     return 0;
 }
 
+int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
+        char* id, int clase,
+        int tipo, int estructura,
+        int direcciones, int numero_parametros,
+        int numero_variables_locales,int posicion_variable_local,
+        int posicion_parametro,int dimension,
+        int tamanio,int filas,
+        int columnas, int capacidad,
+        int numero_atributos_clase,int numero_atributos_instancia,
+        int numero_metodos_sobreescribibles, int numero_metodos_no_sobreescribibles,
+        int tipo_acceso,int tipo_miembro,
+        int posicion_atributo_instancia,int posicion_metodo_sobreescribible,
+        int num_acumulado_atributos_instancia,int num_acumulado_metodos_sobreescritura,
+        int posicion_acumulada_atributos_instancia,
+        int posicion_acumulada_metodos_sobreescritura,
+        int * tipo_args) {
+    elementoTablaSimbolos* elemento;
+    elemento = malloc(sizeof(elementoTablaSimbolos));
+    if(elemento == NULL)
+        return -1;
+    elemento->clave = malloc(sizeof(char)*(strlen(id_clase)+1));
+    if(elemento->clave == NULL) {
+        free(elemento);
+        return -1;
+    }
+    strcpy(elemento->clave, id_clase);
+    elemento->clase = clase;
+    elemento->tipo = tipo;
+    elemento->direcciones = direcciones;
+    elemento->numero_parametros = numero_parametros;
+    elemento->numero_variables_locales = numero_variables_locales;
+    elemento->posicion_variable_local = posicion_variable_local;
+    elemento->posicion_parametro = posicion_parametro;
+    elemento->tamanio = tamanio;
+    elemento->numero_atributos_clase = numero_atributos_clase;
+    elemento->numero_atributos_instancia = numero_atributos_instancia;
+    elemento->numero_metodos_sobreescribibles = numero_metodos_sobreescribibles;
+    elemento->numero_metodos_no_sobreescribibles = numero_metodos_no_sobreescribibles;
+    elemento->tipo_acceso = tipo_acceso;
+    elemento->tipo_miembro = tipo_miembro;
+    elemento->posicion_atributo_instancia = posicion_atributo_instancia;
+    elemento->posicion_metodo_sobreescribible = posicion_metodo_sobreescribible;
+    elemento->num_acumulado_atributos_instancia = num_acumulado_atributos_instancia;
+    elemento->num_acumulado_metodos_sobreescritura = num_acumulado_metodos_sobreescritura;
+    elemento->posicion_acumulada_atributos_instancia = posicion_acumulada_atributos_instancia;
+    elemento->posicion_acumulada_metodos_sobreescritura = posicion_acumulada_metodos_sobreescritura;
+    elemento->tipo_args = tipo_args;
+    insert_symbol(&(tabla->th_ppal), id_clase, elemento);
+    return 0;
+}
+
 int insertarTablaSimbolosClases(TablaSimbolosClases * grafo, char * id_clase,
         char* id, int clase,
         int tipo, int estructura,
@@ -85,10 +136,39 @@ int insertarTablaSimbolosClases(TablaSimbolosClases * grafo, char * id_clase,
         int posicion_acumulada_metodos_sobreescritura,
         int * tipo_args) {
     NodoGrafo* nodo;
+    if(grafo == NULL || id_clase == NULL)
+        return -1;
     nodo = graphGetClassFromName(grafo->graph, id_clase);
     if(nodo == NULL)
         return -1;
-    /*TODO no me queda claro si esta funcion es para insertar en la hash o para que*/
+    return insertarTablaSimbolosAmbitos(nodo->tabla, id_clase,
+        id, clase, tipo, estructura, direcciones, numero_parametros,
+        numero_variables_locales,posicion_variable_local,
+        posicion_parametro,dimension,
+        tamanio,filas,
+        columnas, capacidad,
+        numero_atributos_clase,numero_atributos_instancia,
+        numero_metodos_sobreescribibles, numero_metodos_no_sobreescribibles,
+        tipo_acceso,tipo_miembro,
+        posicion_atributo_instancia,posicion_metodo_sobreescribible,
+        num_acumulado_atributos_instancia,num_acumulado_metodos_sobreescritura,
+        posicion_acumulada_atributos_instancia,
+        posicion_acumulada_metodos_sobreescritura,
+        tipo_args);
+
+}
+
+int AbrirAmbitoPrefijos(TablaAmbito * tabla,
+                                    char * id_clase,
+                                    char* id_ambito,
+                                    int categoria_ambito,
+                                    int acceso_metodo,
+                                    int tipo_metodo,
+                                    int posicion_metodo_sobre,
+                                    int tamanio) {
+
+    /*añadir funcion a tabla hash ppal?*/
+    /*inicializar tabla hash func*/
 
     return 0;
 }
@@ -103,14 +183,18 @@ int tablaSimbolosClasesAbrirAmbitoEnClase(TablaSimbolosClases * grafo,
     /*TODO para que demonios sirve el resto de cosas?¿?¿
     Son los datos de la funcion que tiene asociado el ambito que abrimos*/
     NodoGrafo * nodo;
+    if(grafo == NULL || id_clase == NULL || id_ambito == NULL)
+        return -1;
     nodo = graphGetClassFromName(grafo->graph, id_clase);
     if(nodo == NULL)
         return -1;
-
-    /*añadir funcion a tabla hash ppal?*/
-    /*inicializar tabla hash func*/
-
-    return 0;
+    return AbrirAmbitoPrefijos(nodo->tabla,
+        id_clase,
+        id_ambito,
+        categoria_ambito,
+        acceso_metodo,
+        tipo_metodo,
+        posicion_metodo_sobre, tamanio);
 }
 
 int tablaSimbolosClasesCerrarAmbitoEnClase(TablaSimbolosClases * grafo, char * id_clase){
@@ -119,6 +203,7 @@ int tablaSimbolosClasesCerrarAmbitoEnClase(TablaSimbolosClases * grafo, char * i
     nodo = graphGetClassFromName(grafo->graph, id_clase);
     if(nodo == NULL)
         return -1;
+    /*limpiar hash th_func*/
     cerrarAmbito(nodo->tabla);
     return 0;
 }

@@ -23,7 +23,6 @@ void insert_symbol(Hash **hash, char* name, void* value) {
     HASH_ADD_PTR( *hash, name, s );
 }
 
-/*TODO: no funciona*/
 void delete_symbol(Hash **hash, char* name){
     Hash *point = NULL;
 
@@ -51,6 +50,7 @@ void clear_symbols(Hash **hash){
     HASH_ITER(hh, *hash, point, tmp) {
         HASH_DEL(*hash,point);  
         free(point->name);
+	/*free(point->value); necesario? */
         free(point);            
     }
 }
