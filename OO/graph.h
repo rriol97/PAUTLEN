@@ -14,7 +14,7 @@ typedef struct {
 typedef struct {
     int index;
     char name[MAX_NAME];
-    TablaAmbito tabla;
+    TablaAmbito* tabla;
     int num_at_c;
     int num_at_i;
     int num_me_s;
@@ -23,11 +23,17 @@ typedef struct {
 
 /* Initializes a TablaAmbito correctly.
  * Input:
- * 	    tabla: pointer to the TablaAmbito to initialize
  *      name: name for the TablaAmbito to have
+ * Output: pointer to the TablaAmbito initialized
+ */
+TablaAmbito* tablaInit(char* name);
+
+/* Frees a TablaAmbito.
+ * Input:
+ *      tabla: TablaAmbito to free
  * Output: None
  */
-void tablaInit(TablaAmbito* tabla, char* name);
+void tablaFree(TablaAmbito* tabla);
 
 /*TODO: funciones para insertar atributos de clase y instancia, metodos sobre y no sobres*/
 

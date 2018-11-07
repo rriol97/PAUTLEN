@@ -76,13 +76,25 @@ int addAntecessors(Graph* graph, int src, int dest) {
     return 0;
 }
 
-void tablaInit(TablaAmbito* tabla, char* name) {
-    if(tabla == NULL || name == NULL)
-        return;
+TablaAmbito* tablaInit(char* name) {
+    TablaAmbito* tabla;
+    if(name == NULL)
+        return NULL;
+    tabla = malloc(sizeof(TablaAmbito));
+    if(tabla == NULL)
+        return NULL;
     strcpy(tabla->name, name);
     tabla->th_ppal = NULL;
     tabla->th_func = NULL;
-    return;
+    return tabla;
+}
+
+void tablaFree(TablaAmbito* tabla) {
+    if(tabla == NULL)
+        return;
+    clear_symbols(&(tabla->th_ppal));
+    clear_symbols(&(tabla->th_func));
+    free(tabla);
 }
 
 int nodoListaGetIndex(NodoLista * nodo) {
@@ -224,7 +236,6 @@ void printGraph(Graph* graph) {
 }
 
 Graph * graphToDot(Graph * graph, FILE* fsalida) {
-    FILE* f;
     int i;
     NodoLista* next;
     Hash *s;
@@ -233,7 +244,7 @@ Graph * graphToDot(Graph * graph, FILE* fsalida) {
     for(i = 0; i<graph->num_classes; i++) {
         fprintf(fsalida, "%s [label=\"{%s|%s\\l", graph->nodos[i]->name, graph->nodos[i]->name, graph->nodos[i]->name);
 
-        for(s=graph->nodos[i]->tabla.th_ppal; s != NULL; s=s->hh.next) {
+        for(s=graph->nodos[i]->tabla->th_ppal; s != NULL; s=s->hh.next) {
             fprintf(fsalida, "%s\\l", s->name);
         }
         fprintf(fsalida, "}\"][shape=record];\n");

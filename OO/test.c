@@ -24,14 +24,14 @@ int dotTest() {
     strcpy(class[3].name, "Anciano");
     strcpy(class[4].name, "Depotista");
     for(i = 0; i < 5; i++) {
-        tablaInit(&class[i].tabla, class[i].name);
+        class[i].tabla = tablaInit(class[i].name);
         graphAddClass(graph, &class[i]);
     }
-    insert_symbol(&(class[0].tabla.th_ppal), "esmujer", NULL);
-    insert_symbol(&(class[0].tabla.th_ppal), "edad", NULL);
-    insert_symbol(&(class[1].tabla.th_ppal), "percentil", NULL);
-    insert_symbol(&(class[2].tabla.th_ppal), "percentil", NULL);
-    insert_symbol(&(class[3].tabla.th_ppal), "sumar()", NULL);
+    insert_symbol(&(class[0].tabla->th_ppal), "esmujer", NULL);
+    insert_symbol(&(class[0].tabla->th_ppal), "edad", NULL);
+    insert_symbol(&(class[1].tabla->th_ppal), "percentil", NULL);
+    insert_symbol(&(class[2].tabla->th_ppal), "percentil", NULL);
+    insert_symbol(&(class[3].tabla->th_ppal), "sumar()", NULL);
     graphAddEdge(graph, 0, 1);
     graphAddEdge(graph, 0, 2);
     graphAddEdge(graph, 0, 3);
@@ -42,7 +42,7 @@ int dotTest() {
     /* print the adjacency list representation of the above graph */
     graphToDot(graph, fsalida);
     for(i = 0; i < 5; i++) {
-        clear_symbols(&(class[i].tabla.th_ppal));
+        tablaFree(class[i].tabla);
     }
 
     fclose(fsalida);
@@ -52,13 +52,13 @@ int dotTest() {
 }
 
 int testTabla(char* fname) {
-    TablaAmbito tabla_main; /* Tabla de simbolos de main*/
+    TablaAmbito* tabla_main; /* Tabla de simbolos de main*/
 
     TablaSimbolosClases * ej_tabla_clases=NULL;
 
     FILE* fsalida = fopen(fname, "w");
     /* Inicializar la tabla de simbolos del main (ambito por defecto) */
-    tablaInit(&tabla_main, "main");
+    tabla_main = tablaInit("main");
 
     /* Inicializar la tabla de las clases */
     iniciarTablaSimbolosClases(&ej_tabla_clases, "ej_clases");
@@ -80,8 +80,7 @@ int testTabla(char* fname) {
     tablaSimbolosClasesToDot(ej_tabla_clases, fsalida);
 
     /*liberarTablaSimbolosAmbitos(&tabla_main);*/
-    clear_symbols(&(tabla_main.th_ppal));
-    clear_symbols(&(tabla_main.th_func));
+    tablaFree(tabla_main);
     liberarTablaSimbolosClases(ej_tabla_clases);
     fclose(fsalida);
     return 0;

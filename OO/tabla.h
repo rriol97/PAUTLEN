@@ -30,7 +30,7 @@ int insertarTablaSimbolosClases(TablaSimbolosClases * grafo, char * id_clase,
     int posicion_acumulada_metodos_sobreescritura,
     int * tipo_args);
 
-int TablaSimbolosClasesAbrirAmbitoEnClase(    TablaSimbolosClases * grafo,
+int tablaSimbolosClasesAbrirAmbitoEnClase(    TablaSimbolosClases * grafo,
                                     char * id_clase,
                                     char* id_ambito,
                                     int categoria_ambito,
@@ -39,7 +39,7 @@ int TablaSimbolosClasesAbrirAmbitoEnClase(    TablaSimbolosClases * grafo,
                                     int posicion_metodo_sobre,
                                     int tamanio);
 
-int TablaSimbolosClasesCerrarAmbitoEnClase(    TablaSimbolosClases * grafo,
+int tablaSimbolosClasesCerrarAmbitoEnClase(    TablaSimbolosClases * grafo,
                                                                 char * id_clase);
 int cerrarClase(TablaSimbolosClases* t,
                 char* id_clase,

@@ -31,10 +31,10 @@ int iniciarTablaSimbolosClases(TablaSimbolosClases** t, char * nombre) {
 }
 
 int abrirAmbitoClase(TablaAmbito** t, char* id_clase, int tamanio){
-    int i;
-    for(i = 0 ; i < tamanio; i++){
-        tablaInit(t[i], id_clase);
-    }
+    if(t == NULL || id_clase == NULL)
+        return -1;
+    *t = tablaInit(id_clase);
+    /*TODO: que cojones es tamanio?*/
     return 0;
 }
 
@@ -46,7 +46,7 @@ int abrirClase(TablaSimbolosClases* t, char* id_clase) {
     if(nodo == NULL)
         return -1;
     strcpy(nodo->name, id_clase);
-    tablaInit(&nodo->tabla, id_clase);
+    nodo->tabla = tablaInit(id_clase);
     return graphAddClass(t->graph, nodo);
 }
 
@@ -93,31 +93,33 @@ int insertarTablaSimbolosClases(TablaSimbolosClases * grafo, char * id_clase,
     return 0;
 }
 
-int TablaSimbolosClasesAbrirAmbitoEnClase(TablaSimbolosClases * grafo,
+int tablaSimbolosClasesAbrirAmbitoEnClase(TablaSimbolosClases * grafo,
                                   char * id_clase,
                                   char* id_ambito,
                                   int categoria_ambito,
                                   int acceso_metodo,
                                   int tipo_metodo,
                                   int posicion_metodo_sobre, int tamanio){
-    /*TODO para que demonios sirve el resto de cosas?¿?¿*/
+    /*TODO para que demonios sirve el resto de cosas?¿?¿
+    Son los datos de la funcion que tiene asociado el ambito que abrimos*/
     NodoGrafo * nodo;
     nodo = graphGetClassFromName(grafo->graph, id_clase);
     if(nodo == NULL)
         return -1;
 
-    tablaInit(&(nodo->tabla), id_ambito);
+    /*añadir funcion a tabla hash ppal?*/
+    /*inicializar tabla hash func*/
 
     return 0;
 }
 
-int TablaSimbolosClasesCerrarAmbitoEnClase(TablaSimbolosClases * grafo, char * id_clase){
+int tablaSimbolosClasesCerrarAmbitoEnClase(TablaSimbolosClases * grafo, char * id_clase){
     /*TODO Revisar*/
     NodoGrafo *nodo;
     nodo = graphGetClassFromName(grafo->graph, id_clase);
     if(nodo == NULL)
         return -1;
-    cerrarAmbito(&(nodo->tabla));
+    cerrarAmbito(nodo->tabla);
     return 0;
 }
 
@@ -156,6 +158,7 @@ int liberarTablaSimbolosClases(TablaSimbolosClases* t) {
         return -1;
     free(t->name);
     for(i = 0; (nodo=graphGetClass(t->graph, i)) != NULL; i++) {
+        tablaFree(nodo->tabla);
         free(nodo);
     }
     freeGraph(t->graph);
