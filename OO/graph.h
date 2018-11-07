@@ -22,7 +22,7 @@ typedef struct {
 } NodoGrafo;
 
 /* Initializes a TablaAmbito correctly.
- * Input: 
+ * Input:
  * 	    tabla: pointer to the TablaAmbito to initialize
  *      name: name for the TablaAmbito to have
  * Output: None
@@ -30,6 +30,7 @@ typedef struct {
 void tablaInit(TablaAmbito* tabla, char* name);
 
 /*TODO: funciones para insertar atributos de clase y instancia, metodos sobre y no sobres*/
+
 
 typedef struct _NodoLista NodoLista;
 
@@ -56,7 +57,7 @@ typedef struct _Graph Graph;
 Graph* createGraph();
 
 /* Frees a graph.
- * Input: 
+ * Input:
  *      graph: the Graph to free
  * Output: None
  */
@@ -80,7 +81,7 @@ int graphAddEdge(Graph* graph, int src, int dest);
 int graphAddClass(Graph* graph, NodoGrafo * class);
 
 /* Returns the class that an index refers to.
- * Input: 
+ * Input:
  *      Graph: the Graph to get the class from
  *      index: the index of the class
  * Output: Pointer to the class with the index on the graph
@@ -88,7 +89,7 @@ int graphAddClass(Graph* graph, NodoGrafo * class);
 NodoGrafo* graphGetClass(Graph* graph, int index);
 
 /* Returns the class that a name refers to.
- * Input: 
+ * Input:
  *      Graph: the Graph to get the class from
  *      name: the name of the class
  * Output: Pointer to the class with the name on the graph
@@ -96,14 +97,14 @@ NodoGrafo* graphGetClass(Graph* graph, int index);
 NodoGrafo* graphGetClassFromName(Graph* graph, char* name);
 
 /* Creates the .dot file for the graph.
- * Input: 
+ * Input:
  *      Graph: the Graph to turn into a .dot file
  * Output: The inputted graph
  */
 Graph * tablaSimbolosClasesToDot(Graph * graph);
 
 /* Returns a list of the childs of a class.
- * Input: 
+ * Input:
  *      Graph: the Graph to get the parents from
  *      index: the index of the class
  * Output: Pointer to the list of childs
@@ -111,7 +112,7 @@ Graph * tablaSimbolosClasesToDot(Graph * graph);
 NodoLista* graphGetChildList(Graph* graph, int src);
 
 /* Returns a list of the parents of a class.
- * Input: 
+ * Input:
  *      Graph: the Graph to get the parents from
  *      index: the index of the class
  * Output: Pointer to the list of parents
@@ -119,7 +120,7 @@ NodoLista* graphGetChildList(Graph* graph, int src);
 NodoLista* graphGetParentList(Graph* graph, int src);
 
 /* Returns a list of the antecessors of a class (classes inherited from).
- * Input: 
+ * Input:
  *      Graph: the Graph to get the parents from
  *      index: the index of the class
  * Output: Pointer to the list of parents

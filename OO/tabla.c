@@ -67,7 +67,8 @@ int abrirClaseHereda(tablaSimbolosClases* t, char* id_clase, ...) {
     return 0;
 }
 
-int insertarTablaSimbolosClases(tablaSimbolosClases * grafo, char * id_clase, char* id, int clase,
+int insertarTablaSimbolosClases(tablaSimbolosClases * grafo, char * id_clase,
+    char* id, int clase,
     int tipo, int estructura,
     int direcciones, int numero_parametros,
     int numero_variables_locales,int posicion_variable_local,
@@ -82,26 +83,41 @@ int insertarTablaSimbolosClases(tablaSimbolosClases * grafo, char * id_clase, ch
     int posicion_acumulada_atributos_instancia,
     int posicion_acumulada_metodos_sobreescritura,
     int * tipo_args){
+  NodoGrafo* nodo;
+  nodo = graphGetClassFromName(grafo, id_clase);
+  if(nodo == NULL)
+    return -1;
+/*TODO no me queda claro si esta funcion es para insertar en la hash o para que*/
 
+  return 0;
+}
 
-
-  }
-
-int tablaSimbolosClasesAbrirAmbitoEnClase(    tablaSimbolosClases * grafo,
+int tablaSimbolosClasesAbrirAmbitoEnClase(tablaSimbolosClases * grafo,
                                   char * id_clase,
                                   char* id_ambito,
                                   int categoria_ambito,
                                   int acceso_metodo,
                                   int tipo_metodo,
-                                  int posicion_metodo_sobre,
-                                  int tamanio){
+                                  int posicion_metodo_sobre, int tamanio){
+/*TODO para que demonios sirve el resto de cosas?¿?¿*/
+  NodoGrafo * nodo;
+  nodo = graphGetClassFromName(grafo, id_clase);
+  if(nodo == NULL)
+    return -1;
 
+  tablaInit(nodo->tabla, id_ambito);
 
-
+  return 0;
 }
 
 int tablaSimbolosClasesCerrarAmbitoEnClase(tablaSimbolosClases * grafo, char * id_clase){
-
+  /*TODO Revisar*/
+  NodoGrafo *nodo;
+  nodo = graphGetClassFromName(graph, id_clase);
+  if(nodo == NULL)
+    return -1;
+  cerrarAmbito(nodo->tabla);
+  return 0;
 }
 
 
