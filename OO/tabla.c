@@ -1,5 +1,5 @@
-#include <stdio.h> 
-#include <stdlib.h> 
+#include <stdio.h>
+#include <stdlib.h>
 #include <stdarg.h>
 #include "tabla.h"
 
@@ -28,6 +28,13 @@ int iniciarTablaSimbolosClases(tablaSimbolosClases** t, char * nombre) {
         return -1;
     }
     return 0;
+}
+
+int abrirAmbitoClase(tablaAmbito** t, char* id_clase, int tamanio){
+  int i;
+  for(i = 0 ; i < tamanio; i++){
+    tablaInit(t[i], id_clase[i]);
+  }
 }
 
 int abrirClase(tablaSimbolosClases* t, char* id_clase) {
@@ -61,21 +68,24 @@ int abrirClaseHereda(tablaSimbolosClases* t, char* id_clase, ...) {
 }
 
 int cerrarClase(tablaSimbolosClases* t,
-                char* id_clase, 
-                int num_atributos_clase, 
-                int num_atributos_instancia, 
-                int num_metodos_sobreescribibles, 
+                char* id_clase,
+                int num_atributos_clase,
+                int num_atributos_instancia,
+                int num_metodos_sobreescribibles,
                 int num_metodos_no_sobreescribibles) {
     NodoGrafo *nodo;
     if(t == NULL || id_clase == NULL)
         return -1;
+
     nodo = graphGetClassFromName(t->graph, id_clase);
+
     if(nodo == NULL)
         return -1;
     nodo->num_at_c = num_atributos_clase;
     nodo->num_at_i = num_atributos_instancia;
     nodo->num_me_s = num_metodos_sobreescribibles;
     nodo->num_me_ns = num_metodos_no_sobreescribibles;
+
     return 0;
 }
 
@@ -105,4 +115,3 @@ void graph_enrouteParentsLastNode(tablaSimbolosClases * g) {
 void cerrarAmbito(TablaAmbito* tabla) {
     return;
 }
-

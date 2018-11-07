@@ -1,5 +1,5 @@
-#include <stdio.h> 
-#include <stdlib.h> 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "tabla.h"
 
@@ -57,11 +57,10 @@ int testTabla(char* fname) {
 
     cerrarClase(ej_tabla_clases,"AA",0,0,0,0);
 
-
     abrirClaseHereda(ej_tabla_clases, "BB", "AA", NULL);
     graph_enrouteParentsLastNode(ej_tabla_clases);
 
-    cerrarClase(ej_tabla_clases,"AA",0,0,0,0);
+    cerrarClase(ej_tabla_clases,"BB",0,0,0,0);
 
 
 
@@ -75,7 +74,6 @@ int testTabla(char* fname) {
     clear_symbols(&(tabla_main.th_func));
     liberarTablaSimbolosClases(ej_tabla_clases);
     fclose(fsalida);
-
     return 0;
 }
 
@@ -90,9 +88,9 @@ int main(int argc, char* argv[]) {
         return dotTest();
     } else if (strcmp(argv[1], "tabla") == 0) {
         if(argc < 3) {
-            printf("%s usage: %s %s [filename]", argv[1], argv[0], argv[1]); 
+            printf("%s usage: %s %s [filename]", argv[1], argv[0], argv[1]);
         }
-        return testTabla(argv[2]);
+        else return testTabla(argv[2]);
     } else {
         printf("Unknown command.\nhelp: %s graph|dot\ngraph: test graph\ndot: test function to create .dot file\n", argv[0]);
     }
