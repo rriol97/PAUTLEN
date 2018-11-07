@@ -7,6 +7,23 @@ Descripcion: programa principal de la tabla de símbolos
 
 int procesar_linea(char *linea);
 
+void gestiona_INICIA_TSA_MAIN();
+void gestiona_ABRIR_AMBITO_PPAL_MAIN();
+void gestiona_BUSCAR();
+
+void gestiona_INSERTAR_TSA_MAIN ();
+void gestiona_ABRIR_AMBITO_TSA_MAIN();
+void gestiona_CERRAR_AMBITO_TSA_MAIN();
+void gestiona_INICIA_TSC();
+void gestiona_ABRIR_CLASE();
+void gestiona_ABRIR_CLASE_HEREDA ();
+void gestiona_INSERTAR_TSC();
+void gestiona_ABRIR_AMBITO_TSC();
+void gestiona_CERRAR_AMBITO_TSC ();
+void gestiona_CERRAR_CLASE ();
+void gestiona_CERRAR_TSA_MAIN();
+void gestiona_CERRAR_TSC();
+
 int main(int argc, char *argv) {
   FILE *f_in, *f_out;
   char *linea;
@@ -46,12 +63,41 @@ int main(int argc, char *argv) {
 
 int procesar_linea(char *linea) {
   char *palabra1, *ambito, *categoria;
+  char token[MAX];
 
   token = strtok(linea, " \n\t");
   palabra1 = (char*)malloc(sizeof(char) * (1 + strlen(token)));
-  strcpy(palabra, token);
+  strcpy(palabra1, token);
 
+  if (!strcmp(palabra1, TOK_OP_INICIA_TSA_MAIN)) {
+    gestiona_INICIA_TSA_MAIN();
+  } else if (!strcmp(palabra1, TOK_OP_ABRIR_AMBITO_PPAL_MAIN)) {
+    gestiona_ABRIR_AMBITO_PPAL_MAIN();
+  } else if (!strcmp(palabra1, TOK_OP_BUSCAR)) {
+    gestiona_BUSCAR();
+  } else if (!strcmp(palabra1, TOK_OP_INSERTAR_TSA_MAIN)) {
+    gestiona_INSERTAR_TSA_MAIN();
+  } else if (!strcmp(palabra1, TOK_OP_ABRIR_AMBITO_TSA_MAIN)) {
+    gestiona_ABRIR_AMBITO_TSA_MAIN();
+  } else if (!strcmp(palabra1, TOK_OP_CERRAR_AMBITO_TSA_MAIN)) {
+    gestiona_CERRAR_AMBITO_TSA_MAIN();
+  } else if (!strcmp(palabra1, TOK_OP_INICIA_TSC)) {
+    gestiona_INICIA_TSC();
+  } 
+  //...
+  else if (!strcmp(palabra1, TOK_OP_CERRAR_CLASE)) {
 
+  } else if (!strcmp(palabra1, TOK_OP_CERRAR_TSA_MAIN)) {
+
+  } else if (!strcmp(palabra1, TOK_OP_CERRAR_TSC)) {
+
+  } else if (!strcmp(palabra1, )) {
+
+  } else if (!strcmp(palabra1, )) {
+
+  } else if (!strcmp(palabra1, )) {
+
+  } else if (!strcmp(palabra1, ))
 
   while (token != NULL) {
     token = strtok(NULL," \n\t");
