@@ -86,6 +86,48 @@ int testTabla(char* fname) {
     return 0;
 }
 
+int testBuscarIdNoCualificado(char* fname) {
+    TablaAmbito* tabla_main; /* Tabla de simbolos de main*/
+
+    TablaSimbolosClases * ej_tabla_clases=NULL;
+
+    /* Inicializar la tabla de simbolos del main (ambito por defecto) */
+    tabla_main = tablaInit("main");
+
+    /* Inicializar la tabla de las clases */
+    iniciarTablaSimbolosClases(&ej_tabla_clases, "ej_clases");
+
+    /* Declarar variable global int v1*/
+    insertarTablaSimbolosAmbitos(tabla_main, "v1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, NINGUNO, UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    /* Clase AA: tiene 1 atributo de instancia y uno de clase, tambien un metodo */
+    abrirClase(ej_tabla_clases,"AA");
+    graph_enrouteParentsLastNode(ej_tabla_clases);
+
+    /*TODO: escribir correctamente esta funcion*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "a1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, EXPOSED, UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    /*TODO: terminar de redactar el test (programa omicron al final de la sesion 31/10 */
+
+    cerrarClase(ej_tabla_clases,"AA",0,0,0,0);
+
+    abrirClaseHereda(ej_tabla_clases, "BB", "AA", NULL);
+    graph_enrouteParentsLastNode(ej_tabla_clases);
+
+    cerrarClase(ej_tabla_clases,"BB",0,0,0,0);
+
+    /* Cerrar las tablas de simbolos */
+    cerrarTablaSimbolosClases(ej_tabla_clases);
+
+    tablaSimbolosClasesToDot(ej_tabla_clases, fsalida);
+
+    /*liberarTablaSimbolosAmbitos(&tabla_main);*/
+    tablaFree(tabla_main);
+    liberarTablaSimbolosClases(ej_tabla_clases);
+    fclose(fsalida);
+    return 0;
+}
+
 /* Driver program to test above functions */
 int main(int argc, char* argv[]) {
     /* create the graph */

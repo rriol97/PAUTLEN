@@ -2,6 +2,7 @@
 #define TABLA_H
 #include <stdio.h>
 #include "graph.h"
+#include "alfa.h"
 
 typedef struct elemento {
     char* clave;    
@@ -32,6 +33,14 @@ typedef struct elemento {
 
 typedef struct _TablaSimbolosClases TablaSimbolosClases;
 
+/**********************************************************
+ **********************************************************
+ **********************************************************
+ *************     FUNCIONES DE APERTURA      *************
+ **********************************************************
+ **********************************************************
+ **********************************************************/
+
 int iniciarTablaSimbolosClases(TablaSimbolosClases** t, char * nombre);
 
 int abrirAmbitoClase(TablaAmbito** t, char* id_clase, int tamanio);
@@ -39,40 +48,6 @@ int abrirAmbitoClase(TablaAmbito** t, char* id_clase, int tamanio);
 int abrirClase(TablaSimbolosClases* t, char* id_clase);
 
 int abrirClaseHereda(TablaSimbolosClases* t, char* id_clase, ...);
-
-int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
-        char* id, int clase,
-        int tipo, int estructura,
-        int direcciones, int numero_parametros,
-        int numero_variables_locales,int posicion_variable_local,
-        int posicion_parametro,int dimension,
-        int tamanio,int filas,
-        int columnas, int capacidad,
-        int numero_atributos_clase,int numero_atributos_instancia,
-        int numero_metodos_sobreescribibles, int numero_metodos_no_sobreescribibles,
-        int tipo_acceso,int tipo_miembro,
-        int posicion_atributo_instancia,int posicion_metodo_sobreescribible,
-        int num_acumulado_atributos_instancia,int num_acumulado_metodos_sobreescritura,
-        int posicion_acumulada_atributos_instancia,
-        int posicion_acumulada_metodos_sobreescritura,
-        int * tipo_args);
-
-int insertarTablaSimbolosClases(TablaSimbolosClases * grafo, char * id_clase,
-    char* id,                        int clase,
-    int tipo,                        int estructura,
-    int direcciones,                    int numero_parametros,
-    int numero_variables_locales,        int posicion_variable_local,
-    int posicion_parametro,            int dimension,
-    int tamanio,                    int filas,
-    int columnas,                    int capacidad,
-    int numero_atributos_clase,            int numero_atributos_instancia,
-    int numero_metodos_sobreescribibles,    int numero_metodos_no_sobreescribibles,
-    int tipo_acceso,                  int tipo_miembro,
-    int posicion_atributo_instancia,        int posicion_metodo_sobreescribible,
-    int num_acumulado_atributos_instancia,    int num_acumulado_metodos_sobreescritura,
-    int posicion_acumulada_atributos_instancia,
-    int posicion_acumulada_metodos_sobreescritura,
-    int * tipo_args);
 
 int AbrirAmbitoPrefijos(TablaAmbito * tabla,
                                     char * id_clase,
@@ -92,8 +67,81 @@ int tablaSimbolosClasesAbrirAmbitoEnClase(TablaSimbolosClases * grafo,
                                     int posicion_metodo_sobre,
                                     int tamanio);
 
-int tablaSimbolosClasesCerrarAmbitoEnClase(    TablaSimbolosClases * grafo,
-                                                                char * id_clase);
+/**********************************************************
+ **********************************************************
+ **********************************************************
+ *************     FUNCIONES DE INSERCION     *************
+ **********************************************************
+ **********************************************************
+ **********************************************************/
+
+int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
+        char* id, int clase,
+        int tipo, int categoria,
+        int direcciones, int numero_parametros,
+        int numero_variables_locales,int posicion_variable_local,
+        int posicion_parametro,
+        int tamanio,int filas,
+        int columnas, int capacidad,
+        int numero_atributos_clase,int numero_atributos_instancia,
+        int numero_metodos_sobreescribibles, int numero_metodos_no_sobreescribibles,
+        int tipo_acceso,int tipo_miembro,
+        int posicion_atributo_instancia,int posicion_metodo_sobreescribible,
+        int num_acumulado_atributos_instancia,int num_acumulado_metodos_sobreescritura,
+        int posicion_acumulada_atributos_instancia,
+        int posicion_acumulada_metodos_sobreescritura,
+        int * tipo_args);
+
+int insertarTablaSimbolosClases(TablaSimbolosClases * grafo, char * id_clase,
+        char* id, int clase,
+        int tipo, int categoria,
+        int direcciones, int numero_parametros,
+        int numero_variables_locales,int posicion_variable_local,
+        int posicion_parametro,
+        int tamanio,int filas,
+        int columnas, int capacidad,
+        int numero_atributos_clase,int numero_atributos_instancia,
+        int numero_metodos_sobreescribibles, int numero_metodos_no_sobreescribibles,
+        int tipo_acceso,int tipo_miembro,
+        int posicion_atributo_instancia,int posicion_metodo_sobreescribible,
+        int num_acumulado_atributos_instancia,int num_acumulado_metodos_sobreescritura,
+        int posicion_acumulada_atributos_instancia,
+        int posicion_acumulada_metodos_sobreescritura,
+        int * tipo_args);
+
+/**********************************************************
+ **********************************************************
+ **********************************************************
+ *************      FUNCIONES DE BUSQUEDA     *************
+ **********************************************************
+ **********************************************************
+ **********************************************************/
+
+int aplicarAccesos(TablaSimbolosClases* t, char* nombre_clase_ambito_actual, char* clase_declaro, elementoTablaSimbolos* pelem);
+
+int buscarIdEnJerarquiaDesdeClase(TablaSimbolosClases *t, char * nombre_id,
+		char * nombre_clase_desde,
+		elementoTablaSimbolos ** e,
+		char * nombre_ambito_encontrado);
+
+int buscarIdNoCualificado(TablaSimbolosClases *t, TablaAmbito* tabla_main,
+		char * nombre_id, char * nombre_clase_desde,
+		elementoTablaSimbolos ** e,
+		char * nombre_ambito_encontrado);
+
+/**********************************************************
+ **********************************************************
+ **********************************************************
+ *************      FUNCIONES DE CIERRE       *************
+ **********************************************************
+ **********************************************************
+ **********************************************************/
+
+int tablaSimbolosClasesCerrarAmbitoEnClase(TablaSimbolosClases * grafo,
+		char * id_clase);
+
+void cerrarAmbito(TablaAmbito* tabla);
+
 int cerrarClase(TablaSimbolosClases* t,
                 char* id_clase,
                 int num_atributos_clase,
@@ -103,11 +151,17 @@ int cerrarClase(TablaSimbolosClases* t,
 
 int cerrarTablaSimbolosClases(TablaSimbolosClases* t);
 
-int liberarTablaSimbolosClases(TablaSimbolosClases* t);
-
 void graph_enrouteParentsLastNode(TablaSimbolosClases * g);
 
-void cerrarAmbito(TablaAmbito* tabla);
+/**********************************************************
+ **********************************************************
+ **********************************************************
+ *************        OTRAS FUNCIONES         *************
+ **********************************************************
+ **********************************************************
+ **********************************************************/
+
+int liberarTablaSimbolosClases(TablaSimbolosClases* t);
 
 void tablaSimbolosClasesToDot(TablaSimbolosClases* tabla, FILE* fsalida);
 

@@ -68,96 +68,6 @@ int abrirClaseHereda(TablaSimbolosClases* t, char* id_clase, ...) {
     return 0;
 }
 
-int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
-        char* id, int clase,
-        int tipo, int estructura,
-        int direcciones, int numero_parametros,
-        int numero_variables_locales,int posicion_variable_local,
-        int posicion_parametro,int dimension,
-        int tamanio,int filas,
-        int columnas, int capacidad,
-        int numero_atributos_clase,int numero_atributos_instancia,
-        int numero_metodos_sobreescribibles, int numero_metodos_no_sobreescribibles,
-        int tipo_acceso,int tipo_miembro,
-        int posicion_atributo_instancia,int posicion_metodo_sobreescribible,
-        int num_acumulado_atributos_instancia,int num_acumulado_metodos_sobreescritura,
-        int posicion_acumulada_atributos_instancia,
-        int posicion_acumulada_metodos_sobreescritura,
-        int * tipo_args) {
-    elementoTablaSimbolos* elemento;
-    elemento = malloc(sizeof(elementoTablaSimbolos));
-    if(elemento == NULL)
-        return -1;
-    elemento->clave = malloc(sizeof(char)*(strlen(id_clase)+1));
-    if(elemento->clave == NULL) {
-        free(elemento);
-        return -1;
-    }
-    strcpy(elemento->clave, id_clase);
-    elemento->clase = clase;
-    elemento->tipo = tipo;
-    elemento->direcciones = direcciones;
-    elemento->numero_parametros = numero_parametros;
-    elemento->numero_variables_locales = numero_variables_locales;
-    elemento->posicion_variable_local = posicion_variable_local;
-    elemento->posicion_parametro = posicion_parametro;
-    elemento->tamanio = tamanio;
-    elemento->numero_atributos_clase = numero_atributos_clase;
-    elemento->numero_atributos_instancia = numero_atributos_instancia;
-    elemento->numero_metodos_sobreescribibles = numero_metodos_sobreescribibles;
-    elemento->numero_metodos_no_sobreescribibles = numero_metodos_no_sobreescribibles;
-    elemento->tipo_acceso = tipo_acceso;
-    elemento->tipo_miembro = tipo_miembro;
-    elemento->posicion_atributo_instancia = posicion_atributo_instancia;
-    elemento->posicion_metodo_sobreescribible = posicion_metodo_sobreescribible;
-    elemento->num_acumulado_atributos_instancia = num_acumulado_atributos_instancia;
-    elemento->num_acumulado_metodos_sobreescritura = num_acumulado_metodos_sobreescritura;
-    elemento->posicion_acumulada_atributos_instancia = posicion_acumulada_atributos_instancia;
-    elemento->posicion_acumulada_metodos_sobreescritura = posicion_acumulada_metodos_sobreescritura;
-    elemento->tipo_args = tipo_args;
-    insert_symbol(&(tabla->th_ppal), id_clase, elemento);
-    return 0;
-}
-
-int insertarTablaSimbolosClases(TablaSimbolosClases * grafo, char * id_clase,
-        char* id, int clase,
-        int tipo, int estructura,
-        int direcciones, int numero_parametros,
-        int numero_variables_locales,int posicion_variable_local,
-        int posicion_parametro,int dimension,
-        int tamanio,int filas,
-        int columnas, int capacidad,
-        int numero_atributos_clase,int numero_atributos_instancia,
-        int numero_metodos_sobreescribibles, int numero_metodos_no_sobreescribibles,
-        int tipo_acceso,int tipo_miembro,
-        int posicion_atributo_instancia,int posicion_metodo_sobreescribible,
-        int num_acumulado_atributos_instancia,int num_acumulado_metodos_sobreescritura,
-        int posicion_acumulada_atributos_instancia,
-        int posicion_acumulada_metodos_sobreescritura,
-        int * tipo_args) {
-    NodoGrafo* nodo;
-    if(grafo == NULL || id_clase == NULL)
-        return -1;
-    nodo = graphGetClassFromName(grafo->graph, id_clase);
-    if(nodo == NULL)
-        return -1;
-    return insertarTablaSimbolosAmbitos(nodo->tabla, id_clase,
-        id, clase, tipo, estructura, direcciones, numero_parametros,
-        numero_variables_locales,posicion_variable_local,
-        posicion_parametro,dimension,
-        tamanio,filas,
-        columnas, capacidad,
-        numero_atributos_clase,numero_atributos_instancia,
-        numero_metodos_sobreescribibles, numero_metodos_no_sobreescribibles,
-        tipo_acceso,tipo_miembro,
-        posicion_atributo_instancia,posicion_metodo_sobreescribible,
-        num_acumulado_atributos_instancia,num_acumulado_metodos_sobreescritura,
-        posicion_acumulada_atributos_instancia,
-        posicion_acumulada_metodos_sobreescritura,
-        tipo_args);
-
-}
-
 int AbrirAmbitoPrefijos(TablaAmbito * tabla,
                                     char * id_clase,
                                     char* id_ambito,
@@ -197,17 +107,221 @@ int tablaSimbolosClasesAbrirAmbitoEnClase(TablaSimbolosClases * grafo,
         posicion_metodo_sobre, tamanio);
 }
 
+int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
+        char* id, int clase,
+        int tipo, int categoria,
+        int direcciones, int numero_parametros,
+        int numero_variables_locales,int posicion_variable_local,
+        int posicion_parametro,
+        int tamanio,int filas,
+        int columnas, int capacidad,
+        int numero_atributos_clase,int numero_atributos_instancia,
+        int numero_metodos_sobreescribibles, int numero_metodos_no_sobreescribibles,
+        int tipo_acceso,int tipo_miembro,
+        int posicion_atributo_instancia,int posicion_metodo_sobreescribible,
+        int num_acumulado_atributos_instancia,int num_acumulado_metodos_sobreescritura,
+        int posicion_acumulada_atributos_instancia,
+        int posicion_acumulada_metodos_sobreescritura,
+        int * tipo_args) {
+    elementoTablaSimbolos* elemento;
+    elemento = malloc(sizeof(elementoTablaSimbolos));
+    if(elemento == NULL)
+        return -1;
+    elemento->clave = malloc(sizeof(char)*(strlen(id_clase)+1));
+    if(elemento->clave == NULL) {
+        free(elemento);
+        return -1;
+    }
+    strcpy(elemento->clave, id_clase);
+    elemento->clase = clase;
+    elemento->tipo = tipo;
+    elemento->categoria = categoria;
+    elemento->direcciones = direcciones;
+    elemento->numero_parametros = numero_parametros;
+    elemento->numero_variables_locales = numero_variables_locales;
+    elemento->posicion_variable_local = posicion_variable_local;
+    elemento->posicion_parametro = posicion_parametro;
+    elemento->tamanio = tamanio;
+    elemento->numero_atributos_clase = numero_atributos_clase;
+    elemento->numero_atributos_instancia = numero_atributos_instancia;
+    elemento->numero_metodos_sobreescribibles = numero_metodos_sobreescribibles;
+    elemento->numero_metodos_no_sobreescribibles = numero_metodos_no_sobreescribibles;
+    elemento->tipo_acceso = tipo_acceso;
+    elemento->tipo_miembro = tipo_miembro;
+    elemento->posicion_atributo_instancia = posicion_atributo_instancia;
+    elemento->posicion_metodo_sobreescribible = posicion_metodo_sobreescribible;
+    elemento->num_acumulado_atributos_instancia = num_acumulado_atributos_instancia;
+    elemento->num_acumulado_metodos_sobreescritura = num_acumulado_metodos_sobreescritura;
+    elemento->posicion_acumulada_atributos_instancia = posicion_acumulada_atributos_instancia;
+    elemento->posicion_acumulada_metodos_sobreescritura = posicion_acumulada_metodos_sobreescritura;
+    elemento->tipo_args = tipo_args;
+    insert_symbol(&(tabla->th_ppal), id_clase, elemento);
+    return 0;
+}
+
+int insertarTablaSimbolosClases(TablaSimbolosClases * grafo, char * id_clase,
+        char* id, int clase,
+        int tipo, int categoria,
+        int direcciones, int numero_parametros,
+        int numero_variables_locales,int posicion_variable_local,
+        int posicion_parametro,
+        int tamanio,int filas,
+        int columnas, int capacidad,
+        int numero_atributos_clase,int numero_atributos_instancia,
+        int numero_metodos_sobreescribibles, int numero_metodos_no_sobreescribibles,
+        int tipo_acceso,int tipo_miembro,
+        int posicion_atributo_instancia,int posicion_metodo_sobreescribible,
+        int num_acumulado_atributos_instancia,int num_acumulado_metodos_sobreescritura,
+        int posicion_acumulada_atributos_instancia,
+        int posicion_acumulada_metodos_sobreescritura,
+        int * tipo_args) {
+    NodoGrafo* nodo;
+    if(grafo == NULL || id_clase == NULL)
+        return -1;
+    nodo = graphGetClassFromName(grafo->graph, id_clase);
+    if(nodo == NULL)
+        return -1;
+    return insertarTablaSimbolosAmbitos(nodo->tabla, id_clase,
+        id, clase, tipo, categoria, direcciones, numero_parametros,
+        numero_variables_locales,posicion_variable_local,
+        posicion_parametro,
+        tamanio,filas,
+        columnas, capacidad,
+        numero_atributos_clase,numero_atributos_instancia,
+        numero_metodos_sobreescribibles, numero_metodos_no_sobreescribibles,
+        tipo_acceso,tipo_miembro,
+        posicion_atributo_instancia,posicion_metodo_sobreescribible,
+        num_acumulado_atributos_instancia,num_acumulado_metodos_sobreescritura,
+        posicion_acumulada_atributos_instancia,
+        posicion_acumulada_metodos_sobreescritura,
+        tipo_args);
+}
+
+
+int aplicarAccesos(TablaSimbolosClases* t, char* nombre_clase_ambito_actual, char* clase_declaro, elementoTablaSimbolos* pelem) {
+    NodoGrafo* nodo;
+    NodoLista* padres;
+    int flag;
+
+    if(strcmp(nombre_clase_ambito_actual, "main") == 0) {
+        /*caso main*/
+        if(pelem->tipo_acceso == HIDDEN) {
+            return ERR;
+        } else {
+            return OK;
+        }
+    } else {
+        /*caso clases*/
+        if(pelem->tipo_acceso == HIDDEN) {
+            if(strcmp(nombre_clase_ambito_actual, clase_declaro) == 0) {
+                return OK;
+            } else {
+                return ERR;
+            }
+        } else if(pelem->tipo_acceso == SECRET) {
+            if(strcmp(nombre_clase_ambito_actual, clase_declaro) == 0) {
+                return OK;
+            } else {
+                /*buscar en padres*/
+                nodo = graphGetClassFromName(t->graph, nombre_clase_ambito_actual);
+                if(nodo == NULL) {
+                    return ERR;
+                }
+                padres = graphGetAntecessorList(t->graph, nodo->index);
+                for(flag = 0; padres != NULL; padres = nodoListaGetNext(padres)) {
+                    nodo = graphGetClass(t->graph, nodoListaGetIndex(padres));
+                    if(strcmp(nodo->name, clase_declaro) == 0) {
+                        flag = 1;
+                        break;
+                    }
+                }
+                if(flag == 0) { /*no se ha encontrado clase_declaro en padres*/
+                    return ERR;
+                } else {
+                    return OK;
+                }
+            }
+        } else {
+            return OK;
+        }
+    }
+
+}
+
+int buscarIdEnJerarquiaDesdeClase(TablaSimbolosClases *t, char * nombre_id,
+		char * nombre_clase_desde,
+		elementoTablaSimbolos ** e,
+		char * nombre_ambito_encontrado) {
+    NodoGrafo* nodo;
+    NodoLista* padres;
+    char nombre_real[MAX_NAME];
+    
+    /*buscamos en la propia clase*/
+    nodo = graphGetClassFromName(t->graph, nombre_clase_desde);
+    if(nodo == NULL)
+        return ERR;
+    strcpy(nombre_real, nodo->name);
+    strcat(nombre_real, "_");
+    strcat(nombre_real, nombre_id);
+    *e = find_symbol(&(nodo->tabla->th_ppal), nombre_real);
+    if(*e != NULL) {
+        nombre_ambito_encontrado = nodo->name;
+        return OK; /*esta en la misma clase: siempre se tiene acceso*/
+    }
+
+    /*buscamos en la jerarquia*/
+    padres = graphGetAntecessorList(t->graph, nodo->index);
+    for(; padres != NULL; padres = nodoListaGetNext(padres)) {
+        nodo = graphGetClass(t->graph, nodoListaGetIndex(padres));
+        strcpy(nombre_real, nodo->name);
+        strcat(nombre_real, "_");
+        strcat(nombre_real, nombre_id);
+        *e = find_symbol(&(nodo->tabla->th_ppal), nombre_real);
+        if(*e != NULL) {
+            nombre_ambito_encontrado = nodo->name;
+            return aplicarAccesos(t, nombre_clase_desde, nombre_ambito_encontrado, *e);
+        }
+    }
+    /*no se ha encontrado en la jerarquia*/
+    return ERR;
+}
+
+int buscarIdNoCualificado(TablaSimbolosClases *t, TablaAmbito* tabla_main,
+		char * nombre_id, char * nombre_clase_desde,
+		elementoTablaSimbolos ** e,
+		char * nombre_ambito_encontrado) {
+    char nombre_real[MAX_NAME];
+
+    if(strcmp(nombre_clase_desde, "main") != 0) {
+        /*caso clases*/
+        if(buscarIdEnJerarquiaDesdeClase(t, nombre_id, nombre_clase_desde, e, nombre_ambito_encontrado) == OK) {
+            return OK;
+        }
+    }
+    /*caso main o variables globales para clases*/
+    strcpy(nombre_real, "main_");
+    strcat(nombre_real, nombre_id);
+    *e = find_symbol(&(tabla_main->th_ppal), nombre_real);
+    if(e != NULL) {
+        nombre_ambito_encontrado = tabla_main->name;
+        return OK;
+    }
+    return ERR;
+}
+
 int tablaSimbolosClasesCerrarAmbitoEnClase(TablaSimbolosClases * grafo, char * id_clase){
-    /*TODO Revisar*/
     NodoGrafo *nodo;
     nodo = graphGetClassFromName(grafo->graph, id_clase);
     if(nodo == NULL)
         return -1;
-    /*limpiar hash th_func*/
-    cerrarAmbito(nodo->tabla);
+    /*Ya no son necesarios los simbolos definidos en la tabla hash de funcion */
+    clear_symbols(&(nodo->tabla->th_func));
     return 0;
 }
 
+void cerrarAmbito(TablaAmbito* tabla) {
+    return;
+}
 
 int cerrarClase(TablaSimbolosClases* t,
                 char* id_clase,
@@ -236,6 +350,11 @@ int cerrarTablaSimbolosClases(TablaSimbolosClases* t) {
     return 0;
 }
 
+
+void graph_enrouteParentsLastNode(TablaSimbolosClases * g) {
+    return;
+}
+
 int liberarTablaSimbolosClases(TablaSimbolosClases* t) {
     int i;
     NodoGrafo* nodo;
@@ -249,14 +368,6 @@ int liberarTablaSimbolosClases(TablaSimbolosClases* t) {
     freeGraph(t->graph);
     free(t);
     return 0;
-}
-
-void graph_enrouteParentsLastNode(TablaSimbolosClases * g) {
-    return;
-}
-
-void cerrarAmbito(TablaAmbito* tabla) {
-    return;
 }
 
 void tablaSimbolosClasesToDot(TablaSimbolosClases* tabla, FILE* fsalida) {
