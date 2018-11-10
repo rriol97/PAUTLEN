@@ -98,14 +98,14 @@ int testBuscarIdNoCualificado(char* fname) {
     iniciarTablaSimbolosClases(&ej_tabla_clases, "ej_clases");
 
     /* Declarar variable global int v1*/
-    insertarTablaSimbolosAmbitos(tabla_main, "v1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, NINGUNO, UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    insertarTablaSimbolosAmbitos(tabla_main, "v1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 
     /* Clase AA: tiene 1 atributo de instancia y uno de clase, tambien un metodo */
     abrirClase(ej_tabla_clases,"AA");
     graph_enrouteParentsLastNode(ej_tabla_clases);
 
     /*TODO: escribir correctamente esta funcion*/
-    insertarTablaSimbolosClases(ej_tabla_clases, "a1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, EXPOSED, UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    insertarTablaSimbolosClases(ej_tabla_clases, "a1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 
     /*TODO: terminar de redactar el test (programa omicron al final de la sesion 31/10 */
 

@@ -205,20 +205,20 @@ int aplicarAccesos(TablaSimbolosClases* t, char* nombre_clase_ambito_actual, cha
 
     if(strcmp(nombre_clase_ambito_actual, "main") == 0) {
         /*caso main*/
-        if(pelem->tipo_acceso == HIDDEN) {
+        if(pelem->tipo_acceso == ACCESO_HERENCIA) {
             return ERR;
         } else {
             return OK;
         }
     } else {
         /*caso clases*/
-        if(pelem->tipo_acceso == HIDDEN) {
+        if(pelem->tipo_acceso == ACCESO_HERENCIA) {
             if(strcmp(nombre_clase_ambito_actual, clase_declaro) == 0) {
                 return OK;
             } else {
                 return ERR;
             }
-        } else if(pelem->tipo_acceso == SECRET) {
+        } else if(pelem->tipo_acceso == ACCESO_CLASE) {
             if(strcmp(nombre_clase_ambito_actual, clase_declaro) == 0) {
                 return OK;
             } else {
