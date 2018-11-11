@@ -76,9 +76,21 @@ int AbrirAmbitoPrefijos(TablaAmbito * tabla,
                                     int tipo_metodo,
                                     int posicion_metodo_sobre,
                                     int tamanio) {
-
-    /*añadir funcion a tabla hash ppal?*/
-    /*inicializar tabla hash func*/
+    if(strlen(tabla->func_name) > 0) {
+        /*ya hay una funcion abierta, no se permite anidar funciones*/
+        return -1;
+    }
+    strcpy(tabla->func_name, nombre_real);
+    insertarTablaSimbolosAmbitos(tabla,
+        id_clase,
+        id_ambito,
+        categoria_ambito,
+        tipo_metodo,
+        FUNCION,
+        ...,
+        /*TODO: completar esta informacion (con que parametros se tiene que insertar en la tabla de simbolos*/);
+        
+    
 
     return 0;
 }
@@ -124,6 +136,7 @@ int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
         int posicion_acumulada_metodos_sobreescritura,
         int * tipo_args) {
     elementoTablaSimbolos* elemento;
+    char nombre_real[MAX_NAME];
     elemento = malloc(sizeof(elementoTablaSimbolos));
     if(elemento == NULL)
         return -1;
@@ -132,7 +145,10 @@ int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
         free(elemento);
         return -1;
     }
-    strcpy(elemento->clave, id_clase);
+    strcpy(nombre_real, id_clase);
+    strcat(nombre_real, "_");
+    strcat(nombre_real, id);
+    strcpy(elemento->clave, nombre_real);
     elemento->clase = clase;
     elemento->tipo = tipo;
     elemento->categoria = categoria;
@@ -155,7 +171,7 @@ int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
     elemento->posicion_acumulada_atributos_instancia = posicion_acumulada_atributos_instancia;
     elemento->posicion_acumulada_metodos_sobreescritura = posicion_acumulada_metodos_sobreescritura;
     elemento->tipo_args = tipo_args;
-    insert_symbol(&(tabla->th_ppal), id_clase, elemento);
+    insert_symbol(&(tabla->th_ppal), elemento->clave, elemento);
     return 0;
 }
 
@@ -314,6 +330,7 @@ int tablaSimbolosClasesCerrarAmbitoEnClase(TablaSimbolosClases * grafo, char * i
     nodo = graphGetClassFromName(grafo->graph, id_clase);
     if(nodo == NULL)
         return -1;
+    strcpy(nodo->tabla->func_name, "");
     /*Ya no son necesarios los simbolos definidos en la tabla hash de funcion */
     clear_symbols(&(nodo->tabla->th_func));
     return 0;

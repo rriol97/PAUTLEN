@@ -8,6 +8,7 @@
 typedef struct {
     char name[MAX_NAME];
     Hash* th_ppal;
+    char func_name[MAX_NAME];
     Hash* th_func;
 } TablaAmbito;
 

@@ -84,6 +84,7 @@ TablaAmbito* tablaInit(char* name) {
     if(tabla == NULL)
         return NULL;
     strcpy(tabla->name, name);
+    strcpy(tabla->func_name, "");
     tabla->th_ppal = NULL;
     tabla->th_func = NULL;
     return tabla;
