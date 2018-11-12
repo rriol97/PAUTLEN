@@ -20,7 +20,7 @@ void insert_symbol(Hash **hash, char* name, void* value) {
         return;
     }
     strcpy(s->name, name);
-    HASH_ADD_STR( *hash, name, s );
+    HASH_ADD_KEYPTR(hh, *hash, s->name, strlen(s->name), s);
 }
 
 void delete_symbol(Hash **hash, char* name){

@@ -54,7 +54,7 @@ int dotTest() {
 int testTabla(char* fname) {
     TablaAmbito* tabla_main; /* Tabla de simbolos de main*/
 
-    TablaSimbolosClases * ej_tabla_clases=NULL;
+    TablaSimbolosClases * ej_tabla_clases = NULL;
 
     FILE* fsalida = fopen(fname, "w");
     /* Inicializar la tabla de simbolos del main (ambito por defecto) */
@@ -88,9 +88,10 @@ int testTabla(char* fname) {
 
 int testBuscarIdNoCualificado() {
     TablaAmbito* tabla_main; /* Tabla de simbolos de main*/
-    TablaSimbolosClases * ej_tabla_clases=NULL;
+    TablaSimbolosClases * ej_tabla_clases = NULL;
     char nombre_ambito_encontrado[MAX_NAME];
     elementoTablaSimbolos* e = NULL;
+    FILE* fsalida = fopen("salida.txt", "w");
 
     /* Inicializar la tabla de simbolos del main (ambito por defecto) */
     tabla_main = tablaInit("main");
@@ -185,9 +186,11 @@ int testBuscarIdNoCualificado() {
     /* Cerrar las tablas de simbolos */
     cerrarTablaSimbolosClases(ej_tabla_clases);
 
-    /*liberarTablaSimbolosAmbitos(&tabla_main);*/
+    tablaSimbolosClasesToDot(ej_tabla_clases, fsalida);
+
     tablaFree(tabla_main);
     liberarTablaSimbolosClases(ej_tabla_clases);
+    fclose(fsalida);
     return 0;
 }
 
