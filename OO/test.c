@@ -86,10 +86,11 @@ int testTabla(char* fname) {
     return 0;
 }
 
-int testBuscarIdNoCualificado(char* fname) {
+int testBuscarIdNoCualificado() {
     TablaAmbito* tabla_main; /* Tabla de simbolos de main*/
-
     TablaSimbolosClases * ej_tabla_clases=NULL;
+    char nombre_ambito_encontrado[MAX_NAME];
+    elementoTablaSimbolos* e;
 
     /* Inicializar la tabla de simbolos del main (ambito por defecto) */
     tabla_main = tablaInit("main");
@@ -98,23 +99,44 @@ int testBuscarIdNoCualificado(char* fname) {
     iniciarTablaSimbolosClases(&ej_tabla_clases, "ej_clases");
 
     /* Declarar variable global int v1*/
-    insertarTablaSimbolosAmbitos(tabla_main, "main", "v1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    insertarTablaSimbolosAmbitos(tabla_main, "main", "v1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 
     /* Clase AA: tiene 1 atributo de instancia y uno de clase, tambien un metodo */
     abrirClase(ej_tabla_clases,"AA");
     graph_enrouteParentsLastNode(ej_tabla_clases);
 
-    /*TODO: escribir correctamente esta funcion*/
-    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "a1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    /*declarar variable exposed unique int a1*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "a1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 
-    /*TODO: terminar de redactar el test (programa omicron al final de la sesion 31/10 */
+    /*declarar variable hidden int sa1*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "sa1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_CLASE, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    /*declarar function exposed int f1@3*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "f1@3", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    tablaSimbolosClasesAbrirAmbitoEnClase(ej_tabla_clases, "AA", "f1@3", ESCALAR, ACCESO_TODOS, INT, 0, 1); 
+
+    /*declarar variable int v1ma1*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "v1ma1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    /*buscamos id no cualificado v1: esta en main*/
+    if(buscarIdNoCualificado(ej_tabla_clases, tabla_main, "v1", "AA", &e, nombre_ambito_encontrado) == OK) {
+        printf("CASO 20 -- OK\n-->Elemento \"v1\" en \"buscarIdNoCualificado\" desde \"AA (mA1@1)\" ENCONTRADO en %s\n\n", nombre_ambito_encontrado);
+    } else {
+        printf("CASO 20 FALLIDO\n-->Elemento \"v1\" en \"buscarIdNoCualificado\" desde \"AA (mA1@1)\" NO ENCONTRADO en main\n\n");
+    }
+
+    /*buscamos id no cualificado x: no esta*/
+    if(buscarIdNoCualificado(ej_tabla_clases, tabla_main, "v1", "AA", &e, nombre_ambito_encontrado) == OK) {
+        printf("CASO 21 -- ERR\n-->FALLO en la busqueda del id \"x\" en \"buscarIdNoCualificado\" desde \"AA (mA1@1)\"\n\n");
+    } else {
+        printf("CASO 21 FALLIDO\n-->Elemento \"x\" en \"buscarIdNoCualificado\" desde \"AA (mA1@1)\" ENCONTRADO cuando no existe\n\n");
+    }
+
+    cerrarAmbitoEnClase(ej_tabla_clases, "AA");
 
     cerrarClase(ej_tabla_clases,"AA",0,0,0,0);
 
-    abrirClaseHereda(ej_tabla_clases, "BB", "AA", NULL);
-    graph_enrouteParentsLastNode(ej_tabla_clases);
-
-    cerrarClase(ej_tabla_clases,"BB",0,0,0,0);
+    /*TODO: terminar de redactar el test (programa omicron al final de la sesion 31/10 */
 
     /* Cerrar las tablas de simbolos */
     cerrarTablaSimbolosClases(ej_tabla_clases);
@@ -129,7 +151,7 @@ int testBuscarIdNoCualificado(char* fname) {
 int main(int argc, char* argv[]) {
     /* create the graph */
     if(argc < 2) {
-        printf("help: %s graph|dot|tabla [filename]\ngraph: test graph\ndot: test function to create .dot file\ntabla: test tablaSimbolosClases\n", argv[0]);
+        printf("help: %s graph|dot|tabla [filename]|binc\ngraph: test graph\ndot: test function to create .dot file\ntabla: test tablaSimbolosClases\binc: test buscarIdNoCualificado\n", argv[0]);
     } else if(strcmp(argv[1], "graph") == 0) {
         return test();
     } else if (strcmp(argv[1], "dot") == 0) {
@@ -139,6 +161,8 @@ int main(int argc, char* argv[]) {
             printf("%s usage: %s %s [filename]", argv[1], argv[0], argv[1]);
         }
         else return testTabla(argv[2]);
+    } else if (strcmp(argv[1], "binc") == 0) {
+        return testBuscarIdNoCualificado();
     } else {
         printf("Unknown command.\nhelp: %s graph|dot\ngraph: test graph\ndot: test function to create .dot file\n", argv[0]);
     }

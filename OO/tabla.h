@@ -5,7 +5,7 @@
 #include "alfa.h"
 
 typedef struct elemento {
-    char* clave;    
+    char clave[MAX_NAME];    
     int categoria; /* VARIABLE PARAMETRO FUNCION CLASE METODO_SOBREESCRIBIBLE METODO_NO_SOBREESCRIBIBLE ATRIBUTO_CLASE ATRIBUTO_INSTANCIA */
     int tipo; /* INT BOOLEAN Y PARA LAS CLASES, ALGÚN MECANISMO (-índice en el vector del grafo??)  */
     int clase; /* ESCALAR PUNTERO OBJETO */
@@ -81,8 +81,7 @@ int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
         int direcciones, int numero_parametros,
         int numero_variables_locales,int posicion_variable_local,
         int posicion_parametro,
-        int tamanio,int filas,
-        int columnas, int capacidad,
+        int tamanio,
         int numero_atributos_clase,int numero_atributos_instancia,
         int numero_metodos_sobreescribibles, int numero_metodos_no_sobreescribibles,
         int tipo_acceso,int tipo_miembro,
@@ -98,8 +97,7 @@ int insertarTablaSimbolosClases(TablaSimbolosClases * grafo, char * id_clase,
         int direcciones, int numero_parametros,
         int numero_variables_locales,int posicion_variable_local,
         int posicion_parametro,
-        int tamanio,int filas,
-        int columnas, int capacidad,
+        int tamanio,
         int numero_atributos_clase,int numero_atributos_instancia,
         int numero_metodos_sobreescribibles, int numero_metodos_no_sobreescribibles,
         int tipo_acceso,int tipo_miembro,
@@ -148,7 +146,7 @@ int buscarIdCualificadoInstancia(TablaSimbolosClases *t, TablaAmbito* tabla_main
  **********************************************************
  **********************************************************/
 
-int tablaSimbolosClasesCerrarAmbitoEnClase(TablaSimbolosClases * grafo,
+int cerrarAmbitoEnClase(TablaSimbolosClases * grafo,
 		char * id_clase);
 
 void cerrarAmbito(TablaAmbito* tabla);

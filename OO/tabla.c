@@ -76,49 +76,31 @@ int AbrirAmbitoPrefijos(TablaAmbito * tabla,
                                     int tipo_metodo,
                                     int posicion_metodo_sobre,
                                     int tamanio) {
-    elementoTablaSimbolos* elemento;
-    char nombre_real[MAX_NAME];
-
     if(strlen(tabla->func_name) > 0) {
         /*ya hay una funcion abierta, no se permite anidar funciones*/
         return -1;
     }
-    elemento = malloc(sizeof(elementoTablaSimbolos));
-    if(elemento == NULL)
-        return -1;
 
     /*inicializa el nombre de funcion*/
-    strcpy(nombre_real, id_clase);
-    strcat(nombre_real, "_");
-    strcat(nombre_real, id_ambito);
+    strcpy(tabla->func_name, id_ambito);
 
     /*inserta el simbolo de la funcion en su propia tabla*/
-    strcpy(tabla->func_name, nombre_real);
-    strcpy(elemento->clave, nombre_real);
-    elemento->clase = categoria_ambito;
-    elemento->tipo = tipo_metodo; /*??*/
-    elemento->categoria = FUNCION;
-    elemento->direcciones =  0; /*??*/
-    elemento->numero_parametros = 0; /*por donde se pasa esto?*/
-    elemento->numero_variables_locales = 0; /*??*/
-    elemento->posicion_variable_local = 0; /*??*/
-    elemento->posicion_parametro = 0; /*??*/
-    elemento->tamanio = tamanio;
-    elemento->numero_atributos_clase = 0;
-    elemento->numero_atributos_instancia = 0;
-    elemento->numero_metodos_sobreescribibles = 0;
-    elemento->numero_metodos_no_sobreescribibles = 0;
-    elemento->tipo_acceso = acceso_metodo; 
-    elemento->tipo_miembro = tipo_metodo; /*??*/
-    elemento->posicion_atributo_instancia = 0;
-    elemento->posicion_metodo_sobreescribible = posicion_metodo_sobre;
-    elemento->num_acumulado_atributos_instancia = 0;
-    elemento->num_acumulado_metodos_sobreescritura = 0;
-    elemento->posicion_acumulada_atributos_instancia = 0;
-    elemento->posicion_acumulada_metodos_sobreescritura = posicion_metodo_sobre; /*??*/
-    elemento->tipo_args = NULL; /*??*/
-    insert_symbol(&(tabla->th_func), elemento->clave, elemento);
     /*TODO: comprobar esta informacion (con que parametros se tiene que insertar en la tabla de simbolos*/
+    insertarTablaSimbolosAmbitos(tabla, id_clase,
+        id_ambito, categoria_ambito, 
+        tipo_metodo, /*??*/ FUNCION, 
+        0, /*??*/ 0, /*por donde se pasa esto?*/
+        0, /*??*/ 0, /*??*/
+        0, /*??*/
+        tamanio,
+        0, 0,
+        0, 0,
+        acceso_metodo, tipo_metodo, /*??*/
+        0, posicion_metodo_sobre,
+        0, 0, /*??*/
+        0,
+        posicion_metodo_sobre, /*??*/
+        NULL); /*??*/
     return 0;
 }
 
@@ -152,8 +134,7 @@ int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
         int direcciones, int numero_parametros,
         int numero_variables_locales,int posicion_variable_local,
         int posicion_parametro,
-        int tamanio,int filas,
-        int columnas, int capacidad,
+        int tamanio,
         int numero_atributos_clase,int numero_atributos_instancia,
         int numero_metodos_sobreescribibles, int numero_metodos_no_sobreescribibles,
         int tipo_acceso,int tipo_miembro,
@@ -167,11 +148,7 @@ int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
     elemento = malloc(sizeof(elementoTablaSimbolos));
     if(elemento == NULL)
         return -1;
-    elemento->clave = malloc(sizeof(char)*(strlen(id_clase)+1));
-    if(elemento->clave == NULL) {
-        free(elemento);
-        return -1;
-    }
+
     strcpy(nombre_real, id_clase);
     strcat(nombre_real, "_");
     strcat(nombre_real, id);
@@ -198,7 +175,10 @@ int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
     elemento->posicion_acumulada_atributos_instancia = posicion_acumulada_atributos_instancia;
     elemento->posicion_acumulada_metodos_sobreescritura = posicion_acumulada_metodos_sobreescritura;
     elemento->tipo_args = tipo_args;
-    insert_symbol(&(tabla->th_ppal), elemento->clave, elemento);
+    if(strlen(tabla->func_name) == 0) /*no hay funcion abierta*/
+        insert_symbol(&(tabla->th_ppal), elemento->clave, elemento);
+    else
+        insert_symbol(&(tabla->th_func), elemento->clave, elemento);
     return 0;
 }
 
@@ -208,8 +188,7 @@ int insertarTablaSimbolosClases(TablaSimbolosClases * grafo, char * id_clase,
         int direcciones, int numero_parametros,
         int numero_variables_locales,int posicion_variable_local,
         int posicion_parametro,
-        int tamanio,int filas,
-        int columnas, int capacidad,
+        int tamanio,
         int numero_atributos_clase,int numero_atributos_instancia,
         int numero_metodos_sobreescribibles, int numero_metodos_no_sobreescribibles,
         int tipo_acceso,int tipo_miembro,
@@ -228,8 +207,7 @@ int insertarTablaSimbolosClases(TablaSimbolosClases * grafo, char * id_clase,
         id, clase, tipo, categoria, direcciones, numero_parametros,
         numero_variables_locales,posicion_variable_local,
         posicion_parametro,
-        tamanio,filas,
-        columnas, capacidad,
+        tamanio,
         numero_atributos_clase,numero_atributos_instancia,
         numero_metodos_sobreescribibles, numero_metodos_no_sobreescribibles,
         tipo_acceso,tipo_miembro,
@@ -308,7 +286,7 @@ int buscarIdEnJerarquiaDesdeClase(TablaSimbolosClases *t, char * nombre_id,
     strcat(nombre_real, nombre_id);
     *e = find_symbol(&(nodo->tabla->th_ppal), nombre_real);
     if(*e != NULL) {
-        nombre_ambito_encontrado = nodo->name;
+        strcpy(nombre_ambito_encontrado, nodo->name);
         return OK; /*esta en la misma clase: siempre se tiene acceso*/
     }
 
@@ -321,7 +299,7 @@ int buscarIdEnJerarquiaDesdeClase(TablaSimbolosClases *t, char * nombre_id,
         strcat(nombre_real, nombre_id);
         *e = find_symbol(&(nodo->tabla->th_ppal), nombre_real);
         if(*e != NULL) {
-            nombre_ambito_encontrado = nodo->name;
+            strcpy(nombre_ambito_encontrado, nodo->name);
             return aplicarAccesos(t, nombre_clase_desde, nombre_ambito_encontrado, *e);
         }
     }
@@ -346,7 +324,7 @@ int buscarIdNoCualificado(TablaSimbolosClases *t, TablaAmbito* tabla_main,
     strcat(nombre_real, nombre_id);
     *e = find_symbol(&(tabla_main->th_ppal), nombre_real);
     if(e != NULL) {
-        nombre_ambito_encontrado = tabla_main->name;
+        strcpy(nombre_ambito_encontrado, tabla_main->name);
         return OK;
     }
     return ERR;
@@ -387,7 +365,7 @@ int buscarIdCualificadoInstancia(TablaSimbolosClases *t, TablaAmbito* tabla_main
     return aplicarAccesos(t, nombre_clase_desde, nombre_ambito_encontrado, *e);
 }
 
-int tablaSimbolosClasesCerrarAmbitoEnClase(TablaSimbolosClases * grafo, char * id_clase){
+int cerrarAmbitoEnClase(TablaSimbolosClases * grafo, char * id_clase){
     NodoGrafo *nodo;
     nodo = graphGetClassFromName(grafo->graph, id_clase);
     if(nodo == NULL)
