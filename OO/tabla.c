@@ -198,12 +198,19 @@ int insertarTablaSimbolosClases(TablaSimbolosClases * grafo, char * id_clase,
         int posicion_acumulada_metodos_sobreescritura,
         int * tipo_args) {
     NodoGrafo* nodo;
+    char* id_clase_real;
     if(grafo == NULL || id_clase == NULL)
         return -1;
     nodo = graphGetClassFromName(grafo->graph, id_clase);
     if(nodo == NULL)
         return -1;
-    return insertarTablaSimbolosAmbitos(nodo->tabla, id_clase,
+
+    if(strlen(nodo->tabla->func_name) > 0) /*hay funcion abierta: inserta el simbolo con prefijo de la funcion*/
+        id_clase_real = nodo->tabla->func_name;
+    else
+        id_clase_real = id_clase;
+        
+    return insertarTablaSimbolosAmbitos(nodo->tabla, id_clase_real,
         id, clase, tipo, categoria, direcciones, numero_parametros,
         numero_variables_locales,posicion_variable_local,
         posicion_parametro,
@@ -281,6 +288,20 @@ int buscarIdEnJerarquiaDesdeClase(TablaSimbolosClases *t, char * nombre_id,
     nodo = graphGetClassFromName(t->graph, nombre_clase_desde);
     if(nodo == NULL)
         return ERR;
+
+    if(strlen(nodo->tabla->func_name) > 0) {
+        /*funcion abierta: busca tambien en la tabla de funcion*/
+        strcpy(nombre_real, nodo->tabla->func_name);
+        strcat(nombre_real, "_");
+        strcat(nombre_real, nombre_id);
+    
+        *e = find_symbol(&(nodo->tabla->th_func), nombre_real);
+        if(*e != NULL) {
+            strcpy(nombre_ambito_encontrado, nodo->tabla->func_name);
+            return OK;
+        }
+    }
+
     strcpy(nombre_real, nodo->name);
     strcat(nombre_real, "_");
     strcat(nombre_real, nombre_id);
@@ -320,11 +341,24 @@ int buscarIdNoCualificado(TablaSimbolosClases *t, TablaAmbito* tabla_main,
         }
     }
     /*caso main o variables globales para clases*/
+
+    if(strlen(tabla_main->func_name) > 0) {
+        /*funcion abierta: busca tambien en la tabla de funcion*/
+        strcpy(nombre_real, tabla_main->func_name);
+        strcat(nombre_real, "_");
+        strcat(nombre_real, nombre_id);
+    
+        *e = find_symbol(&(tabla_main->th_func), nombre_real);
+        if(*e != NULL) {
+            strcpy(nombre_ambito_encontrado, tabla_main->func_name);
+            return OK;
+        }
+    }
+
     strcpy(nombre_real, "main_");
     strcat(nombre_real, nombre_id);
-    printf("%s\n", nombre_real);
     *e = find_symbol(&(tabla_main->th_ppal), nombre_real);
-    if(e != NULL) {
+    if(*e != NULL) {
         strcpy(nombre_ambito_encontrado, tabla_main->name);
         return OK;
     }

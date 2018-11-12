@@ -20,13 +20,13 @@ void insert_symbol(Hash **hash, char* name, void* value) {
         return;
     }
     strcpy(s->name, name);
-    HASH_ADD_PTR( *hash, name, s );
+    HASH_ADD_STR( *hash, name, s );
 }
 
 void delete_symbol(Hash **hash, char* name){
     Hash *point = NULL;
 
-    HASH_FIND_PTR( *hash, &name, point );
+    HASH_FIND_STR( *hash, name, point );
     if(point == NULL)
         return;
     HASH_DEL(*hash, point);
@@ -37,7 +37,7 @@ void delete_symbol(Hash **hash, char* name){
 void* find_symbol(Hash **hash, char* name){
     Hash *point = NULL;
 
-    HASH_FIND_PTR( *hash, &name, point );
+    HASH_FIND_STR( *hash, name, point );
     if(point == NULL)
         return NULL;
     return point->value;
