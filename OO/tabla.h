@@ -146,6 +146,8 @@ int buscarIdCualificadoInstancia(TablaSimbolosClases *t, TablaAmbito* tabla_main
  **********************************************************
  **********************************************************/
 
+int cerrarAmbitoPrefijos(TablaAmbito* tabla);
+
 int cerrarAmbitoEnClase(TablaSimbolosClases * grafo,
 		char * id_clase);
 

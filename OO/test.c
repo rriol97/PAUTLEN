@@ -111,9 +111,10 @@ int testBuscarIdNoCualificado() {
     /*declarar variable hidden int sa1*/
     insertarTablaSimbolosClases(ej_tabla_clases, "AA", "sa1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_CLASE, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 
-    /*declarar function exposed int f1@3*/
-    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "f1@3", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
-    tablaSimbolosClasesAbrirAmbitoEnClase(ej_tabla_clases, "AA", "f1@3", ESCALAR, ACCESO_TODOS, INT, 0, 1); 
+    /*declarar function exposed int ma1@3*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "ma1@1", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    tablaSimbolosClasesAbrirAmbitoEnClase(ej_tabla_clases, "AA", "ma1@1", ESCALAR, ACCESO_TODOS, INT, 0, 1); 
+    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "pmA1", ESCALAR, BOOLEAN, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 
     /*declarar variable int v1ma1*/
     insertarTablaSimbolosClases(ej_tabla_clases, "AA", "v1ma1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
@@ -126,17 +127,61 @@ int testBuscarIdNoCualificado() {
     }
 
     /*buscamos id no cualificado x: no esta*/
-    if(buscarIdNoCualificado(ej_tabla_clases, tabla_main, "v1", "AA", &e, nombre_ambito_encontrado) == OK) {
+    if(buscarIdNoCualificado(ej_tabla_clases, tabla_main, "x", "AA", &e, nombre_ambito_encontrado) == ERR) {
         printf("CASO 21 -- ERR\n-->FALLO en la busqueda del id \"x\" en \"buscarIdNoCualificado\" desde \"AA (mA1@1)\"\n\n");
     } else {
-        printf("CASO 21 FALLIDO\n-->Elemento \"x\" en \"buscarIdNoCualificado\" desde \"AA (mA1@1)\" ENCONTRADO cuando no existe\n\n");
+        printf("CASO 21 FALLIDO\n-->Elemento \"x\" en \"buscarIdNoCualificado\" desde \"AA (mA1@1)\" ENCONTRADO cuando no existe (en ambito %s)\n\n", nombre_ambito_encontrado);
     }
 
     cerrarAmbitoEnClase(ej_tabla_clases, "AA");
 
     cerrarClase(ej_tabla_clases,"AA",0,0,0,0);
 
-    /*TODO: terminar de redactar el test (programa omicron al final de la sesion 31/10 */
+    /*declarar function int f1@3*/
+    insertarTablaSimbolosAmbitos(tabla_main, "main", "f1@3", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    AbrirAmbitoPrefijos(tabla_main, "main", "f1@3", ESCALAR, ACCESO_TODOS, INT, 0, 1); 
+    insertarTablaSimbolosAmbitos(tabla_main, "main", "pf1", ESCALAR, BOOLEAN, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    /* Declarar variable de funcion int vlf11*/
+    insertarTablaSimbolosAmbitos(tabla_main, "main", "vlf11", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    /*buscamos id no cualificado pf1: esta en la funcion en main*/
+    if(buscarIdNoCualificado(ej_tabla_clases, tabla_main, "pf1", "main", &e, nombre_ambito_encontrado) == OK) {
+        printf("CASO 24: Elemento \"pf1\" en \"buscarIdNoCualificado\" desde \"main (f1@3)\" ENCONTRADO en %s!\n\n", nombre_ambito_encontrado);
+    } else {
+        printf("CASO 24 FALLIDO\n-->Elemento \"pf1\" en \"buscarIdNoCualificado\" desde \"main (f1@3)\" NO ENCONTRADO en f1@3\n\n");
+    }
+
+    /*buscamos id no cualificado v1: esta en main*/
+    if(buscarIdNoCualificado(ej_tabla_clases, tabla_main, "v1", "main", &e, nombre_ambito_encontrado) == OK) {
+        printf("CASO 25: SE BUSCA DESDE UNA FUNCIÓN GLOBAL UN IDENTIFICADOR NO CUALIFICADO QUE ESTÁ EN EL ÁMBITO main (v1) ==> OK!\n\n");
+    } else {
+        printf("CASO 25 FALLIDO\n-->Elemento \"v1\" en \"buscarIdNoCualificado\" desde \"main (f1@3)\" NO ENCONTRADO en main\n\n");
+    }
+
+    /*buscamos id no cualificado a1: no esta*/
+    if(buscarIdNoCualificado(ej_tabla_clases, tabla_main, "a1", "main", &e, nombre_ambito_encontrado) == ERR) {
+        printf("CASO 26: SE BUSCA UN ID NO CUALIFICADO DESDE UNA FUNCIÓN GLOBAL Y NO ESTÁ NI EN LA FUNCIÓN NI EN EL MAIN (a1) ==> ERR\n\n");
+    } else {
+        printf("CASO 26 FALLIDO\n-->Elemento \"a1\" en \"buscarIdNoCualificado\" desde \"main (f1@3)\" ENCONTRADO cuando no existe (en ambito %s)\n\n", nombre_ambito_encontrado);
+    }
+
+    /*funcion no implementada*/
+    cerrarAmbitoPrefijos(tabla_main);
+
+    /*buscamos id no cualificado v1: esta en main*/
+    if(buscarIdNoCualificado(ej_tabla_clases, tabla_main, "v1", "main", &e, nombre_ambito_encontrado) == OK) {
+        printf("CASO 22: SE BUSCA UN ID NO CUALIFICADO DESDE MAIN EL ID NO ESTÁ EN LA JERARQUÍA PERO SÍ EN EL MAIN (v1) ==> OK!\n\n");
+    } else {
+        printf("CASO 22 FALLIDO\n-->Elemento \"v1\" en \"buscarIdNoCualificado\" desde \"main\" NO ENCONTRADO en main\n\n");
+    }
+
+    /*buscamos id no cualificado x: no esta*/
+    if(buscarIdNoCualificado(ej_tabla_clases, tabla_main, "x", "main", &e, nombre_ambito_encontrado) == ERR) {
+        printf("CASO 23:  SE BUSCA UN ID NO CUALIFICADO DESDE UNA FUNCIÓN GLOBAL CUADO EL ID NO ESTÁ EN LA JERARQUÍA NI EN EL MAIN (x) ==> ERR\n\n");
+    } else {
+        printf("CASO 23 FALLIDO\n-->Elemento \"x\" en \"buscarIdNoCualificado\" desde \"main\" ENCONTRADO cuando no existe (en ambito %s)\n\n", nombre_ambito_encontrado);
+    }
 
     /* Cerrar las tablas de simbolos */
     cerrarTablaSimbolosClases(ej_tabla_clases);

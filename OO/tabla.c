@@ -322,6 +322,7 @@ int buscarIdNoCualificado(TablaSimbolosClases *t, TablaAmbito* tabla_main,
     /*caso main o variables globales para clases*/
     strcpy(nombre_real, "main_");
     strcat(nombre_real, nombre_id);
+    printf("%s\n", nombre_real);
     *e = find_symbol(&(tabla_main->th_ppal), nombre_real);
     if(e != NULL) {
         strcpy(nombre_ambito_encontrado, tabla_main->name);
@@ -365,15 +366,19 @@ int buscarIdCualificadoInstancia(TablaSimbolosClases *t, TablaAmbito* tabla_main
     return aplicarAccesos(t, nombre_clase_desde, nombre_ambito_encontrado, *e);
 }
 
+int cerrarAmbitoPrefijos(TablaAmbito* tabla) {
+    strcpy(tabla->func_name, "");
+    /*Ya no son necesarios los simbolos definidos en la tabla hash de funcion */
+    clear_symbols(&(tabla->th_func));
+    return OK;
+}
+
 int cerrarAmbitoEnClase(TablaSimbolosClases * grafo, char * id_clase){
     NodoGrafo *nodo;
     nodo = graphGetClassFromName(grafo->graph, id_clase);
     if(nodo == NULL)
         return -1;
-    strcpy(nodo->tabla->func_name, "");
-    /*Ya no son necesarios los simbolos definidos en la tabla hash de funcion */
-    clear_symbols(&(nodo->tabla->th_func));
-    return 0;
+    return cerrarAmbitoPrefijos(nodo->tabla);
 }
 
 void cerrarAmbito(TablaAmbito* tabla) {
