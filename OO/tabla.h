@@ -129,6 +129,17 @@ int buscarIdNoCualificado(TablaSimbolosClases *t, TablaAmbito* tabla_main,
 		elementoTablaSimbolos ** e,
 		char * nombre_ambito_encontrado);
 
+int buscarIdCualificadoClase(TablaSimbolosClases *t, char * nombre_clase_cualifica,
+		char * nombre_id, char * nombre_clase_desde,
+		elementoTablaSimbolos ** e,
+		char * nombre_ambito_encontrado);
+
+int buscarIdCualificadoInstancia(TablaSimbolosClases *t, TablaAmbito* tabla_main,
+		char * nombre_instancia_cualifica,
+		char * nombre_id, char * nombre_clase_desde,
+		elementoTablaSimbolos ** e,
+		char * nombre_ambito_encontrado);
+
 /**********************************************************
  **********************************************************
  **********************************************************

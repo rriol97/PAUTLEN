@@ -76,22 +76,49 @@ int AbrirAmbitoPrefijos(TablaAmbito * tabla,
                                     int tipo_metodo,
                                     int posicion_metodo_sobre,
                                     int tamanio) {
+    elementoTablaSimbolos* elemento;
+    char nombre_real[MAX_NAME];
+
     if(strlen(tabla->func_name) > 0) {
         /*ya hay una funcion abierta, no se permite anidar funciones*/
         return -1;
     }
-    strcpy(tabla->func_name, nombre_real);
-    insertarTablaSimbolosAmbitos(tabla,
-        id_clase,
-        id_ambito,
-        categoria_ambito,
-        tipo_metodo,
-        FUNCION,
-        ...,
-        /*TODO: completar esta informacion (con que parametros se tiene que insertar en la tabla de simbolos*/);
-        
-    
+    elemento = malloc(sizeof(elementoTablaSimbolos));
+    if(elemento == NULL)
+        return -1;
 
+    /*inicializa el nombre de funcion*/
+    strcpy(nombre_real, id_clase);
+    strcat(nombre_real, "_");
+    strcat(nombre_real, id_ambito);
+
+    /*inserta el simbolo de la funcion en su propia tabla*/
+    strcpy(tabla->func_name, nombre_real);
+    strcpy(elemento->clave, nombre_real);
+    elemento->clase = categoria_ambito;
+    elemento->tipo = tipo_metodo; /*??*/
+    elemento->categoria = FUNCION;
+    elemento->direcciones =  0; /*??*/
+    elemento->numero_parametros = 0; /*por donde se pasa esto?*/
+    elemento->numero_variables_locales = 0; /*??*/
+    elemento->posicion_variable_local = 0; /*??*/
+    elemento->posicion_parametro = 0; /*??*/
+    elemento->tamanio = tamanio;
+    elemento->numero_atributos_clase = 0;
+    elemento->numero_atributos_instancia = 0;
+    elemento->numero_metodos_sobreescribibles = 0;
+    elemento->numero_metodos_no_sobreescribibles = 0;
+    elemento->tipo_acceso = acceso_metodo; 
+    elemento->tipo_miembro = tipo_metodo; /*??*/
+    elemento->posicion_atributo_instancia = 0;
+    elemento->posicion_metodo_sobreescribible = posicion_metodo_sobre;
+    elemento->num_acumulado_atributos_instancia = 0;
+    elemento->num_acumulado_metodos_sobreescritura = 0;
+    elemento->posicion_acumulada_atributos_instancia = 0;
+    elemento->posicion_acumulada_metodos_sobreescritura = posicion_metodo_sobre; /*??*/
+    elemento->tipo_args = NULL; /*??*/
+    insert_symbol(&(tabla->th_func), elemento->clave, elemento);
+    /*TODO: comprobar esta informacion (con que parametros se tiene que insertar en la tabla de simbolos*/
     return 0;
 }
 
@@ -221,20 +248,20 @@ int aplicarAccesos(TablaSimbolosClases* t, char* nombre_clase_ambito_actual, cha
 
     if(strcmp(nombre_clase_ambito_actual, "main") == 0) {
         /*caso main*/
-        if(pelem->tipo_acceso == ACCESO_HERENCIA) {
+        if(pelem->tipo_acceso == ACCESO_CLASE) {
             return ERR;
         } else {
             return OK;
         }
     } else {
         /*caso clases*/
-        if(pelem->tipo_acceso == ACCESO_HERENCIA) {
+        if(pelem->tipo_acceso == ACCESO_CLASE) {
             if(strcmp(nombre_clase_ambito_actual, clase_declaro) == 0) {
                 return OK;
             } else {
                 return ERR;
             }
-        } else if(pelem->tipo_acceso == ACCESO_CLASE) {
+        } else if(pelem->tipo_acceso == ACCESO_HERENCIA) {
             if(strcmp(nombre_clase_ambito_actual, clase_declaro) == 0) {
                 return OK;
             } else {
@@ -323,6 +350,41 @@ int buscarIdNoCualificado(TablaSimbolosClases *t, TablaAmbito* tabla_main,
         return OK;
     }
     return ERR;
+}
+
+int buscarIdCualificadoClase(TablaSimbolosClases *t, char * nombre_clase_cualifica,
+		char * nombre_id, char * nombre_clase_desde,
+		elementoTablaSimbolos ** e,
+		char * nombre_ambito_encontrado) {
+
+    if(buscarIdEnJerarquiaDesdeClase(t, nombre_id, nombre_clase_cualifica, e, nombre_ambito_encontrado) == OK) {
+        return aplicarAccesos(t, nombre_clase_desde, nombre_ambito_encontrado, *e);
+    }
+    return ERR;
+
+}
+
+int buscarIdCualificadoInstancia(TablaSimbolosClases *t, TablaAmbito* tabla_main,
+		char * nombre_instancia_cualifica,
+		char * nombre_id, char * nombre_clase_desde,
+		elementoTablaSimbolos ** e,
+		char * nombre_ambito_encontrado) {
+    NodoGrafo* nodo;
+    int clase;
+    if(buscarIdNoCualificado(t, tabla_main, nombre_instancia_cualifica, nombre_clase_desde, e, nombre_ambito_encontrado) == ERR) {
+        return ERR;
+    }
+    clase = (*e)->tipo;
+    nodo = graphGetClass(t->graph, -clase);
+    if(nodo == NULL) /*devuelve NULL si el tipo no era una clase*/
+        return ERR;
+    if(aplicarAccesos(t, nombre_clase_desde, nombre_ambito_encontrado, *e) == ERR) {
+        return ERR;
+    }
+    if(buscarIdEnJerarquiaDesdeClase(t, nombre_id, nodo->name, e, nombre_ambito_encontrado) == ERR) {
+        return ERR;
+    }
+    return aplicarAccesos(t, nombre_clase_desde, nombre_ambito_encontrado, *e);
 }
 
 int tablaSimbolosClasesCerrarAmbitoEnClase(TablaSimbolosClases * grafo, char * id_clase){
