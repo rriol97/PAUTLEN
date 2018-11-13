@@ -5,7 +5,7 @@
 #include "alfa.h"
 
 typedef struct elemento {
-    char clave[MAX_NAME];    
+    char clave[MAX_NAME];
     int categoria; /* VARIABLE PARAMETRO FUNCION CLASE METODO_SOBREESCRIBIBLE METODO_NO_SOBREESCRIBIBLE ATRIBUTO_CLASE ATRIBUTO_INSTANCIA */
     int tipo; /* INT BOOLEAN Y PARA LAS CLASES, ALGÚN MECANISMO (-índice en el vector del grafo??)  */
     int clase; /* ESCALAR PUNTERO OBJETO */
@@ -137,6 +137,20 @@ int buscarIdCualificadoInstancia(TablaSimbolosClases *t, TablaAmbito* tabla_main
 		char * nombre_id, char * nombre_clase_desde,
 		elementoTablaSimbolos ** e,
 		char * nombre_ambito_encontrado);
+
+int buscarTablaSimbolosAmbitosConPrefijos(tablaAmbitos * t, char* id, elementoTablaSimbolos** e,
+    char* id_ambito);
+
+int buscarParaDeclararMiembroClase(tablaSimbolosClases *t,
+    char * nombre_clase_desde,
+    char * nombre_miembro,
+    elementoTablaSimbolos ** e,
+    char * nombre_ambito_encontrado);
+
+int buscarParaDeclararMiembroInstancia(tablaSimbolosClases *t, char * nombre_clase_desde,
+    char * nombre_miembro, elementoTablaSimbolos ** e,
+    char * nombre_ambito_encontrado);
+
 
 /**********************************************************
  **********************************************************
