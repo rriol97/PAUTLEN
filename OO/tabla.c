@@ -34,7 +34,6 @@ int abrirAmbitoClase(TablaAmbito** t, char* id_clase, int tamanio){
     if(t == NULL || id_clase == NULL)
         return -1;
     *t = tablaInit(id_clase);
-    /*TODO: el tamanio es en caso de que venga un vector como tipo de clase*/
     return 0;
 }
 
@@ -277,50 +276,27 @@ int aplicarAccesos(TablaSimbolosClases* t, char* nombre_clase_ambito_actual, cha
 }
 
 int buscarIdEnJerarquiaDesdeClase(TablaSimbolosClases *t, char * nombre_id,
-		char * nombre_clase_desde,
-		elementoTablaSimbolos ** e,
-		char * nombre_ambito_encontrado) {
+        char * nombre_clase_desde,
+        elementoTablaSimbolos ** e,
+        char * nombre_ambito_encontrado) {
     NodoGrafo* nodo;
     NodoLista* padres;
-    char nombre_real[MAX_NAME];
 
     /*buscamos en la propia clase*/
     nodo = graphGetClassFromName(t->graph, nombre_clase_desde);
     if(nodo == NULL)
         return ERR;
 
-    if(strlen(nodo->tabla->func_name) > 0) {
-        /*funcion abierta: busca tambien en la tabla de funcion*/
-        strcpy(nombre_real, nodo->tabla->func_name);
-        strcat(nombre_real, "_");
-        strcat(nombre_real, nombre_id);
-
-        *e = find_symbol(&(nodo->tabla->th_func), nombre_real);
-        if(*e != NULL) {
-            strcpy(nombre_ambito_encontrado, nodo->tabla->func_name);
-            return OK;
-        }
-    }
-
-    strcpy(nombre_real, nodo->name);
-    strcat(nombre_real, "_");
-    strcat(nombre_real, nombre_id);
-    *e = find_symbol(&(nodo->tabla->th_ppal), nombre_real);
-    if(*e != NULL) {
-        strcpy(nombre_ambito_encontrado, nodo->name);
-        return OK; /*esta en la misma clase: siempre se tiene acceso*/
+    if(buscarTablaSimbolosAmbitosConPrefijos(nodo->tabla, nombre_id, e, nodo->name, nombre_ambito_encontrado) == OK) {
+            return OK; /*esta en la misma clase: siempre se tiene acceso*/
     }
 
     /*buscamos en la jerarquia*/
     padres = graphGetAntecessorList(t->graph, nodo->index);
     for(; padres != NULL; padres = nodoListaGetNext(padres)) {
         nodo = graphGetClass(t->graph, nodoListaGetIndex(padres));
-        strcpy(nombre_real, nodo->name);
-        strcat(nombre_real, "_");
-        strcat(nombre_real, nombre_id);
-        *e = find_symbol(&(nodo->tabla->th_ppal), nombre_real);
-        if(*e != NULL) {
-            strcpy(nombre_ambito_encontrado, nodo->name);
+
+        if(buscarTablaSimbolosAmbitosConPrefijos(nodo->tabla, nombre_id, e, nodo->name, nombre_ambito_encontrado) == OK) {
             return aplicarAccesos(t, nombre_clase_desde, nombre_ambito_encontrado, *e);
         }
     }
@@ -329,10 +305,9 @@ int buscarIdEnJerarquiaDesdeClase(TablaSimbolosClases *t, char * nombre_id,
 }
 
 int buscarIdNoCualificado(TablaSimbolosClases *t, TablaAmbito* tabla_main,
-		char * nombre_id, char * nombre_clase_desde,
-		elementoTablaSimbolos ** e,
-		char * nombre_ambito_encontrado) {
-    char nombre_real[MAX_NAME];
+        char * nombre_id, char * nombre_clase_desde,
+        elementoTablaSimbolos ** e,
+        char * nombre_ambito_encontrado) {
 
     if(strcmp(nombre_clase_desde, "main") != 0) {
         /*caso clases*/
@@ -342,46 +317,30 @@ int buscarIdNoCualificado(TablaSimbolosClases *t, TablaAmbito* tabla_main,
     }
     /*caso main o variables globales para clases*/
 
-    if(strlen(tabla_main->func_name) > 0) {
-        /*funcion abierta: busca tambien en la tabla de funcion*/
-        strcpy(nombre_real, tabla_main->func_name);
-        strcat(nombre_real, "_");
-        strcat(nombre_real, nombre_id);
-
-        *e = find_symbol(&(tabla_main->th_func), nombre_real);
-        if(*e != NULL) {
-            strcpy(nombre_ambito_encontrado, tabla_main->func_name);
-            return OK;
-        }
-    }
-
-    strcpy(nombre_real, "main_");
-    strcat(nombre_real, nombre_id);
-    *e = find_symbol(&(tabla_main->th_ppal), nombre_real);
-    if(*e != NULL) {
-        strcpy(nombre_ambito_encontrado, tabla_main->name);
+    if(buscarTablaSimbolosAmbitosConPrefijos(tabla_main, nombre_id, e, "main", nombre_ambito_encontrado) == OK) {
         return OK;
     }
     return ERR;
 }
 
 int buscarIdCualificadoClase(TablaSimbolosClases *t, char * nombre_clase_cualifica,
-		char * nombre_id, char * nombre_clase_desde,
-		elementoTablaSimbolos ** e,
-		char * nombre_ambito_encontrado) {
+        char * nombre_id, char * nombre_clase_desde,
+        elementoTablaSimbolos ** e,
+        char * nombre_ambito_encontrado) {
 
     if(buscarIdEnJerarquiaDesdeClase(t, nombre_id, nombre_clase_cualifica, e, nombre_ambito_encontrado) == OK) {
-        return aplicarAccesos(t, nombre_clase_desde, nombre_ambito_encontrado, *e);
+        if((*e)->tipo_miembro == MIEMBRO_UNICO)
+            return aplicarAccesos(t, nombre_clase_desde, nombre_ambito_encontrado, *e);
     }
     return ERR;
 
 }
 
 int buscarIdCualificadoInstancia(TablaSimbolosClases *t, TablaAmbito* tabla_main,
-		char * nombre_instancia_cualifica,
-		char * nombre_id, char * nombre_clase_desde,
-		elementoTablaSimbolos ** e,
-		char * nombre_ambito_encontrado) {
+        char * nombre_instancia_cualifica,
+        char * nombre_id, char * nombre_clase_desde,
+        elementoTablaSimbolos ** e,
+        char * nombre_ambito_encontrado) {
     NodoGrafo* nodo;
     int clase;
     if(buscarIdNoCualificado(t, tabla_main, nombre_instancia_cualifica, nombre_clase_desde, e, nombre_ambito_encontrado) == ERR) {
@@ -401,12 +360,31 @@ int buscarIdCualificadoInstancia(TablaSimbolosClases *t, TablaAmbito* tabla_main
 }
 
 int buscarTablaSimbolosAmbitosConPrefijos(TablaAmbito * t, char* id, elementoTablaSimbolos** e,
-    char* id_ambito){
+    char* id_ambito, char* nombre_ambito_encontrado){
+    char nombre_real[MAX_NAME];
 
-    /*TODO tengo que acabar esta funcion*/
+    if(strlen(t->func_name) > 0) {
+        /*funcion abierta: busca tambien en la tabla de funcion*/
+        strcpy(nombre_real, t->func_name);
+        strcat(nombre_real, "_");
+        strcat(nombre_real, id);
 
+        *e = find_symbol(&(t->th_func), nombre_real);
+        if(*e != NULL) {
+            strcpy(nombre_ambito_encontrado, t->func_name);
+            return OK;
+        }
+    }
 
-    return OK;
+    strcpy(nombre_real, id_ambito);
+    strcat(nombre_real, "_");
+    strcat(nombre_real, id);
+    *e = find_symbol(&(t->th_ppal), nombre_real);
+    if(*e != NULL) {
+        strcpy(nombre_ambito_encontrado, id_ambito);
+        return OK;
+    }
+    return ERR;
 }
 
 TablaAmbito* nombreClaseATablaSimbolosAmbitos(TablaSimbolosClases *t, char* nombre_clase_desde){
@@ -431,8 +409,9 @@ int buscarParaDeclararMiembroClase(TablaSimbolosClases *t,
     e = NULL;
     nombre_ambito_encontrado = NULL;
 
-    return buscarTablaSimbolosAmbitosConPrefijos(nombreClaseATablaSimbolosAmbitos(t, nombre_clase_desde),
-          nombre_miembro, e, nombre_ambito_encontrado);
+    /*return buscarTablaSimbolosAmbitosConPrefijos(nombreClaseATablaSimbolosAmbitos(t, nombre_clase_desde),
+          nombre_miembro, e, nombre_ambito_encontrado);*/
+    return OK;
 }
 
 
@@ -442,7 +421,7 @@ int buscarParaDeclararMiembroInstancia(TablaSimbolosClases *t, char * nombre_cla
 
     e = NULL;
     nombre_ambito_encontrado = NULL;
-    /*MUY IMPORTANTE: suponemos qeu nombre_miembro es ya sin el prefijo    */
+    /*MUY IMPORTANTE: suponemos que nombre_miembro es ya sin el prefijo    */
     return buscarIdEnJerarquiaDesdeClase(t, nombre_miembro,
            nombre_clase_desde, e, nombre_ambito_encontrado);
 }

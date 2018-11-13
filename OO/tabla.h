@@ -139,7 +139,7 @@ int buscarIdCualificadoInstancia(TablaSimbolosClases *t, TablaAmbito* tabla_main
 		char * nombre_ambito_encontrado);
 
 int buscarTablaSimbolosAmbitosConPrefijos(TablaAmbito * t, char* id, elementoTablaSimbolos** e,
-    char* id_ambito);
+    char* id_ambito, char* nombre_ambito_encontrado);
 
 int buscarParaDeclararMiembroClase(TablaSimbolosClases *t,
     char * nombre_clase_desde,

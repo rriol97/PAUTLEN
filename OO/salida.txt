@@ -1,0 +1,7 @@
+digraph grafo_clases  { rankdir=BT;
+edge [arrowhead = empty]
+AA [label="{AA|AA\lAA_a1\lAA_sa1\lAA_ma1@1\l}"][shape=record];
+edge [arrowhead = normal]
+AAN0 [label="AA"][shape=oval];
+
+}
