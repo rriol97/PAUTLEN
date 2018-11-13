@@ -194,6 +194,153 @@ int testBuscarIdNoCualificado() {
     return 0;
 }
 
+int testBuscarDeclararMiembroClase() {
+    TablaAmbito* tabla_main; /* Tabla de simbolos de main*/
+    TablaSimbolosClases * ej_tabla_clases = NULL;
+    char nombre_ambito_encontrado[MAX_NAME];
+    elementoTablaSimbolos* e = NULL;
+    FILE* fsalida = fopen("salida.txt", "w");
+
+    /* Inicializar la tabla de simbolos del main (ambito por defecto) */
+    tabla_main = tablaInit("main");
+
+    /* Inicializar la tabla de las clases */
+    iniciarTablaSimbolosClases(&ej_tabla_clases, "ej_clases");
+
+    /* Clase AA: tiene 3 atributos de clase y 3 metodos de clase */
+    abrirClase(ej_tabla_clases,"AA");
+    graph_enrouteParentsLastNode(ej_tabla_clases);
+
+    if(buscarParaDeclararMiembroClase(ej_tabla_clases, "AA", "sa1", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 50 Buscar: ERROR (AA_sA1) NO ESTÁ EN AA (SOLO SE BUSCA EN AA) SE PUEDE DECLARAR\n\n");
+    } else {
+        printf("Caso 50 FALLIDO Buscar: AA_sA1 ENCONTRADO EN %s\n\n", nombre_ambito_encontrado);
+    }
+
+    /*declarar variable secret unique int sa1*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "sa1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_HERENCIA, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    if(buscarParaDeclararMiembroClase(ej_tabla_clases, "AA", "sa1", &e, nombre_ambito_encontrado) == OK) {
+        printf("Caso 49 Buscar: OK (AA_sA1) YA ESTÁ EN %s (SOLO SE BUSCA EN AA) NO SE PUEDE DECLARAR\n\n", nombre_ambito_encontrado);
+    } else {
+        printf("Caso 49 FALLIDO Buscar: AA_sA1 NO ENCONTRADO EN AA\n\n");
+    }
+
+    if(buscarParaDeclararMiembroClase(ej_tabla_clases, "AA", "ha1", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 50 Buscar: ERROR (AA_hA1) NO ESTÁ EN AA (SOLO SE BUSCA EN AA) SE PUEDE DECLARAR\n\n");
+    } else {
+        printf("Caso 50 FALLIDO Buscar: AA_hA1 ENCONTRADO EN %s\n\n", nombre_ambito_encontrado);
+    }
+
+    /*declarar variable hidden unique int ha1*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "ha1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_CLASE, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    if(buscarParaDeclararMiembroClase(ej_tabla_clases, "AA", "xa1", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 50 Buscar: ERROR (AA_xA1) NO ESTÁ EN AA (SOLO SE BUSCA EN AA) SE PUEDE DECLARAR\n\n");
+    } else {
+        printf("Caso 50 FALLIDO Buscar: AA_xA1 ENCONTRADO EN %s\n\n", nombre_ambito_encontrado);
+    }
+
+    /*declarar variable exposed unique int xa1*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "xa1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    if(buscarParaDeclararMiembroClase(ej_tabla_clases, "AA", "ma1@1", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 50 Buscar: ERROR (AA_mA1@1) NO ESTÁ EN AA (SOLO SE BUSCA EN AA) SE PUEDE DECLARAR\n\n");
+    } else {
+        printf("Caso 50 FALLIDO Buscar: AA_mA1@1 ENCONTRADO EN %s\n\n", nombre_ambito_encontrado);
+    }
+
+    /*declarar function exposed int ma1@1*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "ma1@1", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_CLASE, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    if(buscarParaDeclararMiembroClase(ej_tabla_clases, "AA", "MA1@1", &e, nombre_ambito_encontrado) == OK) {
+        printf("Caso 49 Buscar: OK (AA_MA1@1) YA ESTÁ EN %s (SOLO SE BUSCA EN AA) NO SE PUEDE DECLARAR\n\n", nombre_ambito_encontrado);
+    } else {
+        printf("Caso 49 FALLIDO Buscar: AA_MA1@1 NO ENCONTRADO EN AA\n\n");
+    }
+
+    if(buscarParaDeclararMiembroClase(ej_tabla_clases, "AA", "MA1@1@1", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 50 Buscar: ERROR (AA_MA1@1@1) NO ESTÁ EN AA (SOLO SE BUSCA EN AA) SE PUEDE DECLARAR\n\n");
+    } else {
+        printf("Caso 50 FALLIDO Buscar: AA_MA1@1@1 ENCONTRADO EN %s\n\n", nombre_ambito_encontrado);
+    }
+    /*declarar function exposed int ma1@1*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "ma1@1@1", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_CLASE, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    cerrarClase(ej_tabla_clases,"AA",0,0,0,0);
+
+    /* Clase BB: tiene 3 atributos de clase y 3 metodos de clase */
+    abrirClase(ej_tabla_clases,"BB");
+
+    if(buscarParaDeclararMiembroClase(ej_tabla_clases, "BB", "sa1", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 50 Buscar: ERROR (BB_sA1) NO ESTÁ EN BB (SOLO SE BUSCA EN BB) SE PUEDE DECLARAR\n\n");
+    } else {
+        printf("Caso 50 FALLIDO Buscar: BB_sA1 ENCONTRADO EN %s\n\n", nombre_ambito_encontrado);
+    }
+
+    /*declarar variable secret unique int sa1*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "BB", "sa1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_HERENCIA, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    if(buscarParaDeclararMiembroClase(ej_tabla_clases, "BB", "ha1", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 50 Buscar: ERROR (BB_hA1) NO ESTÁ EN BB (SOLO SE BUSCA EN BB) SE PUEDE DECLARAR\n\n");
+    } else {
+        printf("Caso 50 FALLIDO Buscar: BB_hA1 ENCONTRADO EN %s\n\n", nombre_ambito_encontrado);
+    }
+
+    /*declarar variable hidden unique int ha1*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "BB", "ha1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_CLASE, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    if(buscarParaDeclararMiembroClase(ej_tabla_clases, "BB", "xa1", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 50 Buscar: ERROR (BB_xA1) NO ESTÁ EN BB (SOLO SE BUSCA EN BB) SE PUEDE DECLARAR\n\n");
+    } else {
+        printf("Caso 50 FALLIDO Buscar: BB_xA1 ENCONTRADO EN %s\n\n", nombre_ambito_encontrado);
+    }
+
+    /*declarar variable exposed unique int xa1*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "BB", "xa1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    if(buscarParaDeclararMiembroClase(ej_tabla_clases, "BB", "MB1@1", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 50 Buscar: ERROR (BB_MB1@1) NO ESTÁ EN BB (SOLO SE BUSCA EN BB) SE PUEDE DECLARAR\n\n");
+    } else {
+        printf("Caso 50 FALLIDO Buscar: BB_MB1@1 ENCONTRADO EN %s\n\n", nombre_ambito_encontrado);
+    }
+
+    /*declarar function secret int MB1@1*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "BB", "MB1@1", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_HERENCIA, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    if(buscarParaDeclararMiembroClase(ej_tabla_clases, "BB", "MA1@1", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 50 Buscar: ERROR (BB_MA1@1) NO ESTÁ EN BB (SOLO SE BUSCA EN BB) SE PUEDE DECLARAR\n\n");
+    } else {
+        printf("Caso 50 FALLIDO Buscar: BB_MA1@1 ENCONTRADO EN %s\n\n", nombre_ambito_encontrado);
+    }
+
+    /*declarar function hidden int MA1@1*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "BB", "MA1@1", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_CLASE, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    if(buscarParaDeclararMiembroClase(ej_tabla_clases, "BB", "MA2@1@1", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 50 Buscar: ERROR (BB_MA2@1@1) NO ESTÁ EN BB (SOLO SE BUSCA EN BB) SE PUEDE DECLARAR\n\n");
+    } else {
+        printf("Caso 50 FALLIDO Buscar: BB_MA1@1@1 ENCONTRADO EN %s\n\n", nombre_ambito_encontrado);
+    }
+
+    /*declarar function exposed int MA2@1@1*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "BB", "MA2@1@1", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    cerrarClase(ej_tabla_clases,"BB",0,0,0,0);
+
+    cerrarAmbitoPrefijos(tabla_main);
+
+    /* Cerrar las tablas de simbolos */
+    cerrarTablaSimbolosClases(ej_tabla_clases);
+
+    tablaSimbolosClasesToDot(ej_tabla_clases, fsalida);
+
+    tablaFree(tabla_main);
+    liberarTablaSimbolosClases(ej_tabla_clases);
+    fclose(fsalida);
+    return 0;
+}
+
 /* Driver program to test above functions */
 int main(int argc, char* argv[]) {
     /* create the graph */
@@ -210,6 +357,8 @@ int main(int argc, char* argv[]) {
         else return testTabla(argv[2]);
     } else if (strcmp(argv[1], "binc") == 0) {
         return testBuscarIdNoCualificado();
+    } else if (strcmp(argv[1], "bdmc") == 0) {
+        return testBuscarDeclararMiembroClase();
     } else {
         printf("Unknown command.\nhelp: %s graph|dot\ngraph: test graph\ndot: test function to create .dot file\n", argv[0]);
     }
