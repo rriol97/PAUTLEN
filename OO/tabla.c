@@ -292,7 +292,7 @@ int buscarIdEnJerarquiaDesdeClase(TablaSimbolosClases *t, char * nombre_id,
     if(strlen(nodo->tabla->func_name) > 0) {
         /*funcion abierta: busca tambien en la tabla de funcion*/
         strcpy(nombre_real, nodo->tabla->func_name);
-        strcat(nomb re_real, "_");
+        strcat(nombre_real, "_");
         strcat(nombre_real, nombre_id);
 
         *e = find_symbol(&(nodo->tabla->th_func), nombre_real);
@@ -400,14 +400,29 @@ int buscarIdCualificadoInstancia(TablaSimbolosClases *t, TablaAmbito* tabla_main
     return aplicarAccesos(t, nombre_clase_desde, nombre_ambito_encontrado, *e);
 }
 
-int buscarTablaSimbolosAmbitosConPrefijos(tablaAmbitos * t, char* id, elementoTablaSimbolos** e,
+int buscarTablaSimbolosAmbitosConPrefijos(TablaAmbito * t, char* id, elementoTablaSimbolos** e,
     char* id_ambito){
-    
 
-    }
+    /*TODO tengo que acabar esta funcion*/
 
 
-int buscarParaDeclararMiembroClase(tablaSimbolosClases *t,
+    return OK;
+}
+
+TablaAmbito* nombreClaseATablaSimbolosAmbitos(TablaSimbolosClases *t, char* nombre_clase_desde){
+    NodoGrafo* nodo;
+
+    nodo = graphGetClassFromName(t->graph, nombre_clase_desde);
+
+    if(nodo == NULL)
+      return NULL;
+
+    return nodo->tabla;
+}
+
+
+
+int buscarParaDeclararMiembroClase(TablaSimbolosClases *t,
     char * nombre_clase_desde,
     char * nombre_miembro,
     elementoTablaSimbolos ** e,
@@ -417,18 +432,18 @@ int buscarParaDeclararMiembroClase(tablaSimbolosClases *t,
     nombre_ambito_encontrado = NULL;
 
     return buscarTablaSimbolosAmbitosConPrefijos(nombreClaseATablaSimbolosAmbitos(t, nombre_clase_desde),
-           nombre_miembro, e, nombre_ambito_encontrado);
+          nombre_miembro, e, nombre_ambito_encontrado);
 }
 
 
-int buscarParaDeclararMiembroInstancia(tablaSimbolosClases *t, char * nombre_clase_desde,
+int buscarParaDeclararMiembroInstancia(TablaSimbolosClases *t, char * nombre_clase_desde,
     char * nombre_miembro, elementoTablaSimbolos ** e,
     char * nombre_ambito_encontrado){
 
     e = NULL;
     nombre_ambito_encontrado = NULL;
-
-    return buscarIdEnJerarquiaDesdeClase(t, nombre_miembro_sin_prefijo,
+    /*MUY IMPORTANTE: suponemos qeu nombre_miembro es ya sin el prefijo    */
+    return buscarIdEnJerarquiaDesdeClase(t, nombre_miembro,
            nombre_clase_desde, e, nombre_ambito_encontrado);
 }
 

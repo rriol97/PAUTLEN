@@ -138,16 +138,16 @@ int buscarIdCualificadoInstancia(TablaSimbolosClases *t, TablaAmbito* tabla_main
 		elementoTablaSimbolos ** e,
 		char * nombre_ambito_encontrado);
 
-int buscarTablaSimbolosAmbitosConPrefijos(tablaAmbitos * t, char* id, elementoTablaSimbolos** e,
+int buscarTablaSimbolosAmbitosConPrefijos(TablaAmbito * t, char* id, elementoTablaSimbolos** e,
     char* id_ambito);
 
-int buscarParaDeclararMiembroClase(tablaSimbolosClases *t,
+int buscarParaDeclararMiembroClase(TablaSimbolosClases *t,
     char * nombre_clase_desde,
     char * nombre_miembro,
     elementoTablaSimbolos ** e,
     char * nombre_ambito_encontrado);
 
-int buscarParaDeclararMiembroInstancia(tablaSimbolosClases *t, char * nombre_clase_desde,
+int buscarParaDeclararMiembroInstancia(TablaSimbolosClases *t, char * nombre_clase_desde,
     char * nombre_miembro, elementoTablaSimbolos ** e,
     char * nombre_ambito_encontrado);
 
