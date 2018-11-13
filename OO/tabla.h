@@ -115,6 +115,9 @@ int insertarTablaSimbolosClases(TablaSimbolosClases * grafo, char * id_clase,
  **********************************************************
  **********************************************************/
 
+int buscarTablaSimbolosAmbitosConPrefijos(TablaAmbito * t, char* id, elementoTablaSimbolos** e,
+    char* id_ambito, char* nombre_ambito_encontrado);
+
 int aplicarAccesos(TablaSimbolosClases* t, char* nombre_clase_ambito_actual, char* clase_declaro, elementoTablaSimbolos* pelem);
 
 int buscarIdEnJerarquiaDesdeClase(TablaSimbolosClases *t, char * nombre_id,
@@ -137,9 +140,6 @@ int buscarIdCualificadoInstancia(TablaSimbolosClases *t, TablaAmbito* tabla_main
 		char * nombre_id, char * nombre_clase_desde,
 		elementoTablaSimbolos ** e,
 		char * nombre_ambito_encontrado);
-
-int buscarTablaSimbolosAmbitosConPrefijos(TablaAmbito * t, char* id, elementoTablaSimbolos** e,
-    char* id_ambito, char* nombre_ambito_encontrado);
 
 int buscarParaDeclararMiembroClase(TablaSimbolosClases *t,
     char * nombre_clase_desde,
