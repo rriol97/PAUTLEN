@@ -516,6 +516,82 @@ int testBuscarDeclararMiembroInstancia() {
     return 0;
 }
 
+int testBuscarUso() {
+    TablaAmbito* tabla_main; /* Tabla de simbolos de main*/
+    TablaSimbolosClases * ej_tabla_clases = NULL;
+    char nombre_ambito_encontrado[MAX_NAME];
+    elementoTablaSimbolos* e = NULL;
+    int aaindex;
+    FILE* fsalida = fopen("salida.txt", "w");
+
+    /* Inicializar la tabla de simbolos del main (ambito por defecto) */
+    tabla_main = tablaInit("main");
+
+    /* Inicializar la tabla de las clases */
+    iniciarTablaSimbolosClases(&ej_tabla_clases, "ej_clases");
+
+    /* Clase AA: tiene 3 atributos de instancia y 3 metodos de instancia */
+    aaindex = abrirClase(ej_tabla_clases,"AA");
+    graph_enrouteParentsLastNode(ej_tabla_clases);
+
+    /*declarar variable exposed {AA} inspub*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "inspub", ESCALAR, -aaindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    /*declarar variable secret {AA} insprot*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "insprot", ESCALAR, -aaindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_HERENCIA, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    /*declarar variable hidden {AA} inspriv*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "inspriv", ESCALAR, -aaindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_CLASE, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    /*TODO: continuar el test (me voy a comer volvere luego)*/
+
+    /*if(buscarParaDeclararMiembroInstancia(ej_tabla_clases, "AA", "sa1", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 53 Buscar: ERROR (AA_sA1) SE PUEDE DECLARAR\n\n");
+    } else {
+        printf("Caso 53 FALLIDO Buscar: AA_sA1 ENCONTRADO EN %s\n\n", nombre_ambito_encontrado);
+    }
+*/
+    /*declarar variable secret int sa1*/
+    /*insertarTablaSimbolosClases(ej_tabla_clases, "AA", "sa1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_HERENCIA, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    if(buscarParaDeclararMiembroInstancia(ej_tabla_clases, "AA", "sa1", &e, nombre_ambito_encontrado) == OK) {
+        printf("Caso 51 Buscar: OK (AA_sA1) YA ESTÁ EN %s NO SE PUEDE DECLARAR\n\n", nombre_ambito_encontrado);
+    } else {
+        printf("Caso 51 FALLIDO Buscar: AA_sA1 NO ENCONTRADO EN AA\n\n");
+    }
+
+    if(buscarParaDeclararMiembroInstancia(ej_tabla_clases, "AA", "mA1@1", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 53 Buscar: ERROR (AA_mA1@1) SE PUEDE DECLARAR\n\n");
+    } else {
+        printf("Caso 53 FALLIDO Buscar: AA_mA1@1 ENCONTRADO EN %s\n\n", nombre_ambito_encontrado);
+    }
+*/
+    /*declarar function secret int mA1@1*/
+   /* insertarTablaSimbolosClases(ej_tabla_clases, "AA", "mA1@1", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_HERENCIA, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);*/
+
+
+    cerrarClase(ej_tabla_clases,"AA",0,0,0,0);
+
+    /* Clase BB: tiene 3 atributos de clase y 3 metodos de clase */
+    abrirClaseHereda(ej_tabla_clases,"BB", "AA");
+
+    
+
+    cerrarClase(ej_tabla_clases,"BB",0,0,0,0);
+
+    cerrarAmbitoPrefijos(tabla_main);
+
+    /* Cerrar las tablas de simbolos */
+    cerrarTablaSimbolosClases(ej_tabla_clases);
+
+    tablaSimbolosClasesToDot(ej_tabla_clases, fsalida);
+
+    tablaFree(tabla_main);
+    liberarTablaSimbolosClases(ej_tabla_clases);
+    fclose(fsalida);
+    return 0;
+}
+
 /* Driver program to test above functions */
 int main(int argc, char* argv[]) {
     /* create the graph */
@@ -535,9 +611,11 @@ int main(int argc, char* argv[]) {
             return testBuscarDeclararMiembroClase();
         } else if (strcmp(argv[1], "bdmi") == 0) {
             return testBuscarDeclararMiembroInstancia();
+        } else if (strcmp(argv[1], "buso") == 0) {
+            return testBuscarUso();
         }
     }
-    printf("help: %s graph|dot|tabla [filename]|binc|bdmc|bdmi\ngraph: test graph\ndot: test function to create .dot file\ntabla: test tablaSimbolosClases\nbinc: test buscarIdNoCualificado\nbdmc: test buscarDeclararMiembroClase\nbdmi: test buscarDeclararMiembroInstancia\n", argv[0]);
+    printf("help: %s graph|dot|tabla [filename]|binc|bdmc|bdmi|buso\ngraph: test graph\ndot: test function to create .dot file\ntabla: test tablaSimbolosClases\nbinc: test buscarIdNoCualificado\nbdmc: test buscarDeclararMiembroClase\nbdmi: test buscarDeclararMiembroInstancia\nbuso: test buscarUso\n", argv[0]);
     return 0;
 
 }
