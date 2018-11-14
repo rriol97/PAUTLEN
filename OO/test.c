@@ -86,6 +86,105 @@ int testTabla(char* fname) {
     return 0;
 }
 
+int TestNuevo(){
+    TablaAmbito* tabla_main; /* Tabla de simbolos de main*/
+    TablaSimbolosClases * ej_tabla_clases = NULL;
+    char nombre_ambito_encontrado[MAX_NAME];
+    elementoTablaSimbolos* e = NULL;
+    FILE* fsalida = fopen("salida.txt", "w");
+
+    /* Inicializar la tabla de simbolos del main (ambito por defecto) */
+    tabla_main = tablaInit("main");
+
+    /* Inicializar la tabla de las clases */
+    iniciarTablaSimbolosClases(&ej_tabla_clases, "ej_clases");
+    
+
+    /*Buscar previamente a la declaracion el Id*/
+   if( buscarParaDeclararIdTablaSimbolosAmbitos(tabla_main, "v1", &e, "main", nombre_ambito_encontrado) == OK)
+    printf("Caso 54: FALLIDO. Ya está declarado el Id\n");
+    else{
+        printf("Caso 54: OK. No existe el Id\n");   
+        /* Declarar variable global int v1*/
+        insertarTablaSimbolosAmbitos(tabla_main, "main", "v1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    
+    }
+    
+    /*Buscar previamente a la declaracion el Id*/
+   if( buscarParaDeclararIdTablaSimbolosAmbitos(tabla_main, "v1", &e, "main", nombre_ambito_encontrado) == OK)
+    printf("Caso 57: OK. Ya está declarado el Id\n");
+    else{
+        printf("Caso 57: FALLIDO. No existe el Id\n");       
+    }
+ 
+    /*Buscar previamente a la declaracion el Id*/
+   if( buscarParaDeclararIdTablaSimbolosAmbitos(tabla_main, "f1@1", &e, "main", nombre_ambito_encontrado) == OK)
+    printf("Caso 55: FALLIDO. Ya está declarado el Id\n");
+    else{
+        printf("Caso 55: OK. No existe el Id\n");   
+        /* Declarar funcion f1*/
+        insertarTablaSimbolosAmbitos(tabla_main, "main", "f1@1", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    
+    }
+
+    AbrirAmbitoPrefijos(tabla_main, "main", "f1@1", ESCALAR, 0, INT, 0, 1);
+
+
+   /*Buscar previamente a la declaracion el Id*/
+   if( buscarParaDeclararIdTablaSimbolosAmbitos(tabla_main, "p1", &e, "main", nombre_ambito_encontrado) == OK)
+    printf("Caso 56: FALLIDO. Ya está declarado el Id\n");
+    else{
+        printf("Caso 56: OK. No existe el Id\n");
+    insertarTablaSimbolosAmbitos(tabla_main, "main", "p1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);  
+    }
+
+    cerrarAmbitoPrefijos(tabla_main);
+
+  /*Buscar previamente a la declaracion el Id*/
+   if( buscarParaDeclararIdTablaSimbolosAmbitos(tabla_main, "f1@1", &e, "main", nombre_ambito_encontrado) == OK)
+    printf("Caso 58: OK. Ya está declarado el Id\n");
+    else{
+        printf("Caso 58: FALLIDO. No existe el Id\n");   
+    }
+
+
+/*Buscar previamente a la declaracion el Id*/
+    buscarParaDeclararIdTablaSimbolosAmbitos(tabla_main, "f2@1@1", &e, "main", nombre_ambito_encontrado);
+
+    insertarTablaSimbolosAmbitos(tabla_main, "main", "f2@1@1", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+   
+
+    AbrirAmbitoPrefijos(tabla_main, "main", "f2@1@1", ESCALAR, 0, INT, 0, 1);
+
+
+   /*Buscar previamente a la declaracion el Id*/
+   buscarParaDeclararIdTablaSimbolosAmbitos(tabla_main, "p1", &e, "main", nombre_ambito_encontrado); 
+   
+    insertarTablaSimbolosAmbitos(tabla_main, "main", "p1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);  
+    
+/*Buscar previamente a la declaracion el Id*/
+   if( buscarParaDeclararIdTablaSimbolosAmbitos(tabla_main, "p1", &e, "main", nombre_ambito_encontrado) == OK)
+    printf("Caso 59: OK. Ya está declarado el parámetro\n");
+    else{
+        printf("Caso 59: FALLIDO. No esta declarado el parámetro\n");   
+    }
+
+
+    cerrarAmbitoPrefijos(tabla_main);
+
+    cerrarAmbito(tabla_main);
+
+    /* Cerrar las tablas de simbolos */
+    cerrarTablaSimbolosClases(ej_tabla_clases);
+
+    tablaSimbolosClasesToDot(ej_tabla_clases, fsalida);
+
+    tablaFree(tabla_main);
+    liberarTablaSimbolosClases(ej_tabla_clases);
+    fclose(fsalida);
+    return 0;
+}
+
 int testBuscarIdNoCualificado() {
     TablaAmbito* tabla_main; /* Tabla de simbolos de main*/
     TablaSimbolosClases * ej_tabla_clases = NULL;
@@ -114,7 +213,7 @@ int testBuscarIdNoCualificado() {
 
     /*declarar function exposed int ma1@3*/
     insertarTablaSimbolosClases(ej_tabla_clases, "AA", "ma1@1", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
-    tablaSimbolosClasesAbrirAmbitoEnClase(ej_tabla_clases, "AA", "ma1@1", ESCALAR, ACCESO_TODOS, INT, 0, 1); 
+    abrirAmbitoEnClase(ej_tabla_clases, "AA", "ma1@1", ESCALAR, ACCESO_TODOS, INT, 0, 1); 
     insertarTablaSimbolosClases(ej_tabla_clases, "AA", "pmA1", ESCALAR, BOOLEAN, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 
     /*declarar variable int v1ma1*/
@@ -141,7 +240,7 @@ int testBuscarIdNoCualificado() {
     /*declarar function int f1@3*/
     insertarTablaSimbolosAmbitos(tabla_main, "main", "f1@3", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
     AbrirAmbitoPrefijos(tabla_main, "main", "f1@3", ESCALAR, ACCESO_TODOS, INT, 0, 1); 
-    insertarTablaSimbolosAmbitos(tabla_main, "f1@3", "pf1", ESCALAR, BOOLEAN, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    insertarTablaSimbolosAmbitos(tabla_main, "main", "pf1", ESCALAR, BOOLEAN, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 
     /* Declarar variable de funcion int vlf11*/
     insertarTablaSimbolosAmbitos(tabla_main, "main", "vlf11", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
@@ -557,12 +656,12 @@ int testBuscarUso() {
 
     /*declarar function secret int prueba*/
     insertarTablaSimbolosClases(ej_tabla_clases, "AA", "prueba", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_HERENCIA, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
-    tablaSimbolosClasesAbrirAmbitoEnClase(ej_tabla_clases, "AA", "prueba", ESCALAR, ACCESO_HERENCIA, INT, 0, 1); 
+    abrirAmbitoEnClase(ej_tabla_clases, "AA", "prueba", ESCALAR, ACCESO_HERENCIA, INT, 0, 1); 
 
-    if(buscarIdCualificadoInstancia(ej_tabla_clases, tabla_main, "miaa", "inspriv", "AA", &e, nombre_ambito_encontrado) == ERR) {
-        printf("Caso 48: SE ACCEDE DESDE UN MÉTODO A UN ATRIBUTO (inspriv) QUE EXISTE EN LA JERARQUÍA (AA) Y NO ESTÁ ACCESIBLE (inspriv es hidden) A TRAVÉS DE UNA INSTANCIA QUE SÍ ESTÁ ACCESIBLE (miaa)\n\n");
+    if(buscarIdCualificadoInstancia(ej_tabla_clases, tabla_main, "miaa", "inspriv", "AA", &e, nombre_ambito_encontrado) == OK) {
+        printf("Caso 48: SE ACCEDE DESDE UN MÉTODO A UN ATRIBUTO (inspriv) QUE EXISTE EN LA JERARQUÍA (AA) Y ESTÁ ACCESIBLE (inspriv es hidden pero estamos en AA) A TRAVÉS DE UNA INSTANCIA QUE SÍ ESTÁ ACCESIBLE (miaa)\n\n");
     } else {
-        printf("Caso 48 FALLIDO Buscar: inspriv ACCESIBLE CUANDO NO DEBERIA\n\n");
+        printf("Caso 48 FALLIDO Buscar: inspriv NO ACCESIBLE CUANDO DEBERIA\n\n");
     }
 
     if(buscarIdCualificadoInstancia(ej_tabla_clases, tabla_main, "miaa", "insprot", "AA", &e, nombre_ambito_encontrado) == OK) {
@@ -637,7 +736,7 @@ int testBuscarUso() {
 
 /*declarar function exposed none mE*/
     insertarTablaSimbolosClases(ej_tabla_clases, "EE", "mE", ESCALAR, NINGUNO, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
-    tablaSimbolosClasesAbrirAmbitoEnClase(ej_tabla_clases, "EE", "mE", ESCALAR, ACCESO_TODOS, NINGUNO, 0, 1);
+    abrirAmbitoEnClase(ej_tabla_clases, "EE", "mE", ESCALAR, ACCESO_TODOS, NINGUNO, 0, 1);
 
     /*declarar variable {EE} varLoc*/
     insertarTablaSimbolosClases(ej_tabla_clases, "EE", "varLoc", OBJETO, -eeindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
@@ -798,6 +897,8 @@ int main(int argc, char* argv[]) {
             return testBuscarDeclararMiembroInstancia();
         } else if (strcmp(argv[1], "buso") == 0) {
             return testBuscarUso();
+        } else if (strcmp(argv[1], "nuevo") == 0) {
+            return TestNuevo();
         }
     }
     printf("help: %s graph|dot|tabla [filename]|binc|bdmc|bdmi|buso\ngraph: test graph\ndot: test function to create .dot file\ntabla: test tablaSimbolosClases\nbinc: test buscarIdNoCualificado\nbdmc: test buscarDeclararMiembroClase\nbdmi: test buscarDeclararMiembroInstancia\nbuso: test buscarUso\n", argv[0]);

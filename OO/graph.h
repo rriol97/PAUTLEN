@@ -36,9 +36,6 @@ TablaAmbito* tablaInit(char* name);
  */
 void tablaFree(TablaAmbito* tabla);
 
-/*TODO: funciones para insertar atributos de clase y instancia, metodos sobre y no sobres*/
-
-
 typedef struct _NodoLista NodoLista;
 
 /* Gets the index that a NodoLista stores

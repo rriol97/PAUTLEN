@@ -58,7 +58,7 @@ int AbrirAmbitoPrefijos(TablaAmbito * tabla,
                                     int posicion_metodo_sobre,
                                     int tamanio);
 
-int tablaSimbolosClasesAbrirAmbitoEnClase(TablaSimbolosClases * grafo,
+int abrirAmbitoEnClase(TablaSimbolosClases * grafo,
                                     char * id_clase,
                                     char* id_ambito,
                                     int categoria_ambito,
@@ -151,6 +151,17 @@ int buscarParaDeclararMiembroInstancia(TablaSimbolosClases *t, char * nombre_cla
     char * nombre_miembro, elementoTablaSimbolos ** e,
     char * nombre_ambito_encontrado);
 
+int buscarParaDeclararIdTablaSimbolosAmbitos(TablaAmbito* t, 
+                                    char* id, 
+                                    elementoTablaSimbolos** e,  
+                                    char* id_ambito, 
+                                    char * nombre_ambito_encontrado);
+
+int buscarParaDeclararIdLocalEnMetodo(TablaSimbolosClases *t, 
+                            char * nombre_clase,
+                            char * nombre_id,
+                            elementoTablaSimbolos ** e, 
+                            char * nombre_ambito_encontrado);
 
 /**********************************************************
  **********************************************************

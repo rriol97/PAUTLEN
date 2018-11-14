@@ -103,7 +103,7 @@ int AbrirAmbitoPrefijos(TablaAmbito * tabla,
     return 0;
 }
 
-int tablaSimbolosClasesAbrirAmbitoEnClase(TablaSimbolosClases * grafo,
+int abrirAmbitoEnClase(TablaSimbolosClases * grafo,
                                   char * id_clase,
                                   char* id_ambito,
                                   int categoria_ambito,
@@ -144,11 +144,17 @@ int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
         int * tipo_args) {
     elementoTablaSimbolos* elemento;
     char nombre_real[MAX_NAME];
+    char* id_clase_real;
     elemento = malloc(sizeof(elementoTablaSimbolos));
     if(elemento == NULL)
         return -1;
 
-    strcpy(nombre_real, id_clase);
+    if(strlen(tabla->func_name) > 0) /*hay funcion abierta: inserta el simbolo con prefijo de la funcion*/
+        id_clase_real = tabla->func_name;
+    else
+        id_clase_real = id_clase;
+
+    strcpy(nombre_real, id_clase_real);
     strcat(nombre_real, "_");
     strcat(nombre_real, id);
     strcpy(elemento->clave, nombre_real);
@@ -197,19 +203,13 @@ int insertarTablaSimbolosClases(TablaSimbolosClases * grafo, char * id_clase,
         int posicion_acumulada_metodos_sobreescritura,
         int * tipo_args) {
     NodoGrafo* nodo;
-    char* id_clase_real;
     if(grafo == NULL || id_clase == NULL)
         return -1;
     nodo = graphGetClassFromName(grafo->graph, id_clase);
     if(nodo == NULL)
         return -1;
 
-    if(strlen(nodo->tabla->func_name) > 0) /*hay funcion abierta: inserta el simbolo con prefijo de la funcion*/
-        id_clase_real = nodo->tabla->func_name;
-    else
-        id_clase_real = id_clase;
-
-    return insertarTablaSimbolosAmbitos(nodo->tabla, id_clase_real,
+    return insertarTablaSimbolosAmbitos(nodo->tabla, id_clase,
         id, clase, tipo, categoria, direcciones, numero_parametros,
         numero_variables_locales,posicion_variable_local,
         posicion_parametro,
@@ -411,6 +411,25 @@ int buscarParaDeclararMiembroInstancia(TablaSimbolosClases *t, char * nombre_cla
     /*MUY IMPORTANTE: suponemos que nombre_miembro es ya sin el prefijo*/
     return buscarIdEnJerarquiaDesdeClase(t, nombre_miembro,
            nombre_clase_desde, e, nombre_ambito_encontrado);
+}
+
+int buscarParaDeclararIdTablaSimbolosAmbitos(TablaAmbito* t, 
+                                    char* id, 
+                                    elementoTablaSimbolos** e,  
+                                    char* id_ambito,
+                                    char * nombre_ambito_encontrado) {
+    return buscarTablaSimbolosAmbitosConPrefijos(t, id, e, id_ambito, nombre_ambito_encontrado);
+}
+
+int buscarParaDeclararIdLocalEnMetodo(TablaSimbolosClases *t, 
+                            char * nombre_clase,
+                            char * nombre_id,
+                            elementoTablaSimbolos ** e, 
+                            char * nombre_ambito_encontrado) {
+    NodoGrafo* nodo = graphGetClassFromName(t->graph, nombre_clase);
+    if(nodo == NULL)
+        return ERR;
+    return buscarParaDeclararIdTablaSimbolosAmbitos(nodo->tabla, nombre_id, e, nodo->name, nombre_ambito_encontrado);
 }
 
 int cerrarAmbitoPrefijos(TablaAmbito* tabla) {
