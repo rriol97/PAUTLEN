@@ -64,7 +64,7 @@ int abrirClaseHereda(TablaSimbolosClases* t, char* id_clase, ...) {
         }
     }
     va_end(ap);
-    return 0;
+    return cid;
 }
 
 int AbrirAmbitoPrefijos(TablaAmbito * tabla,

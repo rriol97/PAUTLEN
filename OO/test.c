@@ -521,7 +521,7 @@ int testBuscarUso() {
     TablaSimbolosClases * ej_tabla_clases = NULL;
     char nombre_ambito_encontrado[MAX_NAME];
     elementoTablaSimbolos* e = NULL;
-    int aaindex;
+    int aaindex, bbindex, ccindex, ddindex, eeindex, ffindex;
     FILE* fsalida = fopen("salida.txt", "w");
 
     /* Inicializar la tabla de simbolos del main (ambito por defecto) */
@@ -535,51 +535,236 @@ int testBuscarUso() {
     graph_enrouteParentsLastNode(ej_tabla_clases);
 
     /*declarar variable exposed {AA} inspub*/
-    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "inspub", ESCALAR, -aaindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "inspub", OBJETO, -aaindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 
     /*declarar variable secret {AA} insprot*/
-    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "insprot", ESCALAR, -aaindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_HERENCIA, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "insprot", OBJETO, -aaindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_HERENCIA, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 
     /*declarar variable hidden {AA} inspriv*/
-    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "inspriv", ESCALAR, -aaindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_CLASE, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "inspriv", OBJETO, -aaindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_CLASE, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 
-    /*TODO: continuar el test (me voy a comer volvere luego)*/
+    /*declarar variable exposed unique {AA} clasepub*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "clasepub", OBJETO, -aaindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 
-    /*if(buscarParaDeclararMiembroInstancia(ej_tabla_clases, "AA", "sa1", &e, nombre_ambito_encontrado) == ERR) {
-        printf("Caso 53 Buscar: ERROR (AA_sA1) SE PUEDE DECLARAR\n\n");
+    /*declarar variable secret unique {AA} claseprot*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "claseprot", OBJETO, -aaindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_HERENCIA, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    /*declarar variable hidden unique {AA} clasepriv*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "clasepriv", OBJETO, -aaindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_CLASE, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    /*declarar variable exposed {AA} miaa*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "miaa", OBJETO, -aaindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    /*declarar function secret int prueba*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "AA", "prueba", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_HERENCIA, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    tablaSimbolosClasesAbrirAmbitoEnClase(ej_tabla_clases, "AA", "prueba", ESCALAR, ACCESO_HERENCIA, INT, 0, 1); 
+
+    if(buscarIdCualificadoInstancia(ej_tabla_clases, tabla_main, "miaa", "inspriv", "AA", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 48: SE ACCEDE DESDE UN MÉTODO A UN ATRIBUTO (inspriv) QUE EXISTE EN LA JERARQUÍA (AA) Y NO ESTÁ ACCESIBLE (inspriv es hidden) A TRAVÉS DE UNA INSTANCIA QUE SÍ ESTÁ ACCESIBLE (miaa)\n\n");
     } else {
-        printf("Caso 53 FALLIDO Buscar: AA_sA1 ENCONTRADO EN %s\n\n", nombre_ambito_encontrado);
+        printf("Caso 48 FALLIDO Buscar: inspriv ACCESIBLE CUANDO NO DEBERIA\n\n");
     }
-*/
-    /*declarar variable secret int sa1*/
-    /*insertarTablaSimbolosClases(ej_tabla_clases, "AA", "sa1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_HERENCIA, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 
-    if(buscarParaDeclararMiembroInstancia(ej_tabla_clases, "AA", "sa1", &e, nombre_ambito_encontrado) == OK) {
-        printf("Caso 51 Buscar: OK (AA_sA1) YA ESTÁ EN %s NO SE PUEDE DECLARAR\n\n", nombre_ambito_encontrado);
+    if(buscarIdCualificadoInstancia(ej_tabla_clases, tabla_main, "miaa", "insprot", "AA", &e, nombre_ambito_encontrado) == OK) {
+        printf("Caso 47.3: SE ACCEDE DESDE UN MÉTODO A UN ATRIBUTO (insprot) QUE EXISTE EN LA JERARQUÍA Y ESTÁ ACCESIBLE (insprot es secret) CUALIFICANDO POR UNA INSTANCIA ACCESIBLE (miaa)\n\n");
     } else {
-        printf("Caso 51 FALLIDO Buscar: AA_sA1 NO ENCONTRADO EN AA\n\n");
+        printf("Caso 47.3 FALLIDO Buscar: insprot NO ACCESIBLE CUANDO DEBERIA\n\n");
     }
 
-    if(buscarParaDeclararMiembroInstancia(ej_tabla_clases, "AA", "mA1@1", &e, nombre_ambito_encontrado) == ERR) {
-        printf("Caso 53 Buscar: ERROR (AA_mA1@1) SE PUEDE DECLARAR\n\n");
+    if(buscarIdCualificadoInstancia(ej_tabla_clases, tabla_main, "miaa", "inspub", "AA", &e, nombre_ambito_encontrado) == OK) {
+        printf("Caso 47.3: SE ACCEDE DESDE UN MÉTODO A UN ATRIBUTO (inspub) QUE EXISTE EN LA JERARQUÍA Y ESTÁ ACCESIBLE (inspub es exposed) CUALIFICANDO POR UNA INSTANCIA ACCESIBLE (miaa)\n\n");
     } else {
-        printf("Caso 53 FALLIDO Buscar: AA_mA1@1 ENCONTRADO EN %s\n\n", nombre_ambito_encontrado);
+        printf("Caso 47.3 FALLIDO Buscar: inspub NO ACCESIBLE CUANDO DEBERIA\n\n");
     }
-*/
-    /*declarar function secret int mA1@1*/
-   /* insertarTablaSimbolosClases(ej_tabla_clases, "AA", "mA1@1", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_HERENCIA, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);*/
 
+    if(buscarIdCualificadoClase(ej_tabla_clases, "AA", "claseprot", "AA", &e, nombre_ambito_encontrado) == OK) {
+        printf("Caso 35: SE BUSCA DESDE UN MÉTODO ALGO DE UNA CLASE (AA) QUE ESTÁ EN LA JERARQUÍA Y ES ACCESIBLE (claseprot es secret y estamos en la clase)\n\n");
+    } else {
+        printf("Caso 35 FALLIDO Buscar: claseprot NO ACCESIBLE CUANDO DEBERIA\n\n");
+    }
+
+    if(buscarIdCualificadoClase(ej_tabla_clases, "AA", "clasepub", "AA", &e, nombre_ambito_encontrado) == OK) {
+        printf("Caso 35: SE BUSCA DESDE UN MÉTODO ALGO DE UNA CLASE (AA) QUE ESTÁ EN LA JERARQUÍA Y ES ACCESIBLE (clasepub es exposed)\n\n");
+    } else {
+        printf("Caso 35 FALLIDO Buscar: clasepub NO ACCESIBLE CUANDO DEBERIA\n\n");
+    }
+
+    cerrarAmbitoEnClase(ej_tabla_clases, "AA");
 
     cerrarClase(ej_tabla_clases,"AA",0,0,0,0);
 
-    /* Clase BB: tiene 3 atributos de clase y 3 metodos de clase */
-    abrirClaseHereda(ej_tabla_clases,"BB", "AA");
+    /* Clase BB*/
+    bbindex = abrirClaseHereda(ej_tabla_clases,"BB", "AA");
 
-    
+        /*declarar variable exposed {BB} mibb*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "BB", "mibb", OBJETO, -bbindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 
     cerrarClase(ej_tabla_clases,"BB",0,0,0,0);
 
+    /* Declarar variable global {BB} MainMiBB*/
+    insertarTablaSimbolosAmbitos(tabla_main, "main", "MainMiBB", OBJETO, -bbindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    /* Declarar variable global {BB} MainMiBB2*/
+    insertarTablaSimbolosAmbitos(tabla_main, "main", "MainMiBB2", OBJETO, -bbindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    if(buscarIdCualificadoInstancia(ej_tabla_clases, tabla_main, "MainMiBB", "insnoexiste", "main", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 40.1: SE BUSCA ALGO QUE NO EXISTE CUALIFICADO POR UNA INSTANCIA QUE EXISTE Y ES GLOBAL\n\n");
+    } else {
+        printf("Caso 40.1 FALLIDO Buscar: insnoexiste ENCONTRADO CUANDO NO EXISTE\n\n");
+    }
+
+    /* Clase CC*/
+    ccindex = abrirClase(ej_tabla_clases,"CC");
+
+        /*declarar variable exposed {CC} micc*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "CC", "micc", OBJETO, -ccindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    cerrarClase(ej_tabla_clases,"CC",0,0,0,0);
+
+    /* Clase DD*/
+    ddindex = abrirClaseHereda(ej_tabla_clases,"DD", "AA", "CC");
+
+        /*declarar variable exposed {DD} midd*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "DD", "midd", OBJETO, -ddindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    cerrarClase(ej_tabla_clases,"DD",0,0,0,0);
+
+    /* Clase EE*/
+    eeindex = abrirClaseHereda(ej_tabla_clases,"EE", "BB", "DD");
+
+    /*declarar variable exposed {EE} miee*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "EE", "miee", OBJETO, -eeindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+/*declarar function exposed none mE*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "EE", "mE", ESCALAR, NINGUNO, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    tablaSimbolosClasesAbrirAmbitoEnClase(ej_tabla_clases, "EE", "mE", ESCALAR, ACCESO_TODOS, NINGUNO, 0, 1);
+
+    /*declarar variable {EE} varLoc*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "EE", "varLoc", OBJETO, -eeindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    if(buscarIdCualificadoClase(ej_tabla_clases, "EE", "claseNoExiste", "EE", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 37: DESDE DENTRO DE UN MÉTODO, SE ACCEDE A ALGO CUALIFICADO POR UNA CLASE (EE) QUE EXISTE PERO LO BUSCADO NO EXISTE (claseNoExiste)\n\n");
+    } else {
+        printf("Caso 37 FALLIDO Buscar: claseNoExiste ENCONTRADO CUANDO NO DEBERIA\n\n");
+    }
+
+    if(buscarIdCualificadoClase(ej_tabla_clases, "noExiste", "claseNoExiste", "EE", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 38: DESDE DENTRO DE UN MÉTODO, SE ACCEDE A ALGO CUALIFICADO POR UNA CLASE (noExiste) QUE NO EXISTE\n\n");
+    } else {
+        printf("Caso 38 FALLIDO Buscar: noExiste ENCONTRADO CUANDO NO DEBERIA\n\n");
+    }
+
+    if(buscarIdCualificadoInstancia(ej_tabla_clases, tabla_main, "MainMiBB2", "inspub", "EE", &e, nombre_ambito_encontrado) == OK) {
+        printf("Caso 46.3: DESDE DENTRO DE UN MÉTODO, SE BUSCA ALGO CUALIFICADO POR UNA INSTANCIA DE UNA CLASE (B) QUE ES UNA VARIABLE GLOBAL Y LO BUSCADO ES UN ATRIBUTO (inspub) QUE NO ESTÁ EN LA CLASE PERO SÍ EN LA JERARQUÍA (en A) Y ES ACCESIBLE (exposed)\n\n");
+    } else {
+        printf("Caso 46.3 FALLIDO Buscar: MainMiBB2.inspub NO ACCESIBLE CUANDO DEBERIA\n\n");
+    }
+
+    if(buscarIdCualificadoInstancia(ej_tabla_clases, tabla_main, "miee", "insNoExiste", "EE", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 47.1: DESDE UN MÉTODO SE ACCEDE A ALGO CUALIFICADO POR UNA INSTANCIA (miee) QUE ES UN ATRIBUTO ACCESIBLE EN ESTE CASO DE LA MISMA CLASE PERO EL ATRIBUTO BUSCADO (insNoExiste) NO EXISTE\n\n");
+    } else {
+        printf("Caso 47.1 FALLIDO Buscar: insNoExiste ENCONTRADO CUANDO NO DEBERIA\n\n");
+    }
+
+    if(buscarIdCualificadoInstancia(ej_tabla_clases, tabla_main, "varLoc", "inspub", "EE", &e, nombre_ambito_encontrado) == OK) {
+        printf("Caso 45.3: DESDE UN METODO SE ACCEDE A ALGO CUALIFICADO POR UNA INSTANCIA (varLoc) QUE ES UNA VARIABLE LOCAL DEL MÉTODO DE UN CLASE QUE EXISTE (E) Y LA COSA BUSCADA (inspub) ES UNA ATRIBUTO QUE AUNQUE NO ESTÁ EN LA CLASE SÍ ESTÁ EN  LA JERARQUÍA (A) Y ES ACCESIBLE (exposed)\n\n");
+    } else {
+        printf("Caso 45.3 FALLIDO Buscar: varLoc.inspub NO ACCESIBLE CUANDO DEBERIA\n\n");
+    }
+
+    cerrarAmbitoEnClase(ej_tabla_clases, "EE");
+
+    cerrarClase(ej_tabla_clases,"EE",0,0,0,0);
+
+    /* Clase FF*/
+    ffindex = abrirClaseHereda(ej_tabla_clases,"FF", "CC", "EE");
+
+        /*declarar variable exposed {FF} miff*/
+    insertarTablaSimbolosClases(ej_tabla_clases, "FF", "miff", OBJETO, -ffindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
+    cerrarClase(ej_tabla_clases,"FF",0,0,0,0);
+
+    insertarTablaSimbolosAmbitos(tabla_main, "main", "prueba", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    AbrirAmbitoPrefijos(tabla_main, "main", "prueba", ESCALAR, ACCESO_TODOS, INT, 0, 1); 
+
+    if(buscarIdCualificadoClase(ej_tabla_clases, "AA", "clasepriv", "main", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 32: ACCESOS DESDE UNA FUNCIÓN GLOBAL (prueba) A ALGO CUALIFICADO POR UNA CLASE (A) QUE EXISTE Y LO BUSCADO (clasepriv) ES ATRIBUTO DE ESA CLASE SON DE CLASE Y NO ES ACCESIBLE \n\n");
+    } else {
+        printf("Caso 32 FALLIDO Buscar: clasepriv ACCESIBLE CUANDO NO DEBERIA\n\n");
+    }
+
+    if(buscarIdCualificadoClase(ej_tabla_clases, "AA", "clasepub", "main", &e, nombre_ambito_encontrado) == OK) {
+        printf("Caso 31: ACCESOS DESDE UNA FUNCIÓN GLOBAL (prueba) A ALGO CUALIFICADO POR UNA CLASE (A) QUE EXISTE Y LO BUSCADO (clasepub) ES ATRIBUTO DE ESA CLASE SON DE CLASE Y ES ACCESIBLE \n\n");
+    } else {
+        printf("Caso 31 FALLIDO Buscar: clasepriv NO ACCESIBLE CUANDO DEBERIA\n\n");
+    }
+
+    if(buscarIdCualificadoClase(ej_tabla_clases, "AA", "claseNoExiste", "main", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 33: ACCESOS DESDE UNA FUNCIÓN GLOBAL (prueba) A ALGO CUALIFICADO POR UNA CLASE (A) QUE EXISTE Y LO BUSCADO (claseNoExiste) NO \n\n");
+    } else {
+        printf("Caso 33 FALLIDO Buscar: claseNoExiste ENCONTRADO CUANDO NO DEBERIA\n\n");
+    }
+
+    if(buscarIdCualificadoClase(ej_tabla_clases, "noExiste", "claseNoExiste", "main", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 34: ACCESO DESDE FUNCIÓN GLOBAL DE ALGO CUALIFICADO POR UNA CLASE QUE NO EXISTE \n\n");
+    } else {
+        printf("Caso 34 FALLIDO Buscar: noExiste ENCONTRADO CUANDO NO DEBERIA\n\n");
+    }
+
+    if(buscarIdCualificadoInstancia(ej_tabla_clases, tabla_main, "MainMiBB2", "insNoExiste", "main", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 43.1: ACCESO DESDE UNA FUNCIÓN GLOBAL (prueba) DE UN ID (insNoExiste) CUALIFICADO POR UNA INSTANCIA (MainMiBB2) QUE EXISTE COMO VARIABLE GLOBAL DE UNA CLASE (B) QUE NO TIENE ESE ATRIBUTO DE NINGUNA MANERA\n\n");
+    } else {
+        printf("Caso 43.1 FALLIDO Buscar: MainMiBB2.insNoExiste ENCONTRADO CUANDO NO EXISTE\n\n");
+    }
+
     cerrarAmbitoPrefijos(tabla_main);
+
+    insertarTablaSimbolosAmbitos(tabla_main, "main", "f2", ESCALAR, NINGUNO, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    AbrirAmbitoPrefijos(tabla_main, "main", "f2", ESCALAR, ACCESO_TODOS, NINGUNO, 0, 1); 
+
+    if(buscarIdCualificadoInstancia(ej_tabla_clases, tabla_main, "MainMiBB2", "inspub", "main", &e, nombre_ambito_encontrado) == OK) {
+        printf("Caso 42.3: ACCESO DESDE UNA FUNCIÓN GLOBAL (f2) DE UN ID (inspub) CUALIFICADO POR UNA INSTANCIA (MainMiBB2) QUE EXISTE COMO VARIABLE GLOBAL DE UNA CLASE (B) QUE NO TIENE ESOS ATRIBUTOS PERO QUE SÍ LOS TIENE SU JERARQUIA (A) Y ADEMÁS DESDE ELLA (B) ES ACCESIBLE (exposed)\n\n");
+    } else {
+        printf("Caso 42.3 FALLIDO Buscar: MainMiBB2.inspub NO ACCESIBLE CUANDO DEBERIA\n\n");
+    }
+
+    if(buscarIdCualificadoInstancia(ej_tabla_clases, tabla_main, "MainMiBB2", "inspriv", "main", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 43.3: ACCESO DESDE UNA FUNCIÓN GLOBAL (f2) DE UN ID (inspub y inspriv) CUALIFICADO POR UNA INSTANCIA (MainMiBB2) QUE EXISTE COMO VARIABLE GLOBAL DE UNA CLASE (B) QUE NO TIENE ESOS ATRIBUTOS PERO QUE SÍ LOS TIENE SU JERARQUIA (A) Y ADEMÁS DESDE ELLA (B) NO ES ACCESIBLE (hidden)\n\n");
+    } else {
+        printf("Caso 43.3 FALLIDO Buscar: MainMiBB2.inspriv ACCESIBLE CUANDO NO DEBERIA (seguro?)\n\n");
+    }
+
+    cerrarAmbitoPrefijos(tabla_main);
+
+    if(buscarIdCualificadoClase(ej_tabla_clases, "JJ", "noExiste", "main", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 30: DESDE EL CÓDIGO DE MAIN SE BUSCA ALGO CUALIFICADO POR UNA CLASE QUE NO EXISTE (JJ) \n\n");
+    } else {
+        printf("Caso 30 FALLIDO Buscar: JJ ENCONTRADO CUANDO NO DEBERIA\n\n");
+    }
+
+    if(buscarIdCualificadoInstancia(ej_tabla_clases, tabla_main, "MainMiBB2", "inspub", "main", &e, nombre_ambito_encontrado) == OK) {
+        printf("Caso 40.3: ESDE EL CÓDIGO DE MAIN SE BUSCA ALGO CUALIFICADO POR UNA INSTANCIA (MainMiBB2) QUE EXISTE COMO VARIABLE GLOBAL DE UNA CLASE (B) QUE NO TIENE ESOS ATRIBUTOS PERO QUE SÍ LOS TIENE SU JERARQUIA (A) Y ADEMÁS DESDE ELLA (B) ES ACCESIBLE (exposed)\n\n");
+    } else {
+        printf("Caso 40.3 FALLIDO Buscar: MainMiBB2.inspub NO ACCESIBLE CUANDO DEBERIA\n\n");
+    }
+
+    if(buscarIdCualificadoClase(ej_tabla_clases, "AA", "clasepub", "main", &e, nombre_ambito_encontrado) == OK) {
+        printf("Caso 27.1: DESDE EL CÓDIGO DE MAIN SE BUSCA ALGO CUALIFICADO POR UNA CLASE QUE EXISTE (AA) Y EL ID BUSCADO (clasepub) ES UN ATRIBUTO QUE EXISTE EN LA CLASE, ACCESIBLE Y ATRIBUTO DE CLASE\n\n");
+    } else {
+        printf("Caso 27.1 FALLIDO Buscar: AA.clasepub NO ACCESIBLE CUANDO DEBERIA\n\n");
+    }
+
+    if(buscarIdCualificadoClase(ej_tabla_clases, "AA", "clasepriv", "main", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 28: DESDE EL CÓDIGO DE MAIN SE BUSCA ALGO CUALIFICADO POR UNA CLASE QUE EXISTE (AA) Y EL ID BUSCADO (clasepriv) ES UN ATRIBUTO QUE EXISTE EN LA CLASE, NO ACCESIBLE (hidden)\n\n");
+    } else {
+        printf("Caso 28 FALLIDO Buscar: AA.clasepriv ACCESIBLE CUANDO NO DEBERIA\n\n");
+    }
+
+    if(buscarIdCualificadoClase(ej_tabla_clases, "AA", "claseNoExiste", "noExiste", &e, nombre_ambito_encontrado) == ERR) {
+        printf("Caso 29: DESDE EL CÓDIGO DE MAIN SE BUSCA ALGO CUALIFICADO POR UNA CLASE QUE EXISTE (AA) Y EL ID BUSCADO (noExiste) NO EXISTE\n\n");
+    } else {
+        printf("Caso 29 FALLIDO Buscar: claseNoExiste ENCONTRADO CUANDO NO DEBERIA\n\n");
+    }
 
     /* Cerrar las tablas de simbolos */
     cerrarTablaSimbolosClases(ej_tabla_clases);
