@@ -87,26 +87,28 @@ int testTabla(char* fname) {
 }
 
 int Test2(){
-  TablaAmbito* tabla_main; /* Tabla de simbolos de main*/
-  TablaSimbolosClases * ej_tabla_clases = NULL;
-  char nombre_ambito_encontrado[MAX_NAME];
-  elementoTablaSimbolos* e = NULL;
-  FILE* fsalida = fopen("salida.txt", "w");
+    TablaAmbito* tabla_main; /* Tabla de simbolos de main*/
+    TablaSimbolosClases * ej_tabla_clases = NULL;
+    char nombre_ambito_encontrado[MAX_NAME];
+    elementoTablaSimbolos* e = NULL;
+    FILE* fsalida = fopen("salida.txt", "w");
 
-  /* Inicializar la tabla de simbolos del main (ambito por defecto) */
-  tabla_main = tablaInit("main");
+    /* Inicializar la tabla de simbolos del main (ambito por defecto) */
+    tabla_main = tablaInit("main");
 
-  /* Inicializar la tabla de las clases */
-  iniciarTablaSimbolosClases(&ej_tabla_clases, "ej_clases");
+    /* Inicializar la tabla de las clases */
+    iniciarTablaSimbolosClases(&ej_tabla_clases, "ej_clases");
 
-  /* Declarar variable global int v1*/
-  insertarTablaSimbolosAmbitos(tabla_main, "main", "v1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    /* Declarar variable global int v1*/
+    insertarTablaSimbolosAmbitos(tabla_main, "main", "v1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 
-  /* Clase AA: tiene 8 metodos */
-  abrirClase(ej_tabla_clases,"AA");
-  graph_enrouteParentsLastNode(ej_tabla_clases);
+    /* Clase AA: tiene 8 metodos */
+    abrirClase(ej_tabla_clases,"AA");
+    graph_enrouteParentsLastNode(ej_tabla_clases);
 
     insertarTablaSimbolosClases(ej_tabla_clases, "AA", "mA1@1", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_HERENCIA, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    abrirAmbitoEnClase(ej_tabla_clases, "AA", "mA1@1", ESCALAR, ACCESO_TODOS, INT, 0, 1);
+    
     if(buscarParaDeclararIdLocalEnMetodo(ej_tabla_clases, "AA", "p1", &e, nombre_ambito_encontrado) == ERR){
       printf("CASO 60:OK. NO SE HA ENCONTRADO EL ID Y SE PUEDE DECLARAR");
         insertarTablaSimbolosClases(ej_tabla_clases, "AA", "p1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_CLASE, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
@@ -114,8 +116,11 @@ int Test2(){
     else printf("CASO 60:FALLIDO. SE HA ENCONTRADO EL ID Y NO SE PUEDE DECLARAR");
     printf("\n");
 
-
+    cerrarAmbitoEnClase(ej_tabla_clases, "AA");
+    
     insertarTablaSimbolosClases(ej_tabla_clases, "AA", "mA2@1@1", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_HERENCIA, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    abrirAmbitoEnClase(ej_tabla_clases, "AA", "mA2@1@1", ESCALAR, ACCESO_TODOS, INT, 0, 1);
+    
     insertarTablaSimbolosClases(ej_tabla_clases, "AA", "p1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_CLASE, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
     if(buscarParaDeclararIdLocalEnMetodo(ej_tabla_clases, "AA", "p1", &e, nombre_ambito_encontrado) == ERR){
         printf("CASO 61:FALLIDO. NO SE HA ENCONTRADO EL ID Y SE PUEDE DECLARAR");
@@ -123,8 +128,12 @@ int Test2(){
     }
     else printf("CASO 61:OK. SE HA ENCONTRADO EL ID Y NO SE PUEDE DECLARAR");
     printf("\n");
-
+    
+    cerrarAmbitoEnClase(ej_tabla_clases, "AA");
+    
     insertarTablaSimbolosClases(ej_tabla_clases, "AA", "mA3@1@3", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_HERENCIA, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    abrirAmbitoEnClase(ej_tabla_clases, "AA", "mA3@1@3", ESCALAR, ACCESO_TODOS, INT, 0, 1);
+    
     insertarTablaSimbolosClases(ej_tabla_clases, "AA", "p1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_CLASE, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
     if(buscarParaDeclararIdLocalEnMetodo(ej_tabla_clases, "AA", "mA3", &e, nombre_ambito_encontrado) == ERR){
         printf("CASO 62:OK. NO SE HA ENCONTRADO EL ID Y SE PUEDE DECLARAR");
@@ -133,65 +142,82 @@ int Test2(){
     else printf("CASO 62:FALLIDO. SE HA ENCONTRADO EL ID Y NO SE PUEDE DECLARAR");
     printf("\n");
 
+    cerrarAmbitoEnClase(ej_tabla_clases, "AA");
+    
     insertarTablaSimbolosClases(ej_tabla_clases, "AA", "mA4", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_HERENCIA, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    abrirAmbitoEnClase(ej_tabla_clases, "AA", "mA4", ESCALAR, ACCESO_TODOS, INT, 0, 1);
+    
     if(buscarParaDeclararIdLocalEnMetodo(ej_tabla_clases, "AA", "v2", &e, nombre_ambito_encontrado) == ERR){
         printf("CASO 63:OK. NO SE HA ENCONTRADO EL ID Y SE PUEDE DECLARAR");
         insertarTablaSimbolosClases(ej_tabla_clases, "AA", "v2", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_CLASE, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
     }
     else printf("CASO 63:FALLIDO. SE HA ENCONTRADO EL ID Y NO SE PUEDE DECLARAR");
     printf("\n");
+    
+    cerrarAmbitoEnClase(ej_tabla_clases, "AA");
 
     insertarTablaSimbolosClases(ej_tabla_clases, "AA", "mA5@1", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_HERENCIA, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    abrirAmbitoEnClase(ej_tabla_clases, "AA", "mA5@1", ESCALAR, ACCESO_TODOS, INT, 0, 1);
+    
     insertarTablaSimbolosClases(ej_tabla_clases, "AA", "v1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_CLASE, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
     if(buscarParaDeclararIdLocalEnMetodo(ej_tabla_clases, "AA", "v1", &e, nombre_ambito_encontrado) == ERR){
         printf("CASO 64:FALLIDO. NO SE HA ENCONTRADO EL ID Y SE PUEDE DECLARAR");
     }
     else printf("CASO 64:OK. SE HA ENCONTRADO EL ID Y NO SE PUEDE DECLARAR");
     printf("\n");
+    
+    cerrarAmbitoEnClase(ej_tabla_clases, "AA");
 
     insertarTablaSimbolosClases(ej_tabla_clases, "AA", "mA6", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_HERENCIA, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    abrirAmbitoEnClase(ej_tabla_clases, "AA", "mA6", ESCALAR, ACCESO_TODOS, INT, 0, 1);
+    
     insertarTablaSimbolosClases(ej_tabla_clases, "AA", "v1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_CLASE, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
     if(buscarParaDeclararIdLocalEnMetodo(ej_tabla_clases, "AA", "v1", &e, nombre_ambito_encontrado) == ERR){
         printf("CASO 65:FALLIDO. NO SE HA ENCONTRADO EL ID Y SE PUEDE DECLARAR");
     }
     else printf("CASO 65:OK. SE HA ENCONTRADO EL ID Y NO SE PUEDE DECLARAR");
     printf("\n");
+    
+    cerrarAmbitoEnClase(ej_tabla_clases, "AA");
 
     insertarTablaSimbolosClases(ej_tabla_clases, "AA", "mA7@1", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_HERENCIA, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    abrirAmbitoEnClase(ej_tabla_clases, "AA", "mA7@1", ESCALAR, ACCESO_TODOS, INT, 0, 1);
+    
     insertarTablaSimbolosClases(ej_tabla_clases, "AA", "p1", ESCALAR, INT, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_CLASE, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
     if(buscarParaDeclararIdLocalEnMetodo(ej_tabla_clases, "AA", "mA7", &e, nombre_ambito_encontrado) == ERR){
         printf("CASO 66:OK. NO SE HA ENCONTRADO EL ID Y SE PUEDE DECLARAR");
     }
     else printf("CASO 66:FALLIDO. SE HA ENCONTRADO EL ID Y NO SE PUEDE DECLARAR");
     printf("\n");
+    
+    cerrarAmbitoEnClase(ej_tabla_clases, "AA");
 
     insertarTablaSimbolosClases(ej_tabla_clases, "AA", "mA8", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_HERENCIA, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    abrirAmbitoEnClase(ej_tabla_clases, "AA", "mA8", ESCALAR, ACCESO_TODOS, INT, 0, 1);
+    
     if(buscarParaDeclararIdLocalEnMetodo(ej_tabla_clases, "AA", "mA8", &e, nombre_ambito_encontrado) == ERR){
         printf("CASO 67:OK. NO SE HA ENCONTRADO EL ID Y SE PUEDE DECLARAR");
     }
     else printf("CASO 67:FALLIDO. SE HA ENCONTRADO EL ID Y NO SE PUEDE DECLARAR");
     printf("\n");
+    
+    cerrarAmbitoEnClase(ej_tabla_clases, "AA");
 
 
-      cerrarAmbitoPrefijos(tabla_main);
+    cerrarAmbitoPrefijos(tabla_main);
 
-      cerrarAmbito(tabla_main);
+    cerrarAmbito(tabla_main);
 
-      /* Cerrar las tablas de simbolos */
-      cerrarTablaSimbolosClases(ej_tabla_clases);
+    /* Cerrar las tablas de simbolos */
+    cerrarTablaSimbolosClases(ej_tabla_clases);
 
-      tablaSimbolosClasesToDot(ej_tabla_clases, fsalida);
+    tablaSimbolosClasesToDot(ej_tabla_clases, fsalida);
 
-      tablaFree(tabla_main);
-      liberarTablaSimbolosClases(ej_tabla_clases);
-      fclose(fsalida);
-      return 0;
+    tablaFree(tabla_main);
+    liberarTablaSimbolosClases(ej_tabla_clases);
+    fclose(fsalida);
+    return 0;
 }
-
-
-
-
-
 
 int TestNuevo(){
     TablaAmbito* tabla_main; /* Tabla de simbolos de main*/
@@ -812,7 +838,7 @@ int testBuscarUso() {
 
     /* Declarar variable global {BB} MainMiBB2*/
     insertarTablaSimbolosAmbitos(tabla_main, "main", "MainMiBB2", OBJETO, -bbindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
-
+    
     if(buscarIdCualificadoInstancia(ej_tabla_clases, tabla_main, "MainMiBB", "insnoexiste", "main", &e, nombre_ambito_encontrado) == ERR) {
         printf("Caso 40.1: SE BUSCA ALGO QUE NO EXISTE CUALIFICADO POR UNA INSTANCIA QUE EXISTE Y ES GLOBAL\n\n");
     } else {
@@ -843,6 +869,7 @@ int testBuscarUso() {
 
 /*declarar function exposed none mE*/
     insertarTablaSimbolosClases(ej_tabla_clases, "EE", "mE", ESCALAR, NINGUNO, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+
     abrirAmbitoEnClase(ej_tabla_clases, "EE", "mE", ESCALAR, ACCESO_TODOS, NINGUNO, 0, 1);
 
     /*declarar variable {EE} varLoc*/
@@ -1011,7 +1038,7 @@ int main(int argc, char* argv[]) {
         }
 
     }
-    printf("help: %s graph|dot|tabla [filename]|binc|bdmc|bdmi|buso\ngraph: test graph\ndot: test function to create .dot file\ntabla: test tablaSimbolosClases\nbinc: test buscarIdNoCualificado\nbdmc: test buscarDeclararMiembroClase\nbdmi: test buscarDeclararMiembroInstancia\nbuso: test buscarUso\n", argv[0]);
+    printf("help: %s graph|dot|tabla [filename]|binc|bdmc|bdmi|buso|nuevo|2\ngraph: test graph\ndot: test function to create .dot file\ntabla: test tablaSimbolosClases\nbinc: test buscarIdNoCualificado\nbdmc: test buscarDeclararMiembroClase\nbdmi: test buscarDeclararMiembroInstancia\nbuso: test buscarUso\nnuevo: test buscarParaDeclararIdTablaSimbolosAmbitos\n2: test buscarParaDeclararIdLocalEnMetodo\n", argv[0]);
     return 0;
 
 }
