@@ -75,8 +75,6 @@ int AbrirAmbitoPrefijos(TablaAmbito * tabla,
                                     int tipo_metodo,
                                     int posicion_metodo_sobre,
                                     int tamanio) {
-    char nombre_real[MAX_NAME];
-    
     elementoTablaSimbolos* elemento = malloc(sizeof(elementoTablaSimbolos));
     if(elemento == NULL)
         return -1;
@@ -91,33 +89,21 @@ int AbrirAmbitoPrefijos(TablaAmbito * tabla,
     
     /*inserta el simbolo de la funcion en su propia tabla*/
     /*TODO: comprobar esta informacion (con que parametros se tiene que insertar en la tabla de simbolos*/
-    strcpy(nombre_real, id_clase);
-    strcat(nombre_real, "_");
-    strcat(nombre_real, id_ambito);
-    strcpy(elemento->clave, nombre_real);
-    elemento->clase = categoria_ambito;
-    elemento->tipo = tipo_metodo;
-    elemento->categoria = FUNCION;
-    elemento->direcciones = 0; /*??*/
-    elemento->numero_parametros = 0; /*por donde se pasa esto?*/
-    elemento->numero_variables_locales = 0; /*??*/
-    elemento->posicion_variable_local = 0; /*??*/
-    elemento->posicion_parametro = 0; /*??*/
-    elemento->tamanio = tamanio;
-    elemento->numero_atributos_clase = 0; /*??*/
-    elemento->numero_atributos_instancia = 0; /*??*/
-    elemento->numero_metodos_sobreescribibles = 0; /*??*/
-    elemento->numero_metodos_no_sobreescribibles = 0; /*??*/
-    elemento->tipo_acceso = acceso_metodo;
-    elemento->tipo_miembro = tipo_metodo; /*??*/
-    elemento->posicion_atributo_instancia = 0; /*??*/
-    elemento->posicion_metodo_sobreescribible = 0; /*??*/
-    elemento->num_acumulado_atributos_instancia = 0; /*??*/
-    elemento->num_acumulado_metodos_sobreescritura = 0; /*??*/
-    elemento->posicion_acumulada_atributos_instancia = 0; /*??*/
-    elemento->posicion_acumulada_metodos_sobreescritura = 0; /*??*/
-    elemento->tipo_args = NULL;
-    insert_symbol(&(tabla->th_func), elemento->clave, elemento);
+    insertarTablaSimbolosAmbitos(tabla, id_clase,
+        id_ambito, categoria_ambito,
+        tipo_metodo, /*??*/ FUNCION,
+        0, /*??*/ 0, /*por donde se pasa esto?*/
+        0, /*??*/ 0, /*??*/
+        0, /*??*/
+        tamanio,
+        0, 0,
+        0, 0,
+        acceso_metodo, tipo_metodo, /*??*/
+        0, posicion_metodo_sobre,
+        0, 0, /*??*/
+        0,
+        posicion_metodo_sobre, /*??*/
+        NULL); /*??*/
     return 0;
 }
 
@@ -167,7 +153,9 @@ int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
     if(elemento == NULL)
         return -1;
 
-    if(strlen(tabla->func_name) > 0) /*hay funcion abierta: inserta el simbolo con prefijo de la funcion*/
+    /*hay funcion abierta: inserta el simbolo con prefijo de la funcion */
+    /*a no ser que el simbolo a insertar sea el mismo que el nombre de la funcion: en ese caso se inserta la funcion con el prefijo original*/
+    if(strlen(tabla->func_name) > 0 && strcmp(tabla->func_name, id) != 0) 
         id_clase_real = tabla->func_name;
     else
         id_clase_real = id_clase;
