@@ -75,10 +75,7 @@ int AbrirAmbitoPrefijos(TablaAmbito * tabla,
                                     int tipo_metodo,
                                     int posicion_metodo_sobre,
                                     int tamanio) {
-    elementoTablaSimbolos* elemento = malloc(sizeof(elementoTablaSimbolos));
-    if(elemento == NULL)
-        return -1;
-                                            
+                               
     if(strlen(tabla->func_name) > 0) {
         /*ya hay una funcion abierta, no se permite anidar funciones*/
         return -1;
