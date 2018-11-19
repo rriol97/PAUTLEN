@@ -531,3 +531,4 @@ int liberarTablaSimbolosClases(TablaSimbolosClases* t) {
 void tablaSimbolosClasesToDot(TablaSimbolosClases* tabla, FILE* fsalida) {
     graphToDot(tabla->graph, fsalida);
 }
+
