@@ -4,11 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-
-/* Declaraciones de tipos de datos del compilador */
-#define ENTERO	0
-#define BOOLEANO 	1
+#include "omicron.h"
 
 
 /* OBSERVACIÓN GENERAL A TODAS LAS FUNCIONES:

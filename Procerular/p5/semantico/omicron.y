@@ -566,6 +566,11 @@ exp: exp '+' exp
     exp TOK_AND exp
     {
         fprintf(fout, ";R:\texp: exp TOK_AND exp\n");
+        if ($2.tipo == ENTERO) {
+            sprintf(msg, "El cambio de signo requiere operandos que sean numeros");
+        }
+        $$.tipo = ENTERO;
+        $$.valor_entero = - $2.valor_entero;
     }
     |
     exp TOK_OR exp
