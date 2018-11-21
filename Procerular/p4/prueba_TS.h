@@ -31,3 +31,16 @@ Descripcion: libreria de definiciones e inclusiones
 //···
 #define TOK_ID_CUALIFICADO_INSTANCIA    "id_cualificado_instancia"
 #define TOK_ID_CUALIFICADO_CLASE    "id_cualificado_clase"
+
+
+
+void 
+void 
+void gestiona_ABRIR_CLASE();
+void gestiona_ABRIR_CLASE_HEREDA ();
+void gestiona_INSERTAR_TSC();
+void gestiona_ABRIR_AMBITO_TSC();
+void gestiona_CERRAR_AMBITO_TSC ();
+void gestiona_CERRAR_CLASE ();
+void gestiona_CERRAR_TSA_MAIN();
+void gestiona_CERRAR_TSC();
