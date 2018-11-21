@@ -162,7 +162,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 14 "omicron.y" /* yacc.c:1909  */
+#line 16 "omicron.y" /* yacc.c:1909  */
 
     tipo_atributos atributos;
 

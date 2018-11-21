@@ -9,6 +9,8 @@ extern int yylex();
 extern FILE *yyin;
 extern FILE *fout;
 extern int flag_error;
+
+int tipo_id_actual;
 %}
 
 %union {
@@ -226,13 +228,13 @@ clase_escalar: tipo
 tipo: TOK_INT
     {
         //fprintf(fout, ";R:\ttipo: TOK_INT\n");
-        $$.tipo = ENTERO;
+        tipo_id_actual = ENTERO;
     }
     |
     TOK_BOOLEAN
     {
         //fprintf(fout, ";R:\ttipo: TOK_BOOLEAN\n");
-        $$.tipo = BOOLEAN;
+        tipo_id_actual = BOOLEAN;
     }
 ;
 
@@ -508,10 +510,10 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR
 escritura: TOK_PRINTF exp
     {
         //fprintf(fout, ";R:\tescritura: TOK_PRINTF exp\n");
-        printf("--------> %d\n", $2.tipo);
+        printf("--------> %d\n", tipo_id_actual);
         //$2.tipo = ENTERO;
         escribir_operando(fout, $2.lexema, $2.direcciones);
-        escribir(fout, $2.direcciones, $2.tipo);
+        escribir(fout, $2.direcciones, tipo_id_actual);
     } 
 ;
 
