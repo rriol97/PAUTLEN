@@ -566,21 +566,31 @@ exp: exp '+' exp
     exp TOK_AND exp
     {
         fprintf(fout, ";R:\texp: exp TOK_AND exp\n");
-        if ($2.tipo == ENTERO) {
-            sprintf(msg, "El cambio de signo requiere operandos que sean numeros");
+        if ($1.tipo == ENTERO || $3.tipo == ENTERO) {
+            sprintf(msg, "La conjuncion requiere operandos que sean booleans");
         }
-        $$.tipo = ENTERO;
-        $$.valor_entero = - $2.valor_entero;
+        $$.tipo = BOOLEAN;
+        $$.valor_entero = $1.valor_entero && $3.valor_entero;
     }
     |
     exp TOK_OR exp
     {
         fprintf(fout, ";R:\texp: exp TOK_OR exp\n");
+        if ($1.tipo == ENTERO || $3.tipo == ENTERO) {
+            sprintf(msg, "La disyuncion requiere operandos que sean booleans");
+        }
+        $$.tipo = BOOLEAN;
+        $$.valor_entero = $1.valor_entero || $3.valor_entero;
     }
     |
     '!' exp
     {
         fprintf(fout, ";R:\texp: '!' exp\n");
+        if ($2.tipo == ENTERO) {
+            sprintf(msg, "La negacion requiere operandos que sean booleans");
+        }
+        $$.tipo = BOOLEAN;
+        $$.valor_entero = !($1.valor_entero);
     }
     |
     TOK_IDENTIFICADOR
@@ -596,6 +606,7 @@ exp: exp '+' exp
     '(' exp ')'
     {
         fprintf(fout, ";R:\texp: '(' exp ')'\n");
+        $$.tipo = $2.tipo
     }
     |
     '(' comparacion ')'
