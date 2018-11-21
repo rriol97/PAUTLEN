@@ -4,14 +4,15 @@
 #		   Ricardo Riol Gonzalez - ricardo.riol@estudiante.uam.es
 ################################################################################
 
-all: pruebaSintactico.c lex.yy.c y.tab.c
-	gcc -Wall -o pruebaSintactico pruebaSintactico.c lex.yy.c y.tab.c
+all: pruebaSintactico.c lex.yy.c y.tab.c generacion.c
+	gcc -Wall -o pruebaSintactico pruebaSintactico.c lex.yy.c y.tab.c generacion.c
 
 lex.yy.c: omicron.l
 	$ flex omicron.l
 
 y.tab.c: omicron.y
 	$ bison -dyv omicron.y
+
 
 .PHONY: clean
 

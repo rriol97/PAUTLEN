@@ -4,8 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "omicron.h"
+//#include "omicron.h"
 
+#define ENTERO 1
+#define BOOLEAN 2
 
 /* OBSERVACIÓN GENERAL A TODAS LAS FUNCIONES:
    Todas ellas escriben el código NASM a un FILE* proporcionado como primer argumento.

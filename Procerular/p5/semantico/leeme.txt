@@ -1,5 +1,0 @@
-Entrega de la tercera prácrica de PAUTLEN. Grupo de trabajo número 4.
-Nuestro makefile se encarga tanto de crear como eliminar (clean) los archivos que contienen a yylex e yyparse a partir de los .l y .y entregados.
-El ejecutable que genera se emplea de la forma: pruebaSintactico <fin> <fout>
-
-Las salidas obtenidos con los casos de prueba son idénticos a las soluciones proporcionadas salvo por el orden de alguna regla concreta, que resulta irrelevante.

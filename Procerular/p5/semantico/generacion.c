@@ -1,7 +1,7 @@
 /**
 Name: generacion.c
-Author: Francisco de Vicente y Ricardo Riol 
-Desc: En este fichero se implementan las funciones que permiten la genración del 
+Author: Francisco de Vicente y Ricardo Riol
+Desc: En este fichero se implementan las funciones que permiten la genración del
 	codigo NASM
  */
 #include "generacion.h"
@@ -14,7 +14,7 @@ Desc: En este fichero se implementan las funciones que permiten la genración de
 /*
 	Código para el principio de la sección .bss.
 Con seguridad sabes que deberás reservar una variable entera para guardar
-el puntero de pila extendido (esp). 
+el puntero de pila extendido (esp).
 Se te sugiere el nombre __esp para esta variable.
 */
 void escribir_cabecera_bss(FILE* fpasm) {
@@ -28,7 +28,7 @@ void escribir_cabecera_bss(FILE* fpasm) {
 }
 
 /*
-   Declaración (con directiva db) de las variables que contienen el texto de los 
+   Declaración (con directiva db) de las variables que contienen el texto de los
 mensajes para la identificación de errores en tiempo de ejecución.
 En este punto, al menos, debes ser capaz de detectar la división por 0.
 */
@@ -38,18 +38,18 @@ void escribir_subseccion_data(FILE* fpasm) {
 		printf("Error de fichero (escribir_subsection_data)\n");
 	} else {
 		fprintf(fpasm, "segment .data\n\tmsg_error_division_por_0\tdb \"Division por 0\", 0\n");
-	}	
+	}
 	return;
 }
 
 /*
    Para ser invocada en la sección .bss cada vez que se quiera declarar una variable:
 El argumento nombre es el de la variable.
-tipo puede ser ENTERO o BOOLEANO (observa la declaración de las constantes del 
+tipo puede ser ENTERO o BOOLEAN (observa la declaración de las constantes del
 principio del fichero).
-Esta misma función se invocará cuando en el compilador se declaren vectores, por 
-eso se adjunta un argumento final (tamano) que para esta primera práctica siempre 
-recibirá el valor 1. 
+Esta misma función se invocará cuando en el compilador se declaren vectores, por
+eso se adjunta un argumento final (tamano) que para esta primera práctica siempre
+recibirá el valor 1.
 */
 void declarar_variable(FILE* fpasm, char * nombre,  int tipo,  int tamano) {
 
@@ -62,8 +62,8 @@ void declarar_variable(FILE* fpasm, char * nombre,  int tipo,  int tamano) {
 }
 
 /*
-   Para escribir el comienzo del segmento .text, básicamente se indica que se 
-exporta la etiqueta main y que se usarán las funciones declaradas en la 
+   Para escribir el comienzo del segmento .text, básicamente se indica que se
+exporta la etiqueta main y que se usarán las funciones declaradas en la
 librería olib.o
 */
 void escribir_segmento_codigo(FILE* fpasm) {
@@ -76,8 +76,8 @@ void escribir_segmento_codigo(FILE* fpasm) {
 	return;
 }
 
-/* 
-   En este punto se debe escribir, al menos, la etiqueta main y la sentencia que 
+/*
+   En este punto se debe escribir, al menos, la etiqueta main y la sentencia que
 guarda el puntero de pila en su variable (se recomienda usar __esp).
 */
 void escribir_inicio_main(FILE* fpasm) {
@@ -92,9 +92,9 @@ void escribir_inicio_main(FILE* fpasm) {
 
 /*
    Al final del programa se escribe:
-El código NASM para salir de manera controlada cuando se detecta un error en 
-tiempo de ejecución (cada error saltará a una etiqueta situada en esta zona en 
-la que se imprimirá el correspondiente mensaje y se saltará a la zona de 
+El código NASM para salir de manera controlada cuando se detecta un error en
+tiempo de ejecución (cada error saltará a una etiqueta situada en esta zona en
+la que se imprimirá el correspondiente mensaje y se saltará a la zona de
 finalización del programa).
 En el final del programa se debe:
  ·Restaurar el valor del puntero de pila (a partir de su variable __esp)
@@ -111,19 +111,19 @@ void escribir_fin(FILE* fpasm) {
 }
 
 /*
-   Función que debe ser invocada cuando se sabe un operando de una operación 
-aritmético-lógica y se necesita introducirlo en la pila. nombre es la cadena de 
-caracteres del operando tal y como debería aparecer en el fuente NASM 
+   Función que debe ser invocada cuando se sabe un operando de una operación
+aritmético-lógica y se necesita introducirlo en la pila. nombre es la cadena de
+caracteres del operando tal y como debería aparecer en el fuente NASM
 es_variable indica si este operando es una variable (como por ejemplo b1) con un
-1 u otra cosa (como por ejemplo 34) con un 0. Recuerda que en el primer caso 
-internamente se representará como _b1 y, sin embargo, en el segundo se 
+1 u otra cosa (como por ejemplo 34) con un 0. Recuerda que en el primer caso
+internamente se representará como _b1 y, sin embargo, en el segundo se
 representará tal y como esté en el argumento (34).
 */
 void escribir_operando(FILE* fpasm, char* nombre, int es_variable) {
 
 	if (!fpasm) {
 		printf("Error de fichero (escribir_operando)\n");
-	} 
+	}
 	if (es_variable) {
 		fprintf(fpasm, "\tpush dword _%s\n", nombre);
 	}
@@ -135,8 +135,8 @@ void escribir_operando(FILE* fpasm, char* nombre, int es_variable) {
 }
 
 /*
-	Genera el código para asignar valor a la variable de nombre nombre. 
-Se toma el valor de la cima de la pila. El último argumento es el que indica si 
+	Genera el código para asignar valor a la variable de nombre nombre.
+Se toma el valor de la cima de la pila. El último argumento es el que indica si
 lo que hay en la cima de la pila es una referencia (1) o ya un valor explícito (0).
 */
 void asignar(FILE* fpasm, char* nombre, int es_variable) {
@@ -172,11 +172,11 @@ void sumar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 
 		if (es_variable_1) {
 			fprintf(fpasm, "\tmov edx, [edx]\n");
-		} 
+		}
 
 		if (es_variable_2) {
 			fprintf(fpasm, "\tmov eax, [eax]\n");
-		} 
+		}
 
 		fprintf(fpasm, "\tadd edx, eax\n\tpush edx\n");
 
@@ -193,17 +193,17 @@ void restar(FILE* fpasm, int es_variable_1, int es_variable_2){
 
 		if(es_variable_1) {
 			fprintf(fpasm, "\tmov edx, [edx]\n");
-		} 
+		}
 
 		if (es_variable_2) {
 			fprintf(fpasm, "\tmov eax, [eax]\n");
-		} 
+		}
 
 		fprintf(fpasm, "\tsub edx, eax\n\tpush edx\n");
 
 	}
 	return;
-}	
+}
 
 void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 
@@ -215,11 +215,11 @@ void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 
 		if (es_variable_1) {
 			fprintf(fpasm, "\tmov eax, [eax]\n");
-		} 
+		}
 
 		if (es_variable_2) {
 			fprintf(fpasm, "\tmov ecx, [ecx]\n");
-		} 
+		}
 
 		fprintf(fpasm, "\timul ecx\n\tpush eax\n");
 	}
@@ -236,15 +236,15 @@ void dividir(FILE* fpasm, int es_variable_1, int es_variable_2) {
 
 		if (es_variable_1) {
 			fprintf(fpasm, "\tmov eax, [eax]\n");
-		} 
+		}
 
 		if (es_variable_2) {
 			fprintf(fpasm, "\tmov ecx, [ecx]\n");
-		} 
+		}
 
 		fprintf(fpasm, "\tidiv ecx\n\tpush eax\n");
 	}
-	
+
 	return;
 }
 
@@ -265,7 +265,7 @@ void o(FILE* fpasm, int es_variable_1, int es_variable_2){
 		}
 
 		fprintf(fpasm, "\tor eax, ecx\n\tpush eax\n");
-	} 
+	}
 
 	return;
 }
@@ -288,20 +288,20 @@ void y(FILE* fpasm, int es_variable_1, int es_variable_2){
 		}
 
 		fprintf(fpasm, "\tand eax, ecx\n\tpush eax\n");
-	} 
+	}
 
 	return;
 }
 
 /*
-   Función aritmética de cambio de signo. 
+   Función aritmética de cambio de signo.
    Es análoga a las binarias, excepto que sólo requiere de un acceso a la pila ya que sólo usa un operando.
 */
 void cambiar_signo(FILE* fpasm, int es_variable) {
 
 	if (!fpasm) {
 		printf("Error de fichero (cambiar signo)\n");
-	} 
+	}
 	else {
 		fprintf(fpasm, "\tpush -1\n");
 
@@ -316,7 +316,7 @@ void cambiar_signo(FILE* fpasm, int es_variable) {
 }
 
 /*
-   Función monádica lógica de negación. No hay un código de operación de la ALU 
+   Función monádica lógica de negación. No hay un código de operación de la ALU
    que realice esta operación por lo que se debe codificar un algoritmo que, si encuentra en la cima de la pila un 0 deja en la cima un 1 y al contrario.
    El último argumento es el valor de etiqueta que corresponde (sin lugar a dudas, la implementación del algoritmo requerirá etiquetas). Véase en los ejemplos de programa principal como puede gestionarse el número de etiquetas cuantos_no.
 */
@@ -344,9 +344,9 @@ void no(FILE* fpasm, int es_variable, int cuantos_no) {
 
 
 /* FUNCIONES COMPARATIVAS */
-/* 
-   Todas estas funciones reciben como argumento si los elementos a comparar son o no variables. El resultado de las operaciones, 
-   que siempre será un booleano (“1” si se cumple la comparación y “0” si no se cumple), se deja en la pila como en el resto de 
+/*
+   Todas estas funciones reciben como argumento si los elementos a comparar son o no variables. El resultado de las operaciones,
+   que siempre será un BOOLEAN (“1” si se cumple la comparación y “0” si no se cumple), se deja en la pila como en el resto de
    operaciones. Se deben usar etiquetas para poder gestionar los saltos necesarios para implementar las comparaciones.
 */
 void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
@@ -488,7 +488,7 @@ void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
 
 /* FUNCIONES DE ESCRITURA Y LECTURA */
 /*
-   Se necesita saber el tipo de datos que se va a procesar (ENTERO o BOOLEANO) ya que hay diferentes funciones de librería para la lectura (idem. escritura) de cada tipo.
+   Se necesita saber el tipo de datos que se va a procesar (ENTERO o BOOLEAN) ya que hay diferentes funciones de librería para la lectura (idem. escritura) de cada tipo.
    Se deben insertar en la pila los argumentos necesarios, realizar la llamada (call) a la función de librería correspondiente y limpiar la pila.
 */
 void leer(FILE* fpasm, char* nombre, int tipo){
@@ -504,7 +504,7 @@ void leer(FILE* fpasm, char* nombre, int tipo){
 			fprintf(fpasm, "\tcall scan_int\n");
 		}
 
-		else if(tipo == BOOLEANO) {
+		else if(tipo == BOOLEAN) {
 			fprintf(fpasm, "\tcall scan_boolean\n");
 		}
 
@@ -528,7 +528,7 @@ void escribir(FILE* fpasm, int es_variable, int tipo){
 
 		fprintf(fpasm, "\tpop eax\n");
 
-		if (es_variable){
+		if (es_variable) {
 			fprintf(fpasm, "\tmov eax, [eax]\n");
 		}
 
@@ -538,7 +538,7 @@ void escribir(FILE* fpasm, int es_variable, int tipo){
 			fprintf(fpasm, "\tcall print_int\n");
 		}
 
-		else if(tipo == BOOLEANO) {
+		else if(tipo == BOOLEAN) {
 			fprintf(fpasm, "\tcall print_boolean\n");
 		}
 
@@ -554,83 +554,4 @@ void escribir(FILE* fpasm, int es_variable, int tipo){
 }
 
 /** VVVVVVVVVVVVVVVVVVVVVVVVVVVVV MAIN DE TEST VVVVVVVVVVVVVVVVVVVVVVVVVVVVV */
-
-#include <stdio.h>
-#include "generacion.h"
-
-int main (int argc, char** argv)
-{
-    FILE * salida;
-    int etiqueta = 0;
-
-    if (argc != 2) {fprintf (stdout, "ERROR POCOS ARGUMENTOS\n"); return -1;}
-
-    salida = fopen(argv[1],"w");
-
-    escribir_subseccion_data(salida);    
-    escribir_cabecera_bss(salida);
-    declarar_variable(salida, "b1", BOOLEANO, 1);
-    declarar_variable(salida, "x", ENTERO, 1);
-
-	escribir_segmento_codigo(salida);
-    escribir_inicio_main(salida);
-
-    /* scanf b1; */
-    leer(salida,"b1",BOOLEANO);
-    /* scanf x; */
-    leer(salida,"x",ENTERO);
-
-    /* printf (x > 3); */
-    escribir_operando(salida,"x",1);
-    escribir_operando(salida,"3",0);
-    mayor(salida,1,0,etiqueta++);
-    escribir(salida,0,BOOLEANO);
-
-    /* printf (x >= 3); */
-    escribir_operando(salida,"x",1);
-    escribir_operando(salida,"3",0);
-    mayor_igual(salida,1,0,etiqueta++);
-    escribir(salida,0,BOOLEANO);
-
-    /* printf (x < 3); */
-    escribir_operando(salida,"x",1);
-    escribir_operando(salida,"3",0);
-    menor(salida,1,0,etiqueta++);
-    escribir(salida,0,BOOLEANO);
-
-    /* printf (x <= 3); */
-    escribir_operando(salida,"x",1);
-    escribir_operando(salida,"3",0);
-    menor_igual(salida,1,0,etiqueta++);
-    escribir(salida,0,BOOLEANO);
-
-    /* printf (x == 3); */
-    escribir_operando(salida,"x",1);
-    escribir_operando(salida,"3",0);
-    igual(salida,1,0,etiqueta++);
-    escribir(salida,0,BOOLEANO);
-
-    /* printf (x != 3); */
-    escribir_operando(salida,"x",1);
-    escribir_operando(salida,"3",0);
-    distinto(salida,1,0,etiqueta++);
-    escribir(salida,0,BOOLEANO);
-
-    /* printf b1&&false; */
-    escribir_operando(salida,"b1",1);
-    escribir_operando(salida,"0",0);
-    y(salida,1,0);
-    escribir(salida,0,BOOLEANO);
-
-    /* printf b1||true; */
-    escribir_operando(salida,"b1",1);
-    escribir_operando(salida,"1",0);
-    o(salida,1,0);
-    escribir(salida,0,BOOLEANO);
-
-    escribir_fin(salida);
-
-    fclose(salida);
-    return 0;
-}
 

@@ -3,7 +3,7 @@ Autores: Francisco de Vicente Lana y Ricardo Riol Gonzalez
 Numero de grupo: 1311
 Grupo de trabajo: 4
 
-Desc: programa principal que se encarga de analizar semantico
+Desc: programa principal que se encarga de analizar morfologica y sintacticamente
     cierta entrada segun las normas y patrones del lenguaje omicron.
 */
 #include <stdio.h>
