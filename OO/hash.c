@@ -50,7 +50,7 @@ void clear_symbols(Hash **hash){
     HASH_ITER(hh, *hash, point, tmp) {
         HASH_DEL(*hash,point);  
         free(point->name);
-	free(point->value); /*necesario? */
+        free(point->value);
         free(point);            
     }
 }

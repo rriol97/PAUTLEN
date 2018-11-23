@@ -529,3 +529,22 @@ void tablaSimbolosClasesToDot(TablaSimbolosClases* tabla, FILE* fsalida) {
     graphToDot(tabla->graph, fsalida);
 }
 
+elementoTablaSimbolos** listaElementosTabla(TablaAmbito* tabla, int* num_elementos) {
+    int i;
+    elementoTablaSimbolos** elementos;
+    Hash* s;
+    
+    if(tabla == NULL || num_elementos == NULL)
+        return NULL;
+    
+    *num_elementos = HASH_COUNT(tabla->th_ppal);
+    elementos = malloc((*num_elementos)*sizeof(elementoTablaSimbolos*));
+    if (elementos == NULL)
+        return NULL;
+    
+    for(i = 0, s = tabla->th_ppal; i < *num_elementos; i++, s=s->hh.next) {
+        elementos[i] = s->value;
+    }
+    
+    return elementos;
+}

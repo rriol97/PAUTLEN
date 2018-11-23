@@ -324,6 +324,8 @@ int testBuscarIdNoCualificado() {
     char nombre_ambito_encontrado[MAX_NAME];
     elementoTablaSimbolos* e = NULL;
     FILE* fsalida = fopen("salida.txt", "w");
+    int num_elementos, i;
+    elementoTablaSimbolos** elementos;
 
     /* Inicializar la tabla de simbolos del main (ambito por defecto) */
     tabla_main = tablaInit("main");
@@ -419,6 +421,14 @@ int testBuscarIdNoCualificado() {
     cerrarTablaSimbolosClases(ej_tabla_clases);
 
     tablaSimbolosClasesToDot(ej_tabla_clases, fsalida);
+    
+    elementos = listaElementosTabla(tabla_main, &num_elementos);
+    if(elementos != NULL) {
+        for(i = 0; i < num_elementos; i++) {
+            printf("%s\n", elementos[i]->clave);
+        }
+        free(elementos);
+    }
 
     tablaFree(tabla_main);
     liberarTablaSimbolosClases(ej_tabla_clases);
