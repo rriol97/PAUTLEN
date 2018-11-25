@@ -10,7 +10,6 @@ main:
 	mov dword [__esp], __esp
 	push dword 8
 	pop dword eax
-	mov eax, [eax]
 	mov [_x], eax
 	push dword _x
 	pop eax
