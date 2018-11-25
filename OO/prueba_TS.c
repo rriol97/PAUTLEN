@@ -82,9 +82,9 @@ int procesar_linea(char *linea) {
     gestiona_ABRIR_AMBITO_PPAL_MAIN();
   } else if (!strcmp(token, TOK_OP_BUSCAR)) {
     gestiona_BUSCAR();
-  } /*else if (!strcmp(token, TOK_OP_INSERTAR_TSA_MAIN)) {
+  } else if (!strcmp(token, TOK_OP_INSERTAR_TSA_MAIN)) {
     gestiona_INSERTAR_TSA_MAIN();
-  } else if (!strcmp(token, TOK_OP_ABRIR_AMBITO_TSA_MAIN)) {
+  } /*else if (!strcmp(token, TOK_OP_ABRIR_AMBITO_TSA_MAIN)) {
     gestiona_ABRIR_AMBITO_TSA_MAIN();
   } else if (!strcmp(token, TOK_OP_CERRAR_AMBITO_TSA_MAIN)) {
     gestiona_CERRAR_AMBITO_TSA_MAIN();
@@ -180,14 +180,43 @@ void gestiona_BUSCAR() {
         clase = strtok(NULL, " \r\n\t");
         /*aun no funciona: falta abrir clase*/
         /*buscarIdCualificadoInstancia(tsc, tablaMain, instancia, token, clase, &e, nombre_ambito_encontrado);*/
-        printf("yay");
     } else if(!strcmp(token, TOK_ID_CUALIFICADO_CLASE)) {
         instancia = strtok(NULL, " \r\n\t");
         token = strtok(NULL, " \r\n\t");
         clase = strtok(NULL, " \r\n\t");
         /*aun no funciona: falta abrir clase*/
         /*buscarIdCualificadoClase(tsc, instancia, token, clase, &e, nombre_ambito_encontrado);*/
-        printf("yay");
     }
 
+}
+
+void gestiona_INSERTAR_TSA_MAIN () {
+    char* token;
+    int categoria, tipo_basico, estructura, tipo_acceso, tipo_miembro;
+    
+    token = strtok(NULL, " \r\n\t");
+    categoria = atoi(strtok(NULL, " \r\n\t"));
+    tipo_basico = atoi(strtok(NULL, " \r\n\t"));
+    estructura = atoi(strtok(NULL, " \r\n\t"));
+    tipo_acceso = atoi(strtok(NULL, " \r\n\t"));
+    tipo_miembro = atoi(strtok(NULL, " \r\n\t"));
+    
+    /*TODO: que cojones son todo eso*/
+    /*also cosa importante: los ficheros suyos incluyen el prefijo ya en la llamada a insertar: deberiamos cambiarlo para que funcionen sus ficheros*/
+    insertarTablaSimbolosAmbitos(tablaMain, "main",
+        token, categoria,
+        tipo_basico, estructura,
+        1, 0,
+        0, 1,
+        1,
+        1,
+        0, 0,
+        0, 0,
+        tipo_acceso, tipo_miembro,
+        0, 0,
+        0, 0,
+        0,
+        0,
+        NULL);
+    printf("finally");
 }
