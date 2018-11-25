@@ -99,17 +99,17 @@ programa: TOK_MAIN inicioTabla '{' declaraciones escribirHastaMain funciones sen
     TOK_MAIN inicioTabla '{' escribirHastaMain funciones sentencias '}'
     {
         escribir_fin(fout);
-    }    
+    }
 ;
 
 inicioTabla: {
     /* Inic tabla simbolos */
     escribir_subseccion_data(fout);
-    escribir_cabecera_bss(fout);    
+    escribir_cabecera_bss(fout);
 }
 
 escribirHastaMain: {
-    
+
     //getVarsTS
     //Declararlas
 
@@ -162,7 +162,7 @@ modificadores_acceso: TOK_HIDDEN TOK_UNIQUE
     TOK_SECRET
     {
         //fprintf(fout, ";R:\tmodificadores_acceso: TOK_SECRET\n");
-    } 
+    }
     |
     TOK_EXPOSED
     {
@@ -209,7 +209,7 @@ declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR inherits iden
     modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones funciones '}'
     {
         //fprintf(fout, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones funciones '}'\n");
-    }    
+    }
 ;
 
 modificadores_clase: /*vacio*/
@@ -220,7 +220,7 @@ modificadores_clase: /*vacio*/
 
 clase_escalar: tipo
     {
-       //fprintf(fout, ";R:\tclase_escalar: tipo\n"); 
+       //fprintf(fout, ";R:\tclase_escalar: tipo\n");
        $$.tipo = $1.tipo;
     }
 ;
@@ -266,8 +266,8 @@ identificadores_declaracion: identificador
         /* Aqui solo se accede al declarar varibles */
         declarar_variable(fout, $1.lexema, $1.tipo, 1);
         // TODO: insertar en tabla simbolos
-        
-        
+
+
     }
     |
     identificador ',' identificadores_declaracion
@@ -350,7 +350,7 @@ parametro_funcion: tipo TOK_IDENTIFICADOR
     |
     clase_objeto TOK_IDENTIFICADOR
     {
-        //fprintf(fout, ";R:\tparametro_funcion: clase_objeto TOK_IDENTIFICADOR\n");   
+        //fprintf(fout, ";R:\tparametro_funcion: clase_objeto TOK_IDENTIFICADOR\n");
     }
 ;
 
@@ -420,7 +420,7 @@ sentencia_simple: asignacion
     destruir_objeto
     {
         //fprintf(fout, ";R:\tsentencia_simple: destruir_objeto\n");
-    }          
+    }
 ;
 
 destruir_objeto: TOK_DISCARD TOK_IDENTIFICADOR
@@ -437,7 +437,7 @@ bloque: condicional
     bucle
     {
         //fprintf(fout, ";R:\tbloque: bucle\n");
-    } 
+    }
 ;
 
 asignacion: TOK_IDENTIFICADOR '=' exp
@@ -448,8 +448,9 @@ asignacion: TOK_IDENTIFICADOR '=' exp
         if ($3.direcciones == 0) {
             sprintf(aux, "%d", $3.valor_entero);
         }
+        printf("%d\n", $3.direcciones );
         escribir_operando(fout, aux, $3.direcciones);
-        asignar(fout, $1.lexema, $1.direcciones);
+        asignar(fout, $1.lexema, $3.direcciones);
     }
     |
     elemento_vector '=' exp
@@ -465,7 +466,7 @@ asignacion: TOK_IDENTIFICADOR '=' exp
     TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'
     {
         //fprintf(fout, ";R:\tasignacion: TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
-    }  
+    }
     |
     identificador_clase '.' TOK_IDENTIFICADOR '=' exp
     {
@@ -487,7 +488,7 @@ condicional: TOK_IF '(' exp ')' '{' sentencias '}'
     TOK_IF '(' exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}'
     {
         //fprintf(fout, ";R:\tcondicional: TOK_IF '(' exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}'\n");
-    } 
+    }
 ;
 
 bucle: TOK_WHILE '(' exp ')' '{' sentencias '}'
@@ -504,7 +505,7 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR
     TOK_SCANF elemento_vector
     {
         //fprintf(fout, ";R:\tlectura: TOK_SCANF elemento_vector\n");
-    } 
+    }
 ;
 
 escritura: TOK_PRINTF exp
@@ -514,7 +515,7 @@ escritura: TOK_PRINTF exp
         //$2.tipo = ENTERO;
         escribir_operando(fout, $2.lexema, $2.direcciones);
         escribir(fout, $2.direcciones, tipo_id_actual);
-    } 
+    }
 ;
 
 retorno_funcion: TOK_RETURN exp
@@ -525,7 +526,7 @@ retorno_funcion: TOK_RETURN exp
     TOK_RETURN TOK_NONE
     {
         //fprintf(fout, ";R:\tretorno_funcion: TOK_RETURN TOK_NONE\n");
-    } 
+    }
 ;
 
 exp: exp '+' exp
@@ -663,7 +664,7 @@ identificador_clase: TOK_IDENTIFICADOR
     TOK_ITSELF
     {
         //fprintf(fout, ";R:\tidentificador_clase: TOK_ITSELF\n");
-    } 
+    }
 ;
 
 lista_expresiones: exp resto_lista_expresiones
@@ -674,7 +675,7 @@ lista_expresiones: exp resto_lista_expresiones
     /*vacio*/
     {
         //fprintf(fout, ";R:\tlista_expresiones:\n");
-    } 
+    }
 ;
 
 resto_lista_expresiones: ',' exp resto_lista_expresiones
@@ -685,7 +686,7 @@ resto_lista_expresiones: ',' exp resto_lista_expresiones
     /*vacio*/
     {
         //fprintf(fout, ";R:\tlista_expresiones:\n");
-    } 
+    }
 ;
 
 comparacion: exp TOK_IGUAL exp
@@ -716,7 +717,7 @@ comparacion: exp TOK_IGUAL exp
     exp '>' exp
     {
         //fprintf(fout, ";R:\tcomparacion: exp '>' exp\n");
-    }             
+    }
 ;
 
 constante: constante_logica
@@ -750,7 +751,7 @@ constante_entera: TOK_CONSTANTE_ENTERA
 %%
 
 int yyerror(char* s) {
-    if (!flag_error) 
+    if (!flag_error)
     {
         //fprintf(stderr, "ERROR SINTÁCTICO:%d:%d\n", fila, columna);
     }
