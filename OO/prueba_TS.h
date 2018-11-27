@@ -17,7 +17,9 @@ Descripcion: libreria de definiciones e inclusiones
 #define TOK_OP_ABRIR_AMBITO_TSA_MAIN    "abrir_ambito_tsa_main"
 #define TOK_OP_CERRAR_AMBITO_TSA_MAIN    "cerrar_ambito_tsa_main"
 #define TOK_OP_INICIA_TSC         "inicia_tsc"
-/*...*/
+#define TOK_OP_ABRIR_CLASE         "abrir_clase"
+#define TOK_OP_ABRIR_CLASE_HEREDA         "abrir_clase_hereda"
+#define TOK_OP_INSERTAR_TSC         "insertar_tsc"
 #define TOK_OP_CERRAR_CLASE        "cerrar_clase"
 #define TOK_OP_CERRAR_TSA_MAIN        "cerrar_tsa_main"
 #define TOK_OP_CERRAR_TSC        "cerrar_tsc"
@@ -34,7 +36,7 @@ Descripcion: libreria de definiciones e inclusiones
 
 
 void gestiona_ABRIR_CLASE();
-void gestiona_ABRIR_CLASE_HEREDA ();
+void gestiona_ABRIR_CLASE_HEREDA();
 void gestiona_INSERTAR_TSC();
 void gestiona_ABRIR_AMBITO_TSC();
 void gestiona_CERRAR_AMBITO_TSC ();

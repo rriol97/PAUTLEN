@@ -14,13 +14,12 @@ int procesar_linea(char *linea);
 void gestiona_INICIA_TSA_MAIN();
 void gestiona_ABRIR_AMBITO_PPAL_MAIN();
 void gestiona_BUSCAR();
-
 void gestiona_INSERTAR_TSA_MAIN ();
 void gestiona_ABRIR_AMBITO_TSA_MAIN();
 void gestiona_CERRAR_AMBITO_TSA_MAIN();
 void gestiona_INICIA_TSC();
 void gestiona_ABRIR_CLASE();
-void gestiona_ABRIR_CLASE_HEREDA ();
+void gestiona_ABRIR_CLASE_HEREDA();
 void gestiona_INSERTAR_TSC();
 void gestiona_ABRIR_AMBITO_TSC();
 void gestiona_CERRAR_AMBITO_TSC ();
@@ -89,6 +88,12 @@ int procesar_linea(char *linea) {
     gestiona_CERRAR_AMBITO_TSA_MAIN();
   } else if (!strcmp(token, TOK_OP_INICIA_TSC)) {
     gestiona_INICIA_TSC();
+  } else if (!strcmp(token, TOK_OP_ABRIR_CLASE)) {
+    gestiona_ABRIR_CLASE();
+  } else if (!strcmp(token, TOK_OP_ABRIR_CLASE_HEREDA)) {
+    gestiona_ABRIR_CLASE_HEREDA();
+  } else if (!strcmp(token, TOK_OP_INSERTAR_TSC)) {
+    gestiona_INSERTAR_TSC();
   }
   /*...
   else if (!strcmp(token, TOK_OP_CERRAR_CLASE)) {
@@ -109,8 +114,6 @@ int procesar_linea(char *linea) {
       
   }*/
   /*
-      void gestiona_ABRIR_CLASE();
-void gestiona_ABRIR_CLASE_HEREDA ();
 void gestiona_INSERTAR_TSC();
 void gestiona_ABRIR_AMBITO_TSC();
 
@@ -255,4 +258,19 @@ void gestiona_CERRAR_AMBITO_TSA_MAIN() {
 
 void gestiona_INICIA_TSC() {
     iniciarTablaSimbolosClases(&tsc, "grafo");
+}
+
+void gestiona_ABRIR_CLASE() {
+    char* token;
+
+    token = strtok(NULL, " \r\n\t");
+    abrirClase(tsc, token);
+}
+
+void gestiona_ABRIR_CLASE_HEREDA () {
+    /*TODO:COMO COJONES PASO CON ARGUMENTOS VARIABLES?*/
+}
+
+void gestiona_INSERTAR_TSC() {
+
 }
