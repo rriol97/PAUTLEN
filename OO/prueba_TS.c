@@ -67,7 +67,6 @@ int main(int argc, char *argv[]) {
   if(tsc != NULL){
       liberarTablaSimbolosClases(tsc);
   }
-  printf("llega");
   return EXIT_SUCCESS;
 }
 
@@ -84,13 +83,13 @@ int procesar_linea(char *linea) {
     gestiona_BUSCAR();
   } else if (!strcmp(token, TOK_OP_INSERTAR_TSA_MAIN)) {
     gestiona_INSERTAR_TSA_MAIN();
-  } /*else if (!strcmp(token, TOK_OP_ABRIR_AMBITO_TSA_MAIN)) {
+  } else if (!strcmp(token, TOK_OP_ABRIR_AMBITO_TSA_MAIN)) {
     gestiona_ABRIR_AMBITO_TSA_MAIN();
   } else if (!strcmp(token, TOK_OP_CERRAR_AMBITO_TSA_MAIN)) {
     gestiona_CERRAR_AMBITO_TSA_MAIN();
   } else if (!strcmp(token, TOK_OP_INICIA_TSC)) {
     gestiona_INICIA_TSC();
-  } */
+  }
   /*...
   else if (!strcmp(token, TOK_OP_CERRAR_CLASE)) {
     gestiona_CERRAR_CLASE ();
@@ -144,48 +143,54 @@ void gestiona_BUSCAR() {
     char* instancia;
     elementoTablaSimbolos* e;
     char nombre_ambito_encontrado[MAX_NAME];
+    int result = ERR;
     
     token = strtok(NULL, " \r\n\t");
     if(!strcmp(token, TOK_DECLARAR_MAIN)) {
         token = strtok(NULL, " \r\n\t");
-        buscarParaDeclararIdTablaSimbolosAmbitos(tablaMain, token, &e, "main", nombre_ambito_encontrado);
+        result = buscarParaDeclararIdTablaSimbolosAmbitos(tablaMain, token, &e, "main", nombre_ambito_encontrado);
+        if(result == OK) {
+            printf("Existe el id: no se puede declarar\n");
+        } else {
+            printf("No existe el id: se puede declarar\n");
+        }
     } else if(!strcmp(token, TOK_DECLARAR_MIEMBRO_CLASE)) {
         clase = strtok(NULL, " \r\n\t");
         token = strtok(NULL, " \r\n\t");
         /*aun no funciona: falta abrir clase*/
-        /*buscarParaDeclararMiembroClase(tsc, clase, token, &e, nombre_ambito_encontrado);*/
+        /*result = buscarParaDeclararMiembroClase(tsc, clase, token, &e, nombre_ambito_encontrado);*/
     } else if(!strcmp(token, TOK_DECLARAR_MIEMBRO_INSTANCIA)) {
         clase = strtok(NULL, " \r\n\t");
         token = strtok(NULL, " \r\n\t");
         /*aun no funciona: falta abrir clase*/
-        /*buscarParaDeclararMiembroInstancia(tsc, clase, token, &e, nombre_ambito_encontrado);*/
+        /*result = buscarParaDeclararMiembroInstancia(tsc, clase, token, &e, nombre_ambito_encontrado);*/
     } else if(!strcmp(token, TOK_DECLARAR_ID_LOCAL_METODO)) {
         clase = strtok(NULL, " \r\n\t");
         token = strtok(NULL, " \r\n\t");
         /*aun no funciona: falta abrir clase*/
-        /*buscarParaDeclararIdLocalEnMetodo(tsc, clase, token, &e, nombre_ambito_encontrado);*/
+        /*result = buscarParaDeclararIdLocalEnMetodo(tsc, clase, token, &e, nombre_ambito_encontrado);*/
     } else if(!strcmp(token, TOK_JERARQUIA)) {
         token = strtok(NULL, " \r\n\t");
         clase = strtok(NULL, " \r\n\t");
         /*aun no funciona: falta abrir clase*/
-        /*buscarIdEnJerarquiaDesdeClase(tsc, token, clase, &e, nombre_ambito_encontrado);*/
+        /*result = buscarIdEnJerarquiaDesdeClase(tsc, token, clase, &e, nombre_ambito_encontrado);*/
     } else if(!strcmp(token, TOK_ID_NO_CUALIFICADO)) {
         token = strtok(NULL, " \r\n\t");
         clase = strtok(NULL, " \r\n\t");
         /*aun no funciona: falta abrir clase*/
-        /*buscarIdNoCualificado(tsc, tablaMain, token, clase, &e, nombre_ambito_encontrado);*/
+        /*result = buscarIdNoCualificado(tsc, tablaMain, token, clase, &e, nombre_ambito_encontrado);*/
     } else if(!strcmp(token, TOK_ID_CUALIFICADO_INSTANCIA)) {
         instancia = strtok(NULL, " \r\n\t");
         token = strtok(NULL, " \r\n\t");
         clase = strtok(NULL, " \r\n\t");
         /*aun no funciona: falta abrir clase*/
-        /*buscarIdCualificadoInstancia(tsc, tablaMain, instancia, token, clase, &e, nombre_ambito_encontrado);*/
+        /*result = buscarIdCualificadoInstancia(tsc, tablaMain, instancia, token, clase, &e, nombre_ambito_encontrado);*/
     } else if(!strcmp(token, TOK_ID_CUALIFICADO_CLASE)) {
         instancia = strtok(NULL, " \r\n\t");
         token = strtok(NULL, " \r\n\t");
         clase = strtok(NULL, " \r\n\t");
         /*aun no funciona: falta abrir clase*/
-        /*buscarIdCualificadoClase(tsc, instancia, token, clase, &e, nombre_ambito_encontrado);*/
+        /*result = buscarIdCualificadoClase(tsc, instancia, token, clase, &e, nombre_ambito_encontrado);*/
     }
 
 }
@@ -218,5 +223,36 @@ void gestiona_INSERTAR_TSA_MAIN () {
         0,
         0,
         NULL);
-    printf("finally");
+}
+
+void gestiona_ABRIR_AMBITO_TSA_MAIN() {
+    char* token;
+    int tipo_basico;
+    
+    token = strtok(NULL, " \r\n\t");
+    tipo_basico = atoi(strtok(NULL, " \r\n\t"));
+    insertarTablaSimbolosAmbitos(tablaMain, "main",
+        token, ESCALAR,
+        tipo_basico, FUNCION,
+        1, 0,
+        0, 1,
+        1,
+        1,
+        0, 0,
+        0, 0,
+        ACCESO_TODOS, MIEMBRO_UNICO,
+        0, 0,
+        0, 0,
+        0,
+        0,
+        NULL);
+    AbrirAmbitoPrefijos(tablaMain, "main", token, FUNCION, ACCESO_TODOS, MIEMBRO_UNICO, 0, 1);
+}
+
+void gestiona_CERRAR_AMBITO_TSA_MAIN() {
+    cerrarAmbitoPrefijos(tablaMain);
+}
+
+void gestiona_INICIA_TSC() {
+    iniciarTablaSimbolosClases(&tsc, "grafo");
 }

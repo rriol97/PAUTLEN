@@ -44,7 +44,7 @@ typedef struct _TablaSimbolosClases TablaSimbolosClases;
 /*inicializa tabla de clases*/
 int iniciarTablaSimbolosClases(TablaSimbolosClases** t, char * nombre);
 
-/*inicializa main (equivalente a tablaInit*/
+/*inicializa main (equivalente a tablaInit)*/
 int abrirAmbitoClase(TablaAmbito** t, char* id_clase, int tamanio);
 
 /*crea una clase raiz en el grafo*/
