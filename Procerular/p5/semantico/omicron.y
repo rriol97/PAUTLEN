@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include "omicron.h"
 #include "generacion.h"
+#include "graph.h"
+#include "tabla.h"
 
 extern int columna;
 extern int fila;
@@ -11,6 +13,9 @@ extern FILE *fout;
 extern int flag_error;
 
 int tipo_id_actual;
+TablaAmbito * tabla_main;
+elementoTablaSimbolos * elem;
+char nombre_ambito_encontrado[MAX_NAME];
 %}
 
 %union {
@@ -104,12 +109,19 @@ programa: TOK_MAIN inicioTabla '{' declaraciones escribirHastaMain funciones sen
 
 inicioTabla: {
     /* Inic tabla simbolos */
+
+    if ( abrirAmbitoClase(&tabla_main, "main", 1) == -1) { /* init tabla simbolos */
+        printf("error inicializando en la tabla de simbolos");
+    }
     escribir_subseccion_data(fout);
     escribir_cabecera_bss(fout);
 }
 
 escribirHastaMain: {
 
+
+        //Buscamos la variable en 
+        
     //getVarsTS
     //Declararlas
 
@@ -266,13 +278,13 @@ identificadores_declaracion: identificador
         /* Aqui solo se accede al declarar varibles */
         declarar_variable(fout, $1.lexema, $1.tipo, 1);
         // TODO: insertar en tabla simbolos
-
+        insertarTablaSimbolosAmbitos(tabla_main, "main", $1.lexema, ESCALAR, $1.tipo, $1.direcciones, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 
     }
     |
     identificador ',' identificadores_declaracion
     {
-      /* Preguntar a Ortega*/
+      /* Preguntar a Ortega y Gasset*/
     }
 ;
 
@@ -510,11 +522,12 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR
 
 escritura: TOK_PRINTF exp
     {
-        //fprintf(fout, ";R:\tescritura: TOK_PRINTF exp\n");
-        printf("--------> %d\n", tipo_id_actual);
-        //$2.tipo = ENTERO;
-        escribir_operando(fout, $2.lexema, $2.direcciones);
-        escribir(fout, $2.direcciones, tipo_id_actual);
+        if(buscarIdNoCualificado(NULL, tabla_main, $2.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
+            escribir_operando(fout, $2.lexema, $2.direcciones);
+            escribir(fout, $2.direcciones, elem->tipo);
+        } else {
+            printf("Elem no encontrado\n");
+        }
     }
 ;
 

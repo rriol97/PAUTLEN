@@ -4,8 +4,9 @@
 #		   Ricardo Riol Gonzalez - ricardo.riol@estudiante.uam.es
 ################################################################################
 
-all: pruebaSintactico.c lex.yy.c y.tab.c generacion.c
-	gcc -Wall -o pruebaSintactico pruebaSintactico.c lex.yy.c y.tab.c generacion.c
+
+all: pruebaSintactico.c lex.yy.c y.tab.c generacion.c graph.c tabla.c
+	gcc -Wall -o pruebaSintactico pruebaSintactico.c lex.yy.c y.tab.c generacion.c graph.c tabla.c
 
 lex.yy.c: omicron.l
 	$ flex omicron.l
@@ -13,10 +14,12 @@ lex.yy.c: omicron.l
 y.tab.c: omicron.y
 	$ bison -dyv omicron.y
 
+# nasm -g -o test.o -f elf32 test.asm
+# gcc -m32 -o test test.o olib.o
 
 .PHONY: clean
 
-clean:	
+clean:
 	rm -f *.out
 	rm -f *.o
 	rm -f *.gch
@@ -24,3 +27,4 @@ clean:
 	rm -f lex.yy.c
 	rm -f y.output
 	rm -f pruebaSintactico
+	rm -f test

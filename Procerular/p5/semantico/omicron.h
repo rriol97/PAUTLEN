@@ -5,7 +5,7 @@
 #include <string.h>
 
 #define ENTERO 1
-#define BOOLEAN 2
+#define BOOLEAN 3
 
 #define MAX_LONG_ID 50
 #define MAX_LEN 100
