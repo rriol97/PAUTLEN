@@ -49,21 +49,18 @@ int abrirClase(TablaSimbolosClases* t, char* id_clase) {
     return graphAddClass(t->graph, nodo);
 }
 
-int abrirClaseHereda(TablaSimbolosClases* t, char* id_clase, ...) {
-    va_list ap;
+int abrirClaseHereda(TablaSimbolosClases* t, char* id_clase, char** id_clase_hereda, int num_clases_hereda) {
     NodoGrafo *parent;
-    char* next;
+    int i;
     int cid = abrirClase(t, id_clase);
     if(cid == -1)
         return -1;
-    va_start(ap, id_clase);
-    while( (next=va_arg(ap, char*)) != NULL) {
-        parent = graphGetClassFromName(t->graph, next);
+    for(i = 0; i < num_clases_hereda; i++) {
+        parent = graphGetClassFromName(t->graph, id_clase_hereda[i]);
         if(parent != NULL) {
             graphAddEdge(t->graph, parent->index, cid);
         }
     }
-    va_end(ap);
     return cid;
 }
 

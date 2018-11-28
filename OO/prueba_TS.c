@@ -268,7 +268,23 @@ void gestiona_ABRIR_CLASE() {
 }
 
 void gestiona_ABRIR_CLASE_HEREDA () {
-    /*TODO:COMO COJONES PASO CON ARGUMENTOS VARIABLES?*/
+    char* token;
+    char* padre;
+    int num_padres = 0, i;
+    char** padres = NULL;
+
+    token = strtok(NULL, " \r\n\t");
+    while( (padre=strtok(NULL, " \r\n\t")) != NULL ) {
+        num_padres++;
+        padres = realloc(padres, sizeof(char*)*num_padres);
+        padres[num_padres-1] = malloc((strlen(padre) + 1) * sizeof(char));
+        strcpy(padres[num_padres-1], padre);
+    }
+    abrirClaseHereda(tsc, token, padres, num_padres);
+    for(i = 0; i < num_padres; i++) {
+        free(padres[i]);
+    }
+    free(padres);
 }
 
 void gestiona_INSERTAR_TSC() {

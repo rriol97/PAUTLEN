@@ -55,6 +55,7 @@ int testTabla(char* fname) {
     TablaAmbito* tabla_main; /* Tabla de simbolos de main*/
 
     TablaSimbolosClases * ej_tabla_clases = NULL;
+    char* padre[] = {"AA"};
 
     FILE* fsalida = fopen(fname, "w");
     /* Inicializar la tabla de simbolos del main (ambito por defecto) */
@@ -69,7 +70,7 @@ int testTabla(char* fname) {
 
     cerrarClase(ej_tabla_clases,"AA",0,0,0,0);
 
-    abrirClaseHereda(ej_tabla_clases, "BB", "AA", NULL);
+    abrirClaseHereda(ej_tabla_clases, "BB", padre, 1);
     graph_enrouteParentsLastNode(ej_tabla_clases);
 
     cerrarClase(ej_tabla_clases,"BB",0,0,0,0);
@@ -588,6 +589,7 @@ int testBuscarDeclararMiembroInstancia() {
     TablaSimbolosClases * ej_tabla_clases = NULL;
     char nombre_ambito_encontrado[MAX_NAME];
     elementoTablaSimbolos* e = NULL;
+    char* padre[] = {"AA"};
     FILE* fsalida = fopen("salida.txt", "w");
 
     /* Inicializar la tabla de simbolos del main (ambito por defecto) */
@@ -675,7 +677,7 @@ int testBuscarDeclararMiembroInstancia() {
     cerrarClase(ej_tabla_clases,"AA",0,0,0,0);
 
     /* Clase BB: tiene 3 atributos de clase y 3 metodos de clase */
-    abrirClaseHereda(ej_tabla_clases,"BB", "AA");
+    abrirClaseHereda(ej_tabla_clases,"BB", padre, 1);
 
     if(buscarParaDeclararMiembroInstancia(ej_tabla_clases, "BB", "sa1", &e, nombre_ambito_encontrado) == OK) {
         printf("Caso 52 OK\nBuscar: OK (AA_sA1) DECLARADO EN %s ES ATRIBUTO DE INSTANCIA ACCESIBLE CON ACCESO secret NO SE PUEDE DECLARAR\n\n", nombre_ambito_encontrado);
@@ -763,6 +765,7 @@ int testBuscarUso() {
     TablaSimbolosClases * ej_tabla_clases = NULL;
     char nombre_ambito_encontrado[MAX_NAME];
     elementoTablaSimbolos* e = NULL;
+    char *padreBB[] = {"AA"}, *padreDD[] = {"AA", "CC"}, *padreEE[] = {"BB", "CC"}, *padreFF[] = {"CC", "EE"};
     int aaindex, bbindex, ccindex, ddindex, eeindex, ffindex;
     FILE* fsalida = fopen("salida.txt", "w");
 
@@ -836,7 +839,7 @@ int testBuscarUso() {
     cerrarClase(ej_tabla_clases,"AA",0,0,0,0);
 
     /* Clase BB*/
-    bbindex = abrirClaseHereda(ej_tabla_clases,"BB", "AA");
+    bbindex = abrirClaseHereda(ej_tabla_clases,"BB", padreBB, 1);
 
         /*declarar variable exposed {BB} mibb*/
     insertarTablaSimbolosClases(ej_tabla_clases, "BB", "mibb", OBJETO, -bbindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
@@ -864,7 +867,7 @@ int testBuscarUso() {
     cerrarClase(ej_tabla_clases,"CC",0,0,0,0);
 
     /* Clase DD*/
-    ddindex = abrirClaseHereda(ej_tabla_clases,"DD", "AA", "CC");
+    ddindex = abrirClaseHereda(ej_tabla_clases,"DD", padreDD, 2);
 
         /*declarar variable exposed {DD} midd*/
     insertarTablaSimbolosClases(ej_tabla_clases, "DD", "midd", OBJETO, -ddindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
@@ -872,7 +875,7 @@ int testBuscarUso() {
     cerrarClase(ej_tabla_clases,"DD",0,0,0,0);
 
     /* Clase EE*/
-    eeindex = abrirClaseHereda(ej_tabla_clases,"EE", "BB", "DD");
+    eeindex = abrirClaseHereda(ej_tabla_clases,"EE", padreEE, 2);
 
     /*declarar variable exposed {EE} miee*/
     insertarTablaSimbolosClases(ej_tabla_clases, "EE", "miee", OBJETO, -eeindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
@@ -920,7 +923,7 @@ int testBuscarUso() {
     cerrarClase(ej_tabla_clases,"EE",0,0,0,0);
 
     /* Clase FF*/
-    ffindex = abrirClaseHereda(ej_tabla_clases,"FF", "CC", "EE");
+    ffindex = abrirClaseHereda(ej_tabla_clases,"FF", padreFF, 2);
 
         /*declarar variable exposed {FF} miff*/
     insertarTablaSimbolosClases(ej_tabla_clases, "FF", "miff", OBJETO, -ffindex, VARIABLE, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
