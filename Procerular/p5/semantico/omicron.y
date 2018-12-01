@@ -16,6 +16,7 @@ int tipo_id_actual;
 TablaAmbito * tabla_main;
 elementoTablaSimbolos * elem;
 char nombre_ambito_encontrado[MAX_NAME];
+int tipo_declaracion;
 %}
 
 %union {
@@ -144,6 +145,9 @@ declaraciones: declaracion
 
 declaracion: modificadores_acceso clase identificadores_declaracion ';'
     {
+        if ($2.tipo != $3.tipo){
+            printf("Declaracion de distintos tipos\n");
+        }
         //fprintf(fout, ";R:\tdeclaracion: modificadores_acceso clase identificadores ';'\n");
     }
     |
@@ -197,6 +201,7 @@ modificadores_acceso: TOK_HIDDEN TOK_UNIQUE
 clase: clase_escalar
     {
         //fprintf(fout, ";R:\tclase: clase_escalar\n");
+        $$.tipo = $1.tipo;
     }
     |
     clase_vector
@@ -242,13 +247,14 @@ clase_escalar: tipo
 tipo: TOK_INT
     {
         //fprintf(fout, ";R:\ttipo: TOK_INT\n");
-        tipo_id_actual = ENTERO;
+        $$.tipo = ENTERO;
+        tipo_declaracion = ENTERO;
     }
     |
     TOK_BOOLEAN
     {
         //fprintf(fout, ";R:\ttipo: TOK_BOOLEAN\n");
-        tipo_id_actual = BOOLEAN;
+        $$.tipo = BOOLEAN;
     }
 ;
 
@@ -278,6 +284,8 @@ identificadores: TOK_IDENTIFICADOR
 identificadores_declaracion: identificador
     {
         /* Aqui solo se accede al declarar varibles */
+        $1.tipo = tipo_declaracion;
+        $$.tipo = $1.tipo;
         declarar_variable(fout, $1.lexema, $1.tipo, 1);
         // TODO: insertar en tabla simbolos
         insertarTablaSimbolosAmbitos(tabla_main, "main", $1.lexema, ESCALAR, $1.tipo, $1.direcciones, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
@@ -462,7 +470,6 @@ asignacion: TOK_IDENTIFICADOR '=' exp
         if ($3.direcciones == 0) {
             sprintf(aux, "%d", $3.valor_entero);
         }
-        printf("%d\n", $3.direcciones );
         escribir_operando(fout, aux, $3.direcciones);
         asignar(fout, $1.lexema, $3.direcciones);
     }
