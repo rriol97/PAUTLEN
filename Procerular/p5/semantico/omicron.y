@@ -99,11 +99,13 @@ char nombre_ambito_encontrado[MAX_NAME];
 programa: TOK_MAIN inicioTabla '{' declaraciones escribirHastaMain funciones sentencias '}'
     {
         escribir_fin(fout);
+        tablaFree(tabla_main);
     }
     |
     TOK_MAIN inicioTabla '{' escribirHastaMain funciones sentencias '}'
     {
         escribir_fin(fout);
+        tablaFree(tabla_main);   
     }
 ;
 

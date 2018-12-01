@@ -5,8 +5,8 @@
 ################################################################################
 
 
-all: pruebaSintactico.c lex.yy.c y.tab.c generacion.c graph.c tabla.c
-	gcc -Wall -o pruebaSintactico pruebaSintactico.c lex.yy.c y.tab.c generacion.c graph.c tabla.c
+all: pruebaSintactico.c lex.yy.c y.tab.c generacion.c hash.c graph.c tabla.c
+	gcc -Wall -o pruebaSintactico pruebaSintactico.c lex.yy.c y.tab.c generacion.c hash.c graph.c tabla.c
 
 lex.yy.c: omicron.l
 	$ flex omicron.l
