@@ -5,7 +5,7 @@ main {
   //scanf x2;
   x1 = 1;
   x2 = 2;
-  printf 3+x1+x2;
+  printf 3+x1;
   //y1 = (x1 == x2);
   //printf y1;
   //scanf y1;

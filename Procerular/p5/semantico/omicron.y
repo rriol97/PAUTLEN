@@ -87,6 +87,8 @@ int tipo_declaracion;
 %type <atributos> declaracion
 %type <atributos> identificadores_declaracion
 %type <atributos> constante
+%type <atributos> constante_entera
+%type <atributos> constante_logica
 
 
 %left '+' '-' TOK_OR
@@ -147,9 +149,7 @@ declaracion: modificadores_acceso clase identificadores_declaracion ';'
     {
         if ($2.tipo != $3.tipo) {
             printf("Declaracion de distintos tipos NOT GOOD\n");
-
         }
-        $$.$3
         //fprintf(fout, ";R:\tdeclaracion: modificadores_acceso clase identificadores ';'\n");
     }
     |
@@ -469,11 +469,22 @@ bloque: condicional
 
 asignacion: TOK_IDENTIFICADOR '=' exp
     {
-        // TODO: comprobar tipos
-        //fprintf(fout, ";R:\tasignacion: TOK_IDENTIFICADOR '=' exp\n");
+        //Buscamos en la tabla de simbolos el tipo de $1
+        if (buscarIdNoCualificado(NULL, tabla_main, $1.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
+            $1.tipo = elem->tipo;
+        }
+        else {
+            printf("Error: Variable no encontrada\n");
+        }
+
+        if ($1.tipo != $3.tipo) {
+          printf("Error: Variables distintas\n");
+        }
+
         char aux[50];
         if ($3.direcciones == 0) {
             sprintf(aux, "%d", $3.valor_entero);
+
         }
         escribir_operando(fout, aux, $3.direcciones);
         asignar(fout, $1.lexema, $3.direcciones);
@@ -536,12 +547,20 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR
 
 escritura: TOK_PRINTF exp
     {
-        if(buscarIdNoCualificado(NULL, tabla_main, $2.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
-            escribir_operando(fout, $2.lexema, $2.direcciones);
-            escribir(fout, $2.direcciones, elem->tipo);
-        } else {
-            printf("Elem no encontrado\n");
+        if ($2.direcciones == 1){
+            if(buscarIdNoCualificado(NULL, tabla_main, $2.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
+                escribir_operando(fout, $2.lexema, $2.direcciones);
+                escribir(fout, $2.direcciones, elem->tipo);
+            }
+            else {
+                printf("Elem no encontrado\n");
+            }
         }
+        else{
+            escribir(fout, $2.direcciones, $2.tipo);
+        }
+
+
     }
 ;
 
@@ -555,24 +574,50 @@ retorno_funcion: TOK_RETURN exp
         //fprintf(fout, ";R:\tretorno_funcion: TOK_RETURN TOK_NONE\n");
     }
 ;
-
+  //8  +  x1
 exp: exp '+' exp
     {
+
+        //Recuperamos el tipo los operadores que son variables.
+        if ($1.direcciones == 1) {
+            if (buscarIdNoCualificado(NULL, tabla_main, $1.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
+                $1.tipo = elem->tipo;
+            } else {
+                printf("Error: Variable no declarada\n");
+            }
+        }
+
+        else {
+            sprintf($1.lexema, "%d", $1.valor_entero);
+        }
+
+        if ($3.direcciones == 1) {
+            if (buscarIdNoCualificado(NULL, tabla_main, $3.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
+                $3.tipo = elem->tipo;
+            } else  {
+                printf("Error: Variable no declarada\n");
+            }
+        }
+
+        else {
+            sprintf($3.lexema, "%d", $3.valor_entero);
+        }
+
+
         printf("op1: %s tipo(%d) direc(%d)\n", $1.lexema, $1.tipo, $1.direcciones);
         printf("op2: %s tipo(%d) direc(%d)\n", $3.lexema, $3.tipo, $3.direcciones);
         //fprintf(fout, ";R:\texp: exp '+' exp\n");
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
             printf("La suma requiere que ambos operandos sean numeros");
         }
-        if ($1.tipo == ENTERO && $3.tipo == ENTERO) {
-          printf("no entro quiiiiiiiiiiiiiii\n");
-          escribir_operando(fout, $1.lexema, $1.direcciones);
-          escribir_operando(fout, $3.lexema, $3.direcciones);
-          sumar(fout, $1.direcciones, $3.direcciones);
 
-          $$.tipo = ENTERO;
-          $$.direcciones = 0;
-          $$.valor_entero = $1.valor_entero + $3.valor_entero;
+        if ($1.tipo == ENTERO && $3.tipo == ENTERO) {
+            escribir_operando(fout, $1.lexema, $1.direcciones);
+            escribir_operando(fout, $3.lexema, $3.direcciones);
+            sumar(fout, $1.direcciones, $3.direcciones);
+
+            $$.tipo = ENTERO;
+            $$.direcciones = 0;
         }
 
     }
@@ -652,13 +697,21 @@ exp: exp '+' exp
     |
     TOK_IDENTIFICADOR
     {
-        //fprintf(fout, ";R:\texp: TOK_IDENTIFICADOR\n");
+      if (buscarIdNoCualificado(NULL, tabla_main, $1.lexema, "main", &elem, nombre_ambito_encontrado) == OK){
+          $1.tipo = elem->tipo;
+      }
+      else {
+          printf("Error:Variable no encontrada\n");
+      }
     }
     |
     constante
     {
         //fprintf(fout, ";R:\texp: constante\n");
         $$.tipo = $1.tipo;
+        if ($$.tipo == ENTERO) {
+            $$.valor_entero = $1.valor_entero;
+        }
     }
     |
     '(' exp ')'
@@ -760,29 +813,35 @@ comparacion: exp TOK_IGUAL exp
 
 constante: constante_logica
     {
-        //fprintf(fout, ";R:\tconstante: constante_logica\n");
+        $$.tipo = $1.tipo;
+        $$.direcciones = $1.direcciones;
     }
     |
     constante_entera
     {
-        //fprintf(fout, ";R:\tconstante: constante_entera\n");
+        $$.tipo = $1.tipo;
+        $$.direcciones = $1.direcciones;
     }
 ;
 
 constante_logica: TOK_TRUE
     {
-        //fprintf(fout, ";R:\tconstante_logica: TOK_TRUE\n");
+        $$.tipo = BOOLEAN;
+        $$.direcciones = 0;
     }
     |
     TOK_FALSE
     {
-        //fprintf(fout, ";R:\tconstante_logica: TOK_FALSE\n");
+        $$.tipo = BOOLEAN;
+        $$.direcciones = 0;
     }
 ;
 
 constante_entera: TOK_CONSTANTE_ENTERA
     {
-        //fprintf(fout, ";R:\tconstante_entera: TOK_CONSTANTE_ENTERA\n");
+        $$.tipo = ENTERO;
+        $$.direcciones = 0;
+        //$$.valor_entero = $1.valor_entero;
     }
 ;
 

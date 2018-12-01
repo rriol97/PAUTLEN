@@ -15,7 +15,13 @@ main:
 	push dword 2
 	pop dword eax
 	mov [_x2], eax
-	push dword x2
+	push dword 3
+	push dword _x1
+	pop eax
+	pop edx
+	mov eax, [eax]
+	add edx, eax
+	push edx
 	pop eax
 	push dword eax
 	call print_int
