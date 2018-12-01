@@ -20,6 +20,8 @@ Descripcion: libreria de definiciones e inclusiones
 #define TOK_OP_ABRIR_CLASE         "abrir_clase"
 #define TOK_OP_ABRIR_CLASE_HEREDA         "abrir_clase_hereda"
 #define TOK_OP_INSERTAR_TSC         "insertar_tsc"
+#define TOK_OP_ABRIR_AMBITO_TSC    "abrir_ambito_tsc"
+#define TOK_OP_CERRAR_AMBITO_TSC    "cerrar_ambito_tsc"
 #define TOK_OP_CERRAR_CLASE        "cerrar_clase"
 #define TOK_OP_CERRAR_TSA_MAIN        "cerrar_tsa_main"
 #define TOK_OP_CERRAR_TSC        "cerrar_tsc"

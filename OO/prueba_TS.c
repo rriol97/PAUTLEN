@@ -22,8 +22,8 @@ void gestiona_ABRIR_CLASE();
 void gestiona_ABRIR_CLASE_HEREDA();
 void gestiona_INSERTAR_TSC();
 void gestiona_ABRIR_AMBITO_TSC();
-void gestiona_CERRAR_AMBITO_TSC ();
-void gestiona_CERRAR_CLASE ();
+void gestiona_CERRAR_AMBITO_TSC();
+void gestiona_CERRAR_CLASE();
 void gestiona_CERRAR_TSA_MAIN();
 void gestiona_CERRAR_TSC();
 
@@ -94,42 +94,19 @@ int procesar_linea(char *linea) {
     gestiona_ABRIR_CLASE_HEREDA();
   } else if (!strcmp(token, TOK_OP_INSERTAR_TSC)) {
     gestiona_INSERTAR_TSC();
-  }
-  /*...
-  else if (!strcmp(token, TOK_OP_CERRAR_CLASE)) {
-    gestiona_CERRAR_CLASE ();
+  } else if (!strcmp(token, TOK_OP_ABRIR_AMBITO_TSC)) {
+    gestiona_ABRIR_AMBITO_TSC();
+  } else if (!strcmp(token, TOK_OP_CERRAR_AMBITO_TSC)) {
+    gestiona_CERRAR_AMBITO_TSC();
+  } else if (!strcmp(token, TOK_OP_CERRAR_CLASE)) {
+    gestiona_CERRAR_CLASE();
   } else if (!strcmp(token, TOK_OP_CERRAR_TSA_MAIN)) {
     gestiona_CERRAR_TSA_MAIN();
   } else if (!strcmp(token, TOK_OP_CERRAR_TSC)) {
     gestiona_CERRAR_TSC();
-  } else if (!strcmp(token, TOK_DECLARAR_MAIN)) {
-
-  } else if (!strcmp(token, TOK_DECLARAR_MIEMBRO_CLASE)) {
-
-  } else if (!strcmp(token, TOK_DECLARAR_MIEMBRO_INSTANCIA)) {
-
-  } else if (!strcmp(token, TOK_ID_CUALIFICADO_INSTANCIA)) {
-      
-  } else if (!strcmp(token, TOK_ID_CUALIFICADO_CLASE)) {
-      
-  }*/
-  /*
-void gestiona_INSERTAR_TSC();
-void gestiona_ABRIR_AMBITO_TSC();
-
-
-void gestiona_CERRAR_AMBITO_TSC();*/
-
-  /*while (token != NULL) {
-    token = strtok(NULL," \n\t");
-    printf("%s\n", token);
-    //ambito = (char*)malloc(sizeof(char) * (1 + strlen(token)));
-    //strcpy(ambito, token);
-    //categoria = atoi(strtok(NULL," \n\t"));
-  //}*/
-
-
-    return 0;
+  }
+  
+  return 0;
 }
 
 void gestiona_INICIA_TSA_MAIN() {
@@ -153,47 +130,82 @@ void gestiona_BUSCAR() {
         token = strtok(NULL, " \r\n\t");
         result = buscarParaDeclararIdTablaSimbolosAmbitos(tablaMain, token, &e, "main", nombre_ambito_encontrado);
         if(result == OK) {
-            printf("Existe el id: no se puede declarar\n");
+            printf("Existe el id (%s): no se puede declarar\n", token);
         } else {
-            printf("No existe el id: se puede declarar\n");
+            printf("No existe el id (%s): se puede declarar\n", token);
         }
     } else if(!strcmp(token, TOK_DECLARAR_MIEMBRO_CLASE)) {
         clase = strtok(NULL, " \r\n\t");
         token = strtok(NULL, " \r\n\t");
         /*aun no funciona: falta abrir clase*/
-        /*result = buscarParaDeclararMiembroClase(tsc, clase, token, &e, nombre_ambito_encontrado);*/
+        result = buscarParaDeclararMiembroClase(tsc, clase, token, &e, nombre_ambito_encontrado);
+        if(result == OK) {
+            printf("Existe el id (%s): no se puede declarar\n", token);
+        } else {
+            printf("No existe el id (%s): se puede declarar\n", token);
+        }
     } else if(!strcmp(token, TOK_DECLARAR_MIEMBRO_INSTANCIA)) {
         clase = strtok(NULL, " \r\n\t");
         token = strtok(NULL, " \r\n\t");
         /*aun no funciona: falta abrir clase*/
-        /*result = buscarParaDeclararMiembroInstancia(tsc, clase, token, &e, nombre_ambito_encontrado);*/
+        result = buscarParaDeclararMiembroInstancia(tsc, clase, token, &e, nombre_ambito_encontrado);
+        if(result == OK) {
+            printf("Existe el id (%s): no se puede declarar\n", token);
+        } else {
+            printf("No existe el id (%s): se puede declarar\n", token);
+        }
     } else if(!strcmp(token, TOK_DECLARAR_ID_LOCAL_METODO)) {
         clase = strtok(NULL, " \r\n\t");
         token = strtok(NULL, " \r\n\t");
         /*aun no funciona: falta abrir clase*/
-        /*result = buscarParaDeclararIdLocalEnMetodo(tsc, clase, token, &e, nombre_ambito_encontrado);*/
+        result = buscarParaDeclararIdLocalEnMetodo(tsc, clase, token, &e, nombre_ambito_encontrado);
+        if(result == OK) {
+            printf("Existe el id (%s): no se puede declarar\n", token);
+        } else {
+            printf("No existe el id (%s): se puede declarar\n", token);
+        }
     } else if(!strcmp(token, TOK_JERARQUIA)) {
         token = strtok(NULL, " \r\n\t");
         clase = strtok(NULL, " \r\n\t");
         /*aun no funciona: falta abrir clase*/
-        /*result = buscarIdEnJerarquiaDesdeClase(tsc, token, clase, &e, nombre_ambito_encontrado);*/
+        result = buscarIdEnJerarquiaDesdeClase(tsc, token, clase, &e, nombre_ambito_encontrado);
+        if(result == OK) {
+            printf("Existe el id (%s) en la jerarquía\n", token);
+        } else {
+            printf("No existe el id (%s) en la jerarquía\n", token);
+        }
     } else if(!strcmp(token, TOK_ID_NO_CUALIFICADO)) {
         token = strtok(NULL, " \r\n\t");
         clase = strtok(NULL, " \r\n\t");
         /*aun no funciona: falta abrir clase*/
-        /*result = buscarIdNoCualificado(tsc, tablaMain, token, clase, &e, nombre_ambito_encontrado);*/
+        result = buscarIdNoCualificado(tsc, tablaMain, token, clase, &e, nombre_ambito_encontrado);
+        if(result == OK) {
+            printf("Existe el id no cualificado (%s)\n", token);
+        } else {
+            printf("No existe el id no cualificado (%s)\n", token);
+        }
     } else if(!strcmp(token, TOK_ID_CUALIFICADO_INSTANCIA)) {
         instancia = strtok(NULL, " \r\n\t");
         token = strtok(NULL, " \r\n\t");
         clase = strtok(NULL, " \r\n\t");
         /*aun no funciona: falta abrir clase*/
-        /*result = buscarIdCualificadoInstancia(tsc, tablaMain, instancia, token, clase, &e, nombre_ambito_encontrado);*/
+        result = buscarIdCualificadoInstancia(tsc, tablaMain, instancia, token, clase, &e, nombre_ambito_encontrado);
+        if(result == OK) {
+            printf("Existe el id (%s) cualificado por (%s)\n", token, instancia);
+        } else {
+            printf("No existe el id (%s) cualificado por (%s)\n", token, instancia);
+        }
     } else if(!strcmp(token, TOK_ID_CUALIFICADO_CLASE)) {
         instancia = strtok(NULL, " \r\n\t");
         token = strtok(NULL, " \r\n\t");
         clase = strtok(NULL, " \r\n\t");
         /*aun no funciona: falta abrir clase*/
-        /*result = buscarIdCualificadoClase(tsc, instancia, token, clase, &e, nombre_ambito_encontrado);*/
+        result = buscarIdCualificadoClase(tsc, instancia, token, clase, &e, nombre_ambito_encontrado);
+        if(result == OK) {
+            printf("Existe el id (%s) cualificado por (%s)\n", token, instancia);
+        } else {
+            printf("No existe el id (%s) cualificado por (%s)\n", token, instancia);
+        }
     }
 
 }
@@ -267,7 +279,7 @@ void gestiona_ABRIR_CLASE() {
     abrirClase(tsc, token);
 }
 
-void gestiona_ABRIR_CLASE_HEREDA () {
+void gestiona_ABRIR_CLASE_HEREDA() {
     char* token;
     char* padre;
     int num_padres = 0, i;
@@ -280,7 +292,7 @@ void gestiona_ABRIR_CLASE_HEREDA () {
         padres[num_padres-1] = malloc((strlen(padre) + 1) * sizeof(char));
         strcpy(padres[num_padres-1], padre);
     }
-    abrirClaseHereda(tsc, token, padres, num_padres);
+    abrirClaseHeredaN(tsc, token, padres, num_padres);
     for(i = 0; i < num_padres; i++) {
         free(padres[i]);
     }
@@ -288,5 +300,95 @@ void gestiona_ABRIR_CLASE_HEREDA () {
 }
 
 void gestiona_INSERTAR_TSC() {
-
+    char* token, *simbolo;
+    int categoria, tipo_basico, estructura, tipo_acceso, tipo_miembro;
+    
+    token = strtok(NULL, " \r\n\t");
+    simbolo = strtok(NULL, " \r\n\t");
+    categoria = atoi(strtok(NULL, " \r\n\t"));
+    tipo_basico = atoi(strtok(NULL, " \r\n\t"));
+    estructura = atoi(strtok(NULL, " \r\n\t"));
+    tipo_acceso = atoi(strtok(NULL, " \r\n\t"));
+    tipo_miembro = atoi(strtok(NULL, " \r\n\t"));
+    
+    /*TODO: que cojones son todo eso*/
+    /*also cosa importante: los ficheros suyos incluyen el prefijo ya en la llamada a insertar: deberiamos cambiarlo para que funcionen sus ficheros*/
+    insertarTablaSimbolosClases(tsc, token,
+        simbolo, categoria,
+        tipo_basico, estructura,
+        1, 0,
+        0, 1,
+        1,
+        1,
+        0, 0,
+        0, 0,
+        tipo_acceso, tipo_miembro,
+        0, 0,
+        0, 0,
+        0,
+        0,
+        NULL);
 }
+
+void gestiona_ABRIR_AMBITO_TSC() {
+    char* token, *simbolo;
+    int categoria, tipo_basico, tipo_acceso, tipo_miembro;
+    
+    token = strtok(NULL, " \r\n\t");
+    simbolo = strtok(NULL, " \r\n\t");
+    categoria = atoi(strtok(NULL, " \r\n\t"));
+    tipo_basico = atoi(strtok(NULL, " \r\n\t"));
+    tipo_acceso = atoi(strtok(NULL, " \r\n\t"));
+    tipo_miembro = atoi(strtok(NULL, " \r\n\t"));
+    
+    insertarTablaSimbolosClases(tsc, token,
+        simbolo, ESCALAR,
+        tipo_basico, FUNCION,
+        1, 0,
+        0, 1,
+        1,
+        1,
+        0, 0,
+        0, 0,
+        tipo_acceso, tipo_miembro,
+        0, 0,
+        0, 0,
+        0,
+        0,
+        NULL);
+    abrirAmbitoEnClase(tsc, token, simbolo, categoria, tipo_acceso, tipo_miembro, 0, 1);
+    
+}
+
+void gestiona_CERRAR_AMBITO_TSC() {
+    char* token;
+    
+    token = strtok(NULL, " \r\n\t");
+    
+    cerrarAmbitoEnClase(tsc, token);
+}
+
+void gestiona_CERRAR_CLASE() {
+    char* token;
+    
+    token = strtok(NULL, " \r\n\t");
+    
+    cerrarClase(tsc, token, 0, 0, 0, 0);
+}
+
+
+void gestiona_CERRAR_TSA_MAIN() {
+    cerrarAmbito(tablaMain);
+    
+}
+
+void gestiona_CERRAR_TSC() {
+    FILE* dot;
+    cerrarTablaSimbolosClases(tsc);
+    dot = fopen("tsc.dot", "w");
+    if(dot != NULL) {
+        tablaSimbolosClasesToDot(tsc, dot);
+        fclose(dot);
+    }
+}
+

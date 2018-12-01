@@ -49,7 +49,27 @@ int abrirClase(TablaSimbolosClases* t, char* id_clase) {
     return graphAddClass(t->graph, nodo);
 }
 
-int abrirClaseHereda(TablaSimbolosClases* t, char* id_clase, char** id_clase_hereda, int num_clases_hereda) {
+int abrirClaseHereda(TablaSimbolosClases* t, char* id_clase, ...) {
+    va_list ap;
+    NodoGrafo *parent;
+    char* next;
+    
+    int cid = abrirClase(t, id_clase);
+    if(cid == -1)
+        return -1;
+    
+    va_start(ap, id_clase);
+    while( (next=va_arg(ap, char*)) != NULL) {
+        parent = graphGetClassFromName(t->graph, next);
+        if(parent != NULL) {
+            graphAddEdge(t->graph, parent->index, cid);
+        }
+    }
+    va_end(ap);
+    return cid;
+}
+
+int abrirClaseHeredaN(TablaSimbolosClases* t, char* id_clase, char** id_clase_hereda, int num_clases_hereda) {
     NodoGrafo *parent;
     int i;
     int cid = abrirClase(t, id_clase);
@@ -142,20 +162,24 @@ int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
         int * tipo_args) {
     elementoTablaSimbolos* elemento;
     char nombre_real[MAX_NAME];
-    char* id_clase_real;
+    /*char* id_clase_real;                            Esto ya lo hacen los ficheros de entrada*/
     elemento = malloc(sizeof(elementoTablaSimbolos));
     if(elemento == NULL)
         return -1;
 
     /*hay funcion abierta: inserta el simbolo con prefijo de la funcion */
-    /*a no ser que el simbolo a insertar sea el mismo que el nombre de la funcion: en ese caso se inserta la funcion con el prefijo original*/
-    if(strlen(tabla->func_name) > 0 && strcmp(tabla->func_name, id) != 0) 
+    /*a no ser que el simbolo a insertar sea el mismo que el nombre de la funcion: en ese caso se inserta la funcion con el prefijo original
+          HECHO POR LOS FICHEROS DE ENTRADA (IMAGINO)*/
+    /*if(strlen(tabla->func_name) > 0 && strcmp(tabla->func_name, id) != 0) 
         id_clase_real = tabla->func_name;
     else
-        id_clase_real = id_clase;
+        id_clase_real = id_clase;*/
 
+    /*  HECHO POR LOS FICHEROS DE ENTRADA
     strcpy(nombre_real, id_clase_real);
-    strcat(nombre_real, "_");
+    strcat(nombre_real, "_");*/
+    
+    
     strcat(nombre_real, id);
     strcpy(elemento->clave, nombre_real);
     elemento->clase = clase;
