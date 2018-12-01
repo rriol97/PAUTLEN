@@ -130,6 +130,7 @@ void escribir_operando(FILE* fpasm, char* nombre, int es_variable) {
 	else if (fprintf(fpasm, "\tpush dword %s\n", nombre) <= 0) {
 			printf("Error al meter el operando en la pila");
 	}
+	fprintf(fpasm, "\t;fin escritura operando -----\n\n");
 
 	return;
 }
@@ -149,6 +150,7 @@ void asignar(FILE* fpasm, char* nombre, int es_variable) {
 	else {
 		fprintf(fpasm, "\tpop dword eax\n\tmov [_%s], eax\n", nombre);
 	}
+	fprintf(fpasm, "\t;fin asignacion -----\n\n");
 
 	return;
 }
@@ -179,6 +181,7 @@ void sumar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 		}
 
 		fprintf(fpasm, "\tadd edx, eax\n\tpush edx\n");
+		fprintf(fpasm, "\t;fin suma -----\n\n");
 
 	}
 	return;
@@ -491,20 +494,20 @@ void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
    Se necesita saber el tipo de datos que se va a procesar (ENTERO o BOOLEAN) ya que hay diferentes funciones de librería para la lectura (idem. escritura) de cada tipo.
    Se deben insertar en la pila los argumentos necesarios, realizar la llamada (call) a la función de librería correspondiente y limpiar la pila.
 */
-void leer(FILE* fpasm, char* nombre, int tipo){
+void leer(FILE* fpasm, char* nombre, int tipo) {
 	if (!fpasm) {
 		printf("Error de fichero (lectura)\n");
 	}
 
 	else {
 
-		fprintf(fpasm, "\tpush dword _%s\n", nombre);
+		//fprintf(fpasm, "\tpush dword _%s\n", nombre);
 
 		if (tipo == ENTERO) {
 			fprintf(fpasm, "\tcall scan_int\n");
 		}
 
-		else if(tipo == BOOLEAN) {
+		else if (tipo == BOOLEAN) {
 			fprintf(fpasm, "\tcall scan_boolean\n");
 		}
 
@@ -513,12 +516,13 @@ void leer(FILE* fpasm, char* nombre, int tipo){
 		}
 
 		fprintf(fpasm, "\tadd esp, 4\n");
+		fprintf(fpasm, "\t;fin lectura -----\n\n");
 	}
 
 	return;
 }
 
-void escribir(FILE* fpasm, int es_variable, int tipo){
+void escribir(FILE* fpasm, int es_variable, int tipo) {
 
 	if (!fpasm) {
 		printf("Error de fichero (lectura)\n");
@@ -547,6 +551,7 @@ void escribir(FILE* fpasm, int es_variable, int tipo){
 		}
 
 		fprintf(fpasm, "\tadd esp, 4\n\tcall print_endofline\n");
+		fprintf(fpasm, "\t;fin escritura -----\n\n");
 	}
 
 	return;

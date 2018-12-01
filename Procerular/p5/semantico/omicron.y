@@ -89,6 +89,8 @@ int tipo_declaracion;
 %type <atributos> constante
 %type <atributos> constante_entera
 %type <atributos> constante_logica
+%type <atributos> asignacion
+%type <atributos> elemento_vector
 
 
 %left '+' '-' TOK_OR
@@ -150,7 +152,7 @@ declaracion: modificadores_acceso clase identificadores_declaracion ';'
         if ($2.tipo != $3.tipo) {
             printf("Declaracion de distintos tipos NOT GOOD\n");
         }
-        //fprintf(fout, ";R:\tdeclaracion: modificadores_acceso clase identificadores ';'\n");
+        // Lo suyo sería hacer aqui las declaraciones
     }
     |
     modificadores_acceso declaracion_clase ';'
@@ -492,7 +494,9 @@ asignacion: TOK_IDENTIFICADOR '=' exp
     |
     elemento_vector '=' exp
     {
-        //fprintf(fout, ";R:\tasignacion: elemento_vector '=' exp\n");
+        if ($1.tipo != $3.tipo) {
+            printf("Error: tipos incompatibles");
+        }
     }
     |
     elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'
@@ -513,7 +517,22 @@ asignacion: TOK_IDENTIFICADOR '=' exp
 
 elemento_vector: TOK_IDENTIFICADOR '[' exp ']'
     {
-        //fprintf(fout, ";R:\telemento_vector: TOK_IDENTIFICADOR '[' exp ']'\n");
+        if (buscarIdNoCualificado(NULL, tabla_main, $1.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
+            $1.tipo = elem->tipo;
+            if (elem->clase != VECTOR) {
+                printf("Error: no es vector");
+            }
+            if ($3.tipo != ENTERO) {
+                printf("Error: el indice debe ser de tipo entero");
+            }
+
+            $$.tipo = elem->tipo;
+            $$.direcciones = 1;
+            //Comprobacion indice, 0<i<64
+        }
+        else {
+            printf("Error: Variable no encontrada\n");
+        }
     }
 ;
 
@@ -536,7 +555,16 @@ bucle: TOK_WHILE '(' exp ')' '{' sentencias '}'
 
 lectura: TOK_SCANF TOK_IDENTIFICADOR
     {
-        //fprintf(fout, ";R:\tlectura: TOK_SCANF TOK_IDENTIFICADOR\n");
+        if (buscarIdNoCualificado(NULL, tabla_main, $2.lexema, "main", &elem, nombre_ambito_encontrado) != OK) {
+            printf("Error: Elem no encontrado\n");
+        } else {
+            if (elem->categoria == FUNCION || elem->categoria == VECTOR) {
+                printf("Error: no se puede imprimir funciones ni vectores\n");
+            }
+
+            escribir_operando(fout, $2.lexema, $2.direcciones);
+            leer(fout, $2.lexema, elem->tipo);
+        }
     }
     |
     TOK_SCANF elemento_vector
@@ -547,13 +575,13 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR
 
 escritura: TOK_PRINTF exp
     {
-        if ($2.direcciones == 1){
+        if ($2.direcciones == 1) {
             if(buscarIdNoCualificado(NULL, tabla_main, $2.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
                 escribir_operando(fout, $2.lexema, $2.direcciones);
                 escribir(fout, $2.direcciones, elem->tipo);
             }
             else {
-                printf("Elem no encontrado\n");
+                printf("Error: Elem no encontrado\n");
             }
         }
         else{
@@ -577,157 +605,150 @@ retorno_funcion: TOK_RETURN exp
   //8  +  x1
 exp: exp '+' exp
     {
+        if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
+            printf("Error: La suma requiere que ambos operandos sean numeros");
+        }
 
         //Recuperamos el tipo los operadores que son variables.
-        if ($1.direcciones == 1) {
-            if (buscarIdNoCualificado(NULL, tabla_main, $1.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
-                $1.tipo = elem->tipo;
-            } else {
-                printf("Error: Variable no declarada\n");
-            }
-        }
+        // if ($1.direcciones == 1) {
+        //     if (buscarIdNoCualificado(NULL, tabla_main, $1.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
+        //         $1.tipo = elem->tipo;
+        //     } else {
+        //         printf("Error: Variable no declarada\n");
+        //     }
+        // }
 
-        else {
-            sprintf($1.lexema, "%d", $1.valor_entero);
-        }
+        // else {
+        //     sprintf($1.lexema, "%d", $1.valor_entero);
+        // }
 
-        if ($3.direcciones == 1) {
-            if (buscarIdNoCualificado(NULL, tabla_main, $3.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
-                $3.tipo = elem->tipo;
-            } else  {
-                printf("Error: Variable no declarada\n");
-            }
-        }
+        // if ($3.direcciones == 1) {
+        //     if (buscarIdNoCualificado(NULL, tabla_main, $3.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
+        //         $3.tipo = elem->tipo;
+        //     } else  {
+        //         printf("Error: Variable no declarada\n");
+        //     }
+        // }
 
-        else {
-            sprintf($3.lexema, "%d", $3.valor_entero);
-        }
+        // else {
+        //     sprintf($3.lexema, "%d", $3.valor_entero);
+        // }
 
 
         printf("op1: %s tipo(%d) direc(%d)\n", $1.lexema, $1.tipo, $1.direcciones);
         printf("op2: %s tipo(%d) direc(%d)\n", $3.lexema, $3.tipo, $3.direcciones);
-        //fprintf(fout, ";R:\texp: exp '+' exp\n");
-        if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            printf("La suma requiere que ambos operandos sean numeros");
-        }
 
-        if ($1.tipo == ENTERO && $3.tipo == ENTERO) {
-            escribir_operando(fout, $1.lexema, $1.direcciones);
-            escribir_operando(fout, $3.lexema, $3.direcciones);
-            sumar(fout, $1.direcciones, $3.direcciones);
+        // escribir_operando(fout, $1.lexema, $1.direcciones);
+        // escribir_operando(fout, $3.lexema, $3.direcciones);
+        sumar(fout, $1.direcciones, $3.direcciones);
 
-            $$.tipo = ENTERO;
-            $$.direcciones = 0;
-        }
+        $$.tipo = ENTERO;
+        $$.direcciones = 0;
 
     }
     |
     exp '-' exp
     {
-        //fprintf(fout, ";R:\texp: exp '-' exp\n");
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            //sprintf(msg, "La resta requiere que ambos operandos sean numeros");
+            printf("Error: La resta requiere que ambos operandos sean numeros");
         }
         $$.tipo = ENTERO;
-        $$.valor_entero = $1.valor_entero - $3.valor_entero;
+        $$.direcciones = 0;
     }
     |
     exp '/' exp
     {
-        //fprintf(fout, ";R:\texp: exp '/' exp\n");
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            //sprintf(msg, "La suma requiere que ambos operandos sean numeros");
+            printf("Error: La division requiere que ambos operandos sean numeros");
         }
         if ($3.tipo == 0) {
-            //sprintf(msg, "La division entre 0 no se permite");
+            printf("Error: La division entre 0 no se permite");
         }
         $$.tipo = ENTERO;
-        $$.valor_entero = $1.valor_entero + $3.valor_entero;
+        $$.direcciones = 0;
     }
     |
     exp '*' exp
     {
-        //fprintf(fout, ";R:\texp: exp '*' exp\n");
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            //sprintf(msg, "La multiplicacion requiere que ambos operandos sean numeros");
+            printf("Error: La multiplicacion requiere que ambos operandos sean numeros");
         }
         $$.tipo = ENTERO;
-        $$.valor_entero = $1.valor_entero * $3.valor_entero;
+        $$.direcciones = 0;
     }
     |
     '-' %prec UNARIO exp
     {
-        //fprintf(fout, ";R:\texp: '-' exp\n");
         if ($2.tipo == BOOLEAN) {
-            //sprintf(msg, "El cambio de signo requiere operandos que sean numeros");
+            printf("Error: El cambio de signo requiere operandos que sean numeros");
         }
         $$.tipo = ENTERO;
-        $$.valor_entero = - $2.valor_entero;
+        $$.direcciones = 0;
     }
     |
     exp TOK_AND exp
     {
-        //fprintf(fout, ";R:\texp: exp TOK_AND exp\n");
         if ($1.tipo == ENTERO || $3.tipo == ENTERO) {
-            //sprintf(msg, "La conjuncion requiere operandos que sean booleans");
+            printf("Error: La conjuncion requiere operandos que sean booleans");
         }
         $$.tipo = BOOLEAN;
-        $$.valor_entero = $1.valor_entero && $3.valor_entero;
+        $$.direcciones = 0;
     }
     |
     exp TOK_OR exp
     {
-        //fprintf(fout, ";R:\texp: exp TOK_OR exp\n");
         if ($1.tipo == ENTERO || $3.tipo == ENTERO) {
-            //sprintf(msg, "La disyuncion requiere operandos que sean booleans");
+            printf("Error: La disyuncion requiere operandos que sean booleans");
         }
         $$.tipo = BOOLEAN;
-        $$.valor_entero = $1.valor_entero || $3.valor_entero;
+        $$.direcciones = 0;
     }
     |
     '!' exp
     {
-        //fprintf(fout, ";R:\texp: '!' exp\n");
         if ($2.tipo == ENTERO) {
-            //sprintf(msg, "La negacion requiere operandos que sean booleans");
+            printf("Error: La negacion requiere operandos que sean booleans");
         }
         $$.tipo = BOOLEAN;
-        $$.valor_entero = !($2.valor_entero);
+        $$.direcciones = 0;
     }
     |
     TOK_IDENTIFICADOR
     {
       if (buscarIdNoCualificado(NULL, tabla_main, $1.lexema, "main", &elem, nombre_ambito_encontrado) == OK){
-          $1.tipo = elem->tipo;
+          $1.tipo = elem->tipo; //sobra
       }
       else {
           printf("Error:Variable no encontrada\n");
       }
+
+      //TODO comprobar que no sea de categoria funcion ni clase vector
+      $$.tipo = elem->tipo;
+      $$.direcciones = 1;
     }
     |
     constante
     {
-        //fprintf(fout, ";R:\texp: constante\n");
         $$.tipo = $1.tipo;
-        if ($$.tipo == ENTERO) {
-            $$.valor_entero = $1.valor_entero;
-        }
+        $$.direcciones = $1.direcciones;
     }
     |
     '(' exp ')'
     {
-        //fprintf(fout, ";R:\texp: '(' exp ')'\n");
         $$.tipo = $2.tipo;
+        $$.direcciones = $2.direcciones;
     }
     |
     '(' comparacion ')'
     {
-        //fprintf(fout, ";R:\texp: '(' comparacion ')'\n");
+        $$.tipo = $2.tipo;
+        $$.direcciones = $2.direcciones;
     }
     |
     elemento_vector
     {
-        //fprintf(fout, ";R:\texp: elemento_vector\n");
+        $$.tipo = $1.tipo;
+        $$.direcciones = $1.direcciones;
     }
     |
     TOK_IDENTIFICADOR '(' lista_expresiones ')'
@@ -782,32 +803,56 @@ resto_lista_expresiones: ',' exp resto_lista_expresiones
 
 comparacion: exp TOK_IGUAL exp
     {
-        //fprintf(fout, ";R:\tcomparacion: exp TOK_IGUAL exp\n");
+        if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
+            printf("Error: La division requiere que ambos operandos sean numeros");
+        }
+        $$.tipo = BOOLEAN;
+        $$.direcciones = 0;
     }
     |
     exp TOK_DISTINTO exp
     {
-        //fprintf(fout, ";R:\tcomparacion: exp TOK_DISTINTO exp\n");
+        if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
+            printf("Error: La division requiere que ambos operandos sean numeros");
+        }
+        $$.tipo = BOOLEAN;
+        $$.direcciones = 0;
     }
     |
     exp TOK_MENORIGUAL exp
     {
-        //fprintf(fout, ";R:\tcomparacion: exp TOK_MENORIGUAL exp\n");
+        if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
+            printf("Error: La division requiere que ambos operandos sean numeros");
+        }
+        $$.tipo = BOOLEAN;
+        $$.direcciones = 0;
     }
     |
     exp TOK_MAYORIGUAL exp
     {
-        //fprintf(fout, ";R:\tcomparacion: exp TOK_MAYORIGUAL exp\n");
+        if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
+            printf("Error: La division requiere que ambos operandos sean numeros");
+        }
+        $$.tipo = BOOLEAN;
+        $$.direcciones = 0;
     }
     |
     exp '<' exp
     {
-        //fprintf(fout, ";R:\tcomparacion: exp '<' exp\n");
+        if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
+            printf("Error: La division requiere que ambos operandos sean numeros");
+        }
+        $$.tipo = BOOLEAN;
+        $$.direcciones = 0;
     }
     |
     exp '>' exp
     {
-        //fprintf(fout, ";R:\tcomparacion: exp '>' exp\n");
+        if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
+            printf("Error: La division requiere que ambos operandos sean numeros");
+        }
+        $$.tipo = BOOLEAN;
+        $$.direcciones = 0;
     }
 ;
 
@@ -841,7 +886,8 @@ constante_entera: TOK_CONSTANTE_ENTERA
     {
         $$.tipo = ENTERO;
         $$.direcciones = 0;
-        //$$.valor_entero = $1.valor_entero;
+        sprintf($1.lexema, "%d", $1.valor_entero);
+        escribir_operando(fout, $1.lexema, 0);
     }
 ;
 
