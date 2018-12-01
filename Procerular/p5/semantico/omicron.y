@@ -106,7 +106,7 @@ programa: TOK_MAIN inicioTabla '{' declaraciones escribirHastaMain funciones sen
     TOK_MAIN inicioTabla '{' escribirHastaMain funciones sentencias '}'
     {
         escribir_fin(fout);
-        tablaFree(tabla_main);   
+        tablaFree(tabla_main);
     }
 ;
 
@@ -123,8 +123,8 @@ inicioTabla: {
 escribirHastaMain: {
 
 
-        //Buscamos la variable en 
-        
+        //Buscamos la variable en
+
     //getVarsTS
     //Declararlas
 
@@ -145,9 +145,11 @@ declaraciones: declaracion
 
 declaracion: modificadores_acceso clase identificadores_declaracion ';'
     {
-        if ($2.tipo != $3.tipo){
-            printf("Declaracion de distintos tipos\n");
+        if ($2.tipo != $3.tipo) {
+            printf("Declaracion de distintos tipos NOT GOOD\n");
+
         }
+        $$.$3
         //fprintf(fout, ";R:\tdeclaracion: modificadores_acceso clase identificadores ';'\n");
     }
     |
@@ -255,6 +257,7 @@ tipo: TOK_INT
     {
         //fprintf(fout, ";R:\ttipo: TOK_BOOLEAN\n");
         $$.tipo = BOOLEAN;
+        tipo_declaracion = BOOLEAN;
     }
 ;
 
@@ -284,24 +287,26 @@ identificadores: TOK_IDENTIFICADOR
 identificadores_declaracion: identificador
     {
         /* Aqui solo se accede al declarar varibles */
-        $1.tipo = tipo_declaracion;
         $$.tipo = $1.tipo;
-        declarar_variable(fout, $1.lexema, $1.tipo, 1);
-        // TODO: insertar en tabla simbolos
-        insertarTablaSimbolosAmbitos(tabla_main, "main", $1.lexema, ESCALAR, $1.tipo, $1.direcciones, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 
     }
     |
     identificador ',' identificadores_declaracion
     {
-      /* Preguntar a Ortega y Gasset*/
+      $$.tipo = $1.tipo;
     }
 ;
 
 identificador: TOK_IDENTIFICADOR
 {
-    strcpy($$.lexema, $1.lexema);
-    $$.direcciones = $1.direcciones;
+  $$.direcciones = 1;
+  $1.tipo = tipo_declaracion;
+
+  printf("entro en una declaracion de variable (%s) [%d]\n", $1.lexema, $1.tipo);
+  $$.tipo = $1.tipo;
+  declarar_variable(fout, $1.lexema, $1.tipo, 1);
+  // TODO: insertar en tabla simbolos
+  insertarTablaSimbolosAmbitos(tabla_main, "main", $1.lexema, ESCALAR, $1.tipo, $1.direcciones, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 }
 
 funciones: funcion funciones
@@ -553,12 +558,23 @@ retorno_funcion: TOK_RETURN exp
 
 exp: exp '+' exp
     {
+        printf("op1: %s tipo(%d) direc(%d)\n", $1.lexema, $1.tipo, $1.direcciones);
+        printf("op2: %s tipo(%d) direc(%d)\n", $3.lexema, $3.tipo, $3.direcciones);
         //fprintf(fout, ";R:\texp: exp '+' exp\n");
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            //sprintf(msg, "La suma requiere que ambos operandos sean numeros");
+            printf("La suma requiere que ambos operandos sean numeros");
         }
-        $$.tipo = ENTERO;
-        $$.valor_entero = $1.valor_entero + $3.valor_entero;
+        if ($1.tipo == ENTERO && $3.tipo == ENTERO) {
+          printf("no entro quiiiiiiiiiiiiiii\n");
+          escribir_operando(fout, $1.lexema, $1.direcciones);
+          escribir_operando(fout, $3.lexema, $3.direcciones);
+          sumar(fout, $1.direcciones, $3.direcciones);
+
+          $$.tipo = ENTERO;
+          $$.direcciones = 0;
+          $$.valor_entero = $1.valor_entero + $3.valor_entero;
+        }
+
     }
     |
     exp '-' exp
