@@ -51,7 +51,10 @@ int abrirAmbitoClase(TablaAmbito** t, char* id_clase, int tamanio);
 int abrirClase(TablaSimbolosClases* t, char* id_clase);
 
 /*crea una clase que hereda de un numero arbitrario de clases ya definidas*/
-int abrirClaseHereda(TablaSimbolosClases* t, char* id_clase, char** id_clase_hereda, int num_clases_hereda);
+int abrirClaseHereda(TablaSimbolosClases* t, char* id_clase, ...);
+
+/*crea una clase que hereda de un numero arbitrario de clases ya definidas: def alternativa*/
+int abrirClaseHeredaN(TablaSimbolosClases* t, char* id_clase, char** id_clase_hereda, int num_clases_hereda);
 
 /*abre funcion en main*/
 int AbrirAmbitoPrefijos(TablaAmbito * tabla,
