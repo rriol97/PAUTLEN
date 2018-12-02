@@ -112,7 +112,9 @@ void escribir_fin(FILE* fpasm) {
 
 /*
    Función que debe ser invocada cuando se sabe un operando de una operación
-aritmético-lógica y se necesita introducirlo en la pila. nombre es la cadena de
+aritmético-lógica y se necesita i
+	;fin escritura operando -----
+ntroducirlo en la pila. nombre es la cadena de
 caracteres del operando tal y como debería aparecer en el fuente NASM
 es_variable indica si este operando es una variable (como por ejemplo b1) con un
 1 u otra cosa (como por ejemplo 34) con un 0. Recuerda que en el primer caso
@@ -559,4 +561,3 @@ void escribir(FILE* fpasm, int es_variable, int tipo) {
 }
 
 /** VVVVVVVVVVVVVVVVVVVVVVVVVVVVV MAIN DE TEST VVVVVVVVVVVVVVVVVVVVVVVVVVVVV */
-

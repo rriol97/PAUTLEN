@@ -609,37 +609,16 @@ exp: exp '+' exp
             printf("Error: La suma requiere que ambos operandos sean numeros");
         }
 
-        //Recuperamos el tipo los operadores que son variables.
-        // if ($1.direcciones == 1) {
-        //     if (buscarIdNoCualificado(NULL, tabla_main, $1.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
-        //         $1.tipo = elem->tipo;
-        //     } else {
-        //         printf("Error: Variable no declarada\n");
-        //     }
-        // }
-
-        // else {
-        //     sprintf($1.lexema, "%d", $1.valor_entero);
-        // }
-
-        // if ($3.direcciones == 1) {
-        //     if (buscarIdNoCualificado(NULL, tabla_main, $3.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
-        //         $3.tipo = elem->tipo;
-        //     } else  {
-        //         printf("Error: Variable no declarada\n");
-        //     }
-        // }
-
-        // else {
-        //     sprintf($3.lexema, "%d", $3.valor_entero);
-        // }
-
-
         printf("op1: %s tipo(%d) direc(%d)\n", $1.lexema, $1.tipo, $1.direcciones);
         printf("op2: %s tipo(%d) direc(%d)\n", $3.lexema, $3.tipo, $3.direcciones);
 
-        // escribir_operando(fout, $1.lexema, $1.direcciones);
-        // escribir_operando(fout, $3.lexema, $3.direcciones);
+        if ($1.direcciones) {
+            escribir_operando(fout, $1.lexema, $1.direcciones);
+        }
+        if ($3.direcciones) {
+            escribir_operando(fout, $3.lexema, $3.direcciones);
+        }
+
         sumar(fout, $1.direcciones, $3.direcciones);
 
         $$.tipo = ENTERO;
@@ -716,7 +695,7 @@ exp: exp '+' exp
     TOK_IDENTIFICADOR
     {
       if (buscarIdNoCualificado(NULL, tabla_main, $1.lexema, "main", &elem, nombre_ambito_encontrado) == OK){
-          $1.tipo = elem->tipo; //sobra
+          $1.tipo = elem->tipo;
       }
       else {
           printf("Error:Variable no encontrada\n");
@@ -803,9 +782,20 @@ resto_lista_expresiones: ',' exp resto_lista_expresiones
 
 comparacion: exp TOK_IGUAL exp
     {
-        if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            printf("Error: La division requiere que ambos operandos sean numeros");
+        printf("entro aquiiiiiiiiiiii\n");
+        //if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
+            //printf("Error: La division requiere que ambos operandos sean numeros");
+        //}
+        //Escribimos operandos
+        if ($1.direcciones == 1) {
+            escribir_operando(fout, $1.lexema, $1.direcciones);
         }
+
+        if ($3.direcciones == 1) {
+            escribir_operando(fout, $3.lexema, $3.direcciones);
+        }
+
+        igual(fout, $1.direcciones, $3.direcciones, 666);
         $$.tipo = BOOLEAN;
         $$.direcciones = 0;
     }
