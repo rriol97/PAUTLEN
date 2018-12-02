@@ -17,6 +17,7 @@ TablaAmbito * tabla_main;
 elementoTablaSimbolos * elem;
 char nombre_ambito_encontrado[MAX_NAME];
 int tipo_declaracion;
+int etiqueta = 1;
 %}
 
 %union {
@@ -91,6 +92,9 @@ int tipo_declaracion;
 %type <atributos> constante_logica
 %type <atributos> asignacion
 %type <atributos> elemento_vector
+%type <atributos> if_exp_sentencias
+%type <atributos> if_exp
+
 
 
 %left '+' '-' TOK_OR
@@ -488,7 +492,7 @@ asignacion: TOK_IDENTIFICADOR '=' exp
             sprintf(aux, "%d", $3.valor_entero);
 
         }
-        escribir_operando(fout, aux, $3.direcciones);
+        //escribir_operando(fout, aux, $3.direcciones);
         asignar(fout, $1.lexema, $3.direcciones);
     }
     |
@@ -536,14 +540,29 @@ elemento_vector: TOK_IDENTIFICADOR '[' exp ']'
     }
 ;
 
-condicional: TOK_IF '(' exp ')' '{' sentencias '}'
+condicional: if_exp_sentencias TOK_ELSE '{' sentencias '}'
     {
-        //fprintf(fout, ";R:\tcondicional: TOK_IF '(' exp ')' '{' sentencias '}'\n");
+        fin_if_else(fout, $1.etiqueta);
     }
-    |
-    TOK_IF '(' exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}'
+;
+
+if_exp_sentencias: if_exp sentencias '}'
     {
-        //fprintf(fout, ";R:\tcondicional: TOK_IF '(' exp ')' '{' sentencias '}' TOK_ELSE '{' sentencias '}'\n");
+        $$.etiqueta = $1.etiqueta;
+
+        medio_if_else(fout, $1.etiqueta);
+    }   
+;
+
+if_exp: TOK_IF '(' exp ')' '{'
+    {
+        if ($3.tipo != BOOLEAN) {
+            printf("Error: condicion del if no booleano");
+        }
+        $$.etiqueta = etiqueta;
+        etiqueta++;
+
+        inicio_if_else(fout, $$.etiqueta, $3.direcciones);
     }
 ;
 
@@ -613,10 +632,10 @@ exp: exp '+' exp
         printf("op2: %s tipo(%d) direc(%d)\n", $3.lexema, $3.tipo, $3.direcciones);
 
         if ($1.direcciones) {
-            escribir_operando(fout, $1.lexema, $1.direcciones);
+            //escribir_operando(fout, $1.lexema, $1.direcciones);
         }
         if ($3.direcciones) {
-            escribir_operando(fout, $3.lexema, $3.direcciones);
+            //escribir_operando(fout, $3.lexema, $3.direcciones);
         }
 
         sumar(fout, $1.direcciones, $3.direcciones);
@@ -700,6 +719,8 @@ exp: exp '+' exp
       else {
           printf("Error:Variable no encontrada\n");
       }
+      //diapo90 gen
+      escribir_operando(fout, $1.lexema, 1);
 
       //TODO comprobar que no sea de categoria funcion ni clase vector
       $$.tipo = elem->tipo;
@@ -782,20 +803,19 @@ resto_lista_expresiones: ',' exp resto_lista_expresiones
 
 comparacion: exp TOK_IGUAL exp
     {
-        printf("entro aquiiiiiiiiiiii\n");
-        //if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            //printf("Error: La division requiere que ambos operandos sean numeros");
-        //}
-        //Escribimos operandos
+        if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
+            printf("Error: La division requiere que ambos operandos sean numeros");
+        }
         if ($1.direcciones == 1) {
-            escribir_operando(fout, $1.lexema, $1.direcciones);
+            //escribir_operando(fout, $1.lexema, $1.direcciones);
         }
-
         if ($3.direcciones == 1) {
-            escribir_operando(fout, $3.lexema, $3.direcciones);
+            //escribir_operando(fout, $3.lexema, $3.direcciones);
         }
 
-        igual(fout, $1.direcciones, $3.direcciones, 666);
+        igual(fout, $1.direcciones, $3.direcciones, etiqueta);
+        etiqueta++;
+        
         $$.tipo = BOOLEAN;
         $$.direcciones = 0;
     }
@@ -863,12 +883,14 @@ constante_logica: TOK_TRUE
     {
         $$.tipo = BOOLEAN;
         $$.direcciones = 0;
+        escribir_operando(fout, "1", 0);
     }
     |
     TOK_FALSE
     {
         $$.tipo = BOOLEAN;
         $$.direcciones = 0;
+        escribir_operando(fout, "0", 0);
     }
 ;
 

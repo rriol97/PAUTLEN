@@ -132,7 +132,7 @@ void escribir_operando(FILE* fpasm, char* nombre, int es_variable) {
 	else if (fprintf(fpasm, "\tpush dword %s\n", nombre) <= 0) {
 			printf("Error al meter el operando en la pila");
 	}
-	fprintf(fpasm, "\t;fin escritura operando -----\n\n");
+	fprintf(fpasm, "\t;fin escritura operando -----\n");
 
 	return;
 }
@@ -372,6 +372,7 @@ void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
 		}
 
 		fprintf(fpasm, "\tcmp eax, ecx\n\tje near igual_%d\n\tpush dword 0\n\tjmp near final_%d\nigual_%d:\n\tpush dword 1\nfinal_%d:\n", etiqueta, etiqueta, etiqueta, etiqueta);
+		fprintf(fpasm, "\t;fin igualacion -----\n\n");
 	}
 
 	return;
@@ -560,4 +561,55 @@ void escribir(FILE* fpasm, int es_variable, int tipo) {
 
 }
 
-/** VVVVVVVVVVVVVVVVVVVVVVVVVVVVV MAIN DE TEST VVVVVVVVVVVVVVVVVVVVVVVVVVVVV */
+void inicio_if_else(FILE* fpasm, int etiqueta, int es_direccion) {
+	if (!fpasm) {
+		printf("Error de fichero (lectura)\n");
+	}
+
+	fprintf(fpasm, "\tpop eax\n");
+	if (es_direccion) {
+		fprintf(fpasm, "\tmov eax, [eax]\n");
+	}
+	fprintf(fpasm, "\tcmp eax, 0\n");
+	fprintf(fpasm, "\tje near fin_if_%d\n", etiqueta);
+
+	return;
+}
+
+void medio_if_else(FILE* fpasm, int etiqueta) {
+	if (!fpasm) {
+		printf("Error de fichero (lectura)\n");
+	}
+
+	fprintf(fpasm, "\tjmp near fin_ifelse_%d\n", etiqueta);
+	fprintf(fpasm, "fin_if_%d:\n", etiqueta);
+
+	return;
+}
+
+void fin_if_else(FILE* fpasm, int etiqueta) {
+	if (!fpasm) {
+		printf("Error de fichero (lectura)\n");
+	}
+
+	fprintf(fpasm, "fin_ifelse_%d:\n", etiqueta);
+
+	return;
+}
+
+
+
+void inicio_if(FILE* fpasm, int etiqueta, int es_direccion) {
+	if (!fpasm) {
+		printf("Error de fichero (lectura)\n");
+	}
+
+	fprintf(fpasm, "\tpop eax\n");
+	if (es_direccion) {
+		fprintf(fpasm, "\tmov eax, [eax]\n");
+	}
+	fprintf(fpasm, "\tcmp eax, 0\n");
+	fprintf(fpasm, "\tje near fin_ifsimple_%d\n", etiqueta);
+
+	return;
+}

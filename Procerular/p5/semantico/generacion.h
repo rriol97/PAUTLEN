@@ -114,4 +114,9 @@ void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta);
 void leer(FILE* fpasm, char* nombre, int tipo);
 void escribir(FILE* fpasm, int es_variable, int tipo);
 
+/* FUNCIONES PARA EL CONTROL DE FLUJO */
+void inicio_if_else(FILE* fpasm, int etiqueta, int es_direccion);
+void medio_if_else(FILE* fpasm, int etiqueta);
+void fin_if_else(FILE* fpasm, int etiqueta);
+
 #endif
