@@ -1,0 +1,38 @@
+inicia_tsc    grafo_enunciado
+inicia_tsa_main
+abrir_ambito_ppal_main
+abrir_clase    AA
+buscar    declarar_miembro_clase    AA    AA_sa1
+insertar_tsc    AA    AA_sa1    7    1    1    1    1
+buscar    declarar_miembro_clase    AA    AA_sa1
+buscar    declarar_miembro_clase    AA    AA_ha1
+insertar_tsc    AA    AA_ha1    7    1    1    2    1
+buscar    declarar_miembro_clase    AA    AA_xa1
+insertar_tsc    AA    AA_xa1    7    1    1    3    1
+buscar    declarar_miembro_clase    AA    AA_MA1@1
+abrir_ambito_tsc    AA    AA_MA1@1    6    1    2    1
+cerrar_ambito_tsc    AA
+buscar    declarar_miembro_clase    AA    AA_MA1@1
+buscar    declarar_miembro_clase    AA    AA_MA1@1@1
+abrir_ambito_tsc    AA    AA_MA1@1@1    6    1    2    1
+cerrar_ambito_tsc    AA
+cerrar_clase    AA
+abrir_clase    BB
+buscar    declarar_miembro_clase    BB    BB_sA1
+insertar_tsc    BB    BB_sA1    7    1    1    1    1
+buscar    declarar_miembro_clase    BB    BB_hA1
+insertar_tsc    BB    BB_hA1    7    1    1    2    1
+buscar    declarar_miembro_clase    BB    BB_xA1
+insertar_tsc    BB    BB_xA1    7    1    1    3    1
+buscar    declarar_miembro_clase    BB    BB_MB1@1
+abrir_ambito_tsc    BB    BB_MB1@1    6    1    1    1
+cerrar_ambito_tsc    BB
+buscar    declarar_miembro_clase    BB    BB_MA1@1
+abrir_ambito_tsc    BB    BB_MA1@1    6    1    2    1
+cerrar_ambito_tsc    BB
+buscar    declarar_miembro_clase    BB    BB_MA2@1
+abrir_ambito_tsc    BB    BB_MA2@1    6    1    3    1
+cerrar_ambito_tsc    BB
+cerrar_clase    BB
+cerrar_tsa_main
+cerrar_tsc

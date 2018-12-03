@@ -1,11 +1,24 @@
 digraph grafo_clases  { rankdir=BT;
 edge [arrowhead = empty]
-AA [label="{AA|AA\lAA_a1\lAA_sa1\lAA_a2\lAA_mA1@1\l}"][shape=record];
-BB [label="{BB|BB\lBB_b1\lBB_aa1\lBB_mB1@1\l}"][shape=record];
+AA [label="{AA|AA\lAA_inspub\lAA_insprot\lAA_inspriv\lAA_clasepub\lAA_claseprot\lAA_clasepriv\lAA_miaa\lAA_prueba\l}"][shape=record];
+BB [label="{BB|BB\lBB_mibb\l}"][shape=record];
+CC [label="{CC|CC\lCC_micc\l}"][shape=record];
+DD [label="{DD|DD\lDD_midd\l}"][shape=record];
+EE [label="{EE|EE\lEE_miee\lEE_mE\l}"][shape=record];
 BB -> AA ;
+DD -> CC ;
+DD -> AA ;
+EE -> DD ;
+EE -> BB ;
 edge [arrowhead = normal]
 AAN0 [label="AA"][shape=oval];
 BBN1 [label="BB"][shape=oval];
+CCN2 [label="CC"][shape=oval];
+DDN3 [label="DD"][shape=oval];
+EEN4 [label="EE"][shape=oval];
 AAN0 -> BBN1 ;
+BBN1 -> CCN2 ;
+CCN2 -> DDN3 ;
+DDN3 -> EEN4 ;
 
 }

@@ -167,7 +167,11 @@ void gestiona_BUSCAR() {
         instancia = strtok(NULL, "_");
         result = buscarParaDeclararMiembroInstancia(tsc, clase, instancia, &e, nombre_ambito_encontrado);
         if(result == OK) {
-            fprintf(f_out, "Existe el id: no se puede declarar\n");
+            if(e->clase == METODO_SOBREESCRIBIBLE) {
+                fprintf(f_out, "Existe el id: se sobreescribe\n");
+            } else {
+                fprintf(f_out, "Existe el id: no se puede declarar\n");
+            }
         } else {
             fprintf(f_out, "No existe el id: se puede declarar\n");
         }
@@ -269,8 +273,8 @@ void gestiona_ABRIR_AMBITO_TSA_MAIN() {
     fprintf(f_out, "abrir ambito tsa main (%s)\n", token);
 
     insertarTablaSimbolosAmbitos(tablaMain, "main",
-        token, ESCALAR,
-        tipo_basico, FUNCION,
+        token, FUNCION,
+        tipo_basico, ESCALAR,
         1, 0,
         0, 1,
         1,
@@ -396,8 +400,8 @@ void gestiona_ABRIR_AMBITO_TSC() {
     fprintf(f_out, "abrir ambito tsc (%s)\n", simbolo);
     
     insertarTablaSimbolosClases(tsc, token,
-        simbolo, ESCALAR,
-        tipo_basico, FUNCION,
+        simbolo, categoria,
+        tipo_basico, ESCALAR,
         1, 0,
         0, 1,
         1,
