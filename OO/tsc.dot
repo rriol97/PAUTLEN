@@ -1,7 +1,0 @@
-digraph grafo_clases  { rankdir=BT;
-edge [arrowhead = empty]
-AA [label="{AA|AA\lAA_mA1@1\lAA_mA2@1\lAA_mA3@1@3\lAA_mA4\lAA_mA5@1\lAA_mA6\lAA_mA7@1\lAA_mA8\l}"][shape=record];
-edge [arrowhead = normal]
-AAN0 [label="AA"][shape=oval];
-
-}
