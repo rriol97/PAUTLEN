@@ -131,100 +131,97 @@ void gestiona_BUSCAR() {
     char* token;
     char* clase;
     char* instancia;
-    char nombre_og[MAX_NAME];
     elementoTablaSimbolos* e;
     char nombre_ambito_encontrado[MAX_NAME];
     int result = ERR;
     
     token = strtok(NULL, " \r\n\t");
     if(!strcmp(token, TOK_DECLARAR_MAIN)) {
-        fprintf(f_out, "buscar declarar main\n");
         token = strtok(NULL, " \r\n\t");
+        fprintf(f_out, "buscar declarar main (%s)\n", token);
         result = buscarParaDeclararIdTablaSimbolosAmbitos(tablaMain, token, &e, "main", nombre_ambito_encontrado);
         if(result == OK) {
-            fprintf(f_out, "Existe el id (%s): no se puede declarar\n", token);
+            fprintf(f_out, "Existe el id: no se puede declarar\n");
         } else {
-            fprintf(f_out, "No existe el id (%s): se puede declarar\n", token);
+            fprintf(f_out, "No existe el id: se puede declarar\n");
         }
     } else if(!strcmp(token, TOK_DECLARAR_MIEMBRO_CLASE)) {
-        fprintf(f_out, "buscar declarar miembro clase\n");
         clase = strtok(NULL, " \r\n\t");
         token = strtok(NULL, " \r\n\t");
+        fprintf(f_out, "buscar declarar miembro clase (%s)\n", token);
         /*quitamos el prefijo*/
-        strcpy(nombre_og, token);
         strtok(token, "_");
         instancia = strtok(NULL, "_");
         result = buscarParaDeclararMiembroClase(tsc, clase, instancia, &e, nombre_ambito_encontrado);
         if(result == OK) {
-            fprintf(f_out, "Existe el id (%s): no se puede declarar\n", nombre_og);
+            fprintf(f_out, "Existe el id: no se puede declarar\n");
         } else {
-            fprintf(f_out, "No existe el id (%s): se puede declarar\n", nombre_og);
+            fprintf(f_out, "No existe el id: se puede declarar\n");
         }
     } else if(!strcmp(token, TOK_DECLARAR_MIEMBRO_INSTANCIA)) {
-        fprintf(f_out, "buscar declarar miembro instancia\n");
         clase = strtok(NULL, " \r\n\t");
         token = strtok(NULL, " \r\n\t");
+        fprintf(f_out, "buscar declarar miembro instancia (%s)\n", token);
         /*quitamos el prefijo*/
-        strcpy(nombre_og, token);
         instancia = strtok(token, "_");
         instancia = strtok(NULL, "_");
         result = buscarParaDeclararMiembroInstancia(tsc, clase, instancia, &e, nombre_ambito_encontrado);
         if(result == OK) {
-            fprintf(f_out, "Existe el id (%s): no se puede declarar\n", nombre_og);
+            fprintf(f_out, "Existe el id: no se puede declarar\n");
         } else {
-            fprintf(f_out, "No existe el id (%s): se puede declarar\n", nombre_og);
+            fprintf(f_out, "No existe el id: se puede declarar\n");
         }
     } else if(!strcmp(token, TOK_DECLARAR_ID_LOCAL_METODO)) {
-        fprintf(f_out, "buscar declarar id local metodo\n");
         clase = strtok(NULL, " \r\n\t");
         token = strtok(NULL, " \r\n\t");
+        fprintf(f_out, "buscar declarar id local metodo (%s)\n", token);
         result = buscarParaDeclararIdLocalEnMetodo(tsc, clase, token, &e, nombre_ambito_encontrado);
         if(result == OK) {
-            fprintf(f_out, "Existe el id (%s): no se puede declarar\n", token);
+            fprintf(f_out, "Existe el id: no se puede declarar\n");
         } else {
-            fprintf(f_out, "No existe el id (%s): se puede declarar\n", token);
+            fprintf(f_out, "No existe el id: se puede declarar\n");
         }
     } else if(!strcmp(token, TOK_JERARQUIA)) {
-        fprintf(f_out, "buscar jararquia\n");
         token = strtok(NULL, " \r\n\t");
         clase = strtok(NULL, " \r\n\t");
+        fprintf(f_out, "buscar jerarquia (%s)\n", token);
         result = buscarIdEnJerarquiaDesdeClase(tsc, token, clase, &e, nombre_ambito_encontrado);
         if(result == OK) {
-            fprintf(f_out, "Existe el id (%s) en la jerarquía\n", token);
+            fprintf(f_out, "Existe el id en la jerarquía\n");
         } else {
-            fprintf(f_out, "No existe el id (%s) en la jerarquía\n", token);
+            fprintf(f_out, "No existe el id en la jerarquía\n");
         }
     } else if(!strcmp(token, TOK_ID_NO_CUALIFICADO)) {
-        fprintf(f_out, "buscar id no cualificado\n");
         token = strtok(NULL, " \r\n\t");
         clase = strtok(NULL, " \r\n\t");
+        fprintf(f_out, "buscar id no cualificado (%s)\n", token);
         result = buscarIdNoCualificado(tsc, tablaMain, token, clase, &e, nombre_ambito_encontrado);
         if(result == OK) {
-            fprintf(f_out, "Existe el id no cualificado (%s)\n", token);
+            fprintf(f_out, "Existe el id no cualificado\n");
         } else {
-            fprintf(f_out, "No existe el id no cualificado (%s)\n", token);
+            fprintf(f_out, "No existe el id no cualificado\n");
         }
     } else if(!strcmp(token, TOK_ID_CUALIFICADO_INSTANCIA)) {
-        fprintf(f_out, "buscar id cualificado instancia\n");
         instancia = strtok(NULL, " \r\n\t");
         token = strtok(NULL, " \r\n\t");
         clase = strtok(NULL, " \r\n\t");
+        fprintf(f_out, "buscar id cualificado instancia (instancia: %s id: %s)\n", instancia, token);
         result = buscarIdCualificadoInstancia(tsc, tablaMain, instancia, token, clase, &e, nombre_ambito_encontrado);
         if(result == OK) {
-            fprintf(f_out, "Existe el id (%s) cualificado por (%s)\n", token, instancia);
+            fprintf(f_out, "Existe el id cualificado por instancia\n");
         } else {
-            fprintf(f_out, "No existe el id (%s) cualificado por (%s)\n", token, instancia);
+            fprintf(f_out, "No existe el id cualificado por instancia\n");
         }
     } else if(!strcmp(token, TOK_ID_CUALIFICADO_CLASE)) {
-        fprintf(f_out, "buscar id cualificado clase\n");
         instancia = strtok(NULL, " \r\n\t");
         token = strtok(NULL, " \r\n\t");
         clase = strtok(NULL, " \r\n\t");
+        fprintf(f_out, "buscar id cualificado clase (clase: %s id: %s)\n", instancia, token);
         result = buscarIdCualificadoClase(tsc, instancia, token, clase, &e, nombre_ambito_encontrado);
         if(result == OK) {
-            fprintf(f_out, "Existe el id (%s) cualificado por (%s)\n", token, instancia);
+            fprintf(f_out, "Existe el id cualificado por clase\n");
         } else {
-            fprintf(f_out, "No existe el id (%s) cualificado por (%s)\n", token, instancia);
+            fprintf(f_out, "No existe el id cualificado por clase\n");
         }
     }
 
@@ -234,14 +231,14 @@ void gestiona_INSERTAR_TSA_MAIN () {
     char* token;
     int categoria, tipo_basico, estructura, tipo_acceso, tipo_miembro;
     
-    fprintf(f_out, "insertar tsa main\n");
-    
     token = strtok(NULL, " \r\n\t");
     categoria = atoi(strtok(NULL, " \r\n\t"));
     tipo_basico = atoi(strtok(NULL, " \r\n\t"));
     estructura = atoi(strtok(NULL, " \r\n\t"));
     tipo_acceso = atoi(strtok(NULL, " \r\n\t"));
     tipo_miembro = atoi(strtok(NULL, " \r\n\t"));
+
+    fprintf(f_out, "insertar tsa main (%s)\n", token);
     
     /*TODO: que cojones son todo eso*/
     insertarTablaSimbolosAmbitos(tablaMain, "main",
@@ -259,16 +256,18 @@ void gestiona_INSERTAR_TSA_MAIN () {
         0,
         0,
         NULL);
+    imprimirTabla(tablaMain, f_out);
 }
 
 void gestiona_ABRIR_AMBITO_TSA_MAIN() {
     char* token, *no_prefijo;
     int tipo_basico;
     
-    fprintf(f_out, "abrir ambito tsa main\n");
-    
     token = strtok(NULL, " \r\n\t");
     tipo_basico = atoi(strtok(NULL, " \r\n\t"));
+    
+    fprintf(f_out, "abrir ambito tsa main (%s)\n", token);
+
     insertarTablaSimbolosAmbitos(tablaMain, "main",
         token, ESCALAR,
         tipo_basico, FUNCION,
@@ -289,6 +288,7 @@ void gestiona_ABRIR_AMBITO_TSA_MAIN() {
     strtok(token, "_");
     no_prefijo = strtok(NULL, "_");
     AbrirAmbitoPrefijos(tablaMain, "main", no_prefijo, FUNCION, ACCESO_TODOS, MIEMBRO_UNICO, 0, 1);
+    imprimirTabla(tablaMain, f_out);
 }
 
 void gestiona_CERRAR_AMBITO_TSA_MAIN() {
@@ -303,10 +303,11 @@ void gestiona_INICIA_TSC() {
 
 void gestiona_ABRIR_CLASE() {
     char* token;
-    
-    fprintf(f_out, "abrir clase\n");
 
     token = strtok(NULL, " \r\n\t");
+
+    fprintf(f_out, "abrir clase (%s)\n", token);
+
     abrirClase(tsc, token);
 }
 
@@ -315,10 +316,11 @@ void gestiona_ABRIR_CLASE_HEREDA() {
     char* padre;
     int num_padres = 0, i;
     char** padres = NULL;
-    
-    fprintf(f_out, "abrir clase hereda\n");
 
     token = strtok(NULL, " \r\n\t");
+
+    fprintf(f_out, "abrir clase hereda (%s)\n", token);
+
     while( (padre=strtok(NULL, " \r\n\t")) != NULL ) {
         num_padres++;
         padres = realloc(padres, sizeof(char*)*num_padres);
@@ -336,8 +338,6 @@ void gestiona_INSERTAR_TSC() {
     char* token, *simbolo;
     int categoria, tipo_basico, estructura, tipo_acceso, tipo_miembro;
     
-    fprintf(f_out, "insertar tsc\n");
-    
     token = strtok(NULL, " \r\n\t");
     simbolo = strtok(NULL, " \r\n\t");
     categoria = atoi(strtok(NULL, " \r\n\t"));
@@ -345,6 +345,8 @@ void gestiona_INSERTAR_TSC() {
     estructura = atoi(strtok(NULL, " \r\n\t"));
     tipo_acceso = atoi(strtok(NULL, " \r\n\t"));
     tipo_miembro = atoi(strtok(NULL, " \r\n\t"));
+
+    fprintf(f_out, "insertar tsc (%s)\n", simbolo);
     
     /*TODO: que cojones son todo eso*/
     insertarTablaSimbolosClases(tsc, token,
@@ -374,6 +376,8 @@ void gestiona_INSERTAR_TSC() {
         num_at_i++;
         num_acumulado_at_i++;
     }
+
+    imprimirTablaClase(tsc, token, f_out);
     
 }
 
@@ -381,14 +385,15 @@ void gestiona_ABRIR_AMBITO_TSC() {
     char* token, *simbolo, *no_prefijo;
     int categoria, tipo_basico, tipo_acceso, tipo_miembro;
     
-    fprintf(f_out, "abrir ambito tsc\n");
-    
     token = strtok(NULL, " \r\n\t");
     simbolo = strtok(NULL, " \r\n\t");
     categoria = atoi(strtok(NULL, " \r\n\t"));
     tipo_basico = atoi(strtok(NULL, " \r\n\t"));
     tipo_acceso = atoi(strtok(NULL, " \r\n\t"));
     tipo_miembro = atoi(strtok(NULL, " \r\n\t"));
+
+    
+    fprintf(f_out, "abrir ambito tsc (%s)\n", simbolo);
     
     insertarTablaSimbolosClases(tsc, token,
         simbolo, ESCALAR,
@@ -410,24 +415,27 @@ void gestiona_ABRIR_AMBITO_TSC() {
     strtok(simbolo, "_");
     no_prefijo = strtok(NULL, "_");
     abrirAmbitoEnClase(tsc, token, no_prefijo, categoria, tipo_acceso, tipo_miembro, 0, 1);
-    
+
+    imprimirTablaClase(tsc, token, f_out);    
 }
 
 void gestiona_CERRAR_AMBITO_TSC() {
     char* token;
     
-    fprintf(f_out, "cerrar ambito tsc\n");
-    
     token = strtok(NULL, " \r\n\t");
+
+    fprintf(f_out, "cerrar ambito tsc (%s)\n", token);
+
     cerrarAmbitoEnClase(tsc, token);
 }
 
 void gestiona_CERRAR_CLASE() {
     char* token;
     
-    fprintf(f_out, "cerrar clase\n");
-    
     token = strtok(NULL, " \r\n\t");
+
+    
+    fprintf(f_out, "cerrar clase (%s)\n", token);
     
     cerrarClase(tsc, token, num_at_c, num_at_i, num_met_s, num_met_ns);
     num_at_c = 0;

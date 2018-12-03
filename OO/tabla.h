@@ -227,6 +227,12 @@ void graph_enrouteParentsLastNode(TablaSimbolosClases * g);
 /*liberar memoria de tabla de clases (para main usa tablaFree)*/
 int liberarTablaSimbolosClases(TablaSimbolosClases* t);
 
+/*imprime la tabla del main*/
+void imprimirTabla(TablaAmbito* tabla, FILE* fsalida);
+
+/*imprime la tabla de una clase*/
+void imprimirTablaClase(TablaSimbolosClases* tabla, char* clase, FILE* fsalida);
+
 /*crea el .dot del grafo de clases en el fichero dado*/
 void tablaSimbolosClasesToDot(TablaSimbolosClases* tabla, FILE* fsalida);
 
