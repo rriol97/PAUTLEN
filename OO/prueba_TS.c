@@ -17,6 +17,7 @@ int num_met_s = 0;
 int num_met_ns = 0;
 int num_acumulado_at_i = 0;
 int num_acumulado_met_s = 0;
+int offset = 0;
 
 int procesar_linea(char *linea);
 
@@ -169,6 +170,7 @@ void gestiona_BUSCAR() {
         if(result == OK) {
             if(e->clase == METODO_SOBREESCRIBIBLE) {
                 fprintf(f_out, "Existe el id: se sobreescribe\n");
+                offset = e->posicion_acumulada_metodos_sobreescribibles;
             } else {
                 fprintf(f_out, "Existe el id: no se puede declarar\n");
             }
