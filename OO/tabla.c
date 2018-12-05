@@ -497,7 +497,6 @@ int cerrarClase(TablaSimbolosClases* t,
 }
 
 int cerrarTablaSimbolosClases(TablaSimbolosClases* t) {
-    /*TODO: comprobar si necesitamos hacer alguna operacion aqui*/
     return 0;
 }
 

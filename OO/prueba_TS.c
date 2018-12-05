@@ -244,7 +244,6 @@ void gestiona_INSERTAR_TSA_MAIN () {
 
     fprintf(f_out, "insertar tsa main (%s)\n", token);
     
-    /*TODO: que cojones son todo eso*/
     insertarTablaSimbolosAmbitos(tablaMain, "main",
         token, categoria,
         tipo_basico, estructura,
@@ -352,7 +351,6 @@ void gestiona_INSERTAR_TSC() {
 
     fprintf(f_out, "insertar tsc (%s)\n", simbolo);
     
-    /*TODO: que cojones son todo eso*/
     insertarTablaSimbolosClases(tsc, token,
         simbolo, categoria,
         tipo_basico, estructura,
@@ -406,14 +404,21 @@ void gestiona_ABRIR_AMBITO_TSC() {
         0, 1,
         1,
         1,
-        0, 0,
-        0, 0,
+        num_at_c, num_at_i,
+        num_met_s, num_met_ns,
         tipo_acceso, tipo_miembro,
-        0, 0,
-        0, 0,
-        0,
-        0,
+        num_at_i*4, num_met_s*4,
+        num_acumulado_at_i, num_acumulado_met_s,
+        num_acumulado_at_i*4,
+        num_acumulado_met_s*4,
         NULL);
+
+    if(categoria == METODO_NO_SOBREESCRIBIBLE) {
+        num_met_ns++;
+    } else if (categoria == METODO_SOBREESCRIBIBLE) {
+        num_met_ns++;
+        num_acumulado_met_s++;
+    }
         
     /*quitamos el prefijo*/
     strtok(simbolo, "_");
