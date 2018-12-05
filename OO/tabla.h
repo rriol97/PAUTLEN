@@ -6,9 +6,9 @@
 
 typedef struct elemento {
     char clave[MAX_NAME];
-    int categoria; /* VARIABLE PARAMETRO FUNCION CLASE METODO_SOBREESCRIBIBLE METODO_NO_SOBREESCRIBIBLE ATRIBUTO_CLASE ATRIBUTO_INSTANCIA */
+    int clase; /* VARIABLE PARAMETRO FUNCION CLASE METODO_SOBREESCRIBIBLE METODO_NO_SOBREESCRIBIBLE ATRIBUTO_CLASE ATRIBUTO_INSTANCIA */
     int tipo; /* INT BOOLEAN Y PARA LAS CLASES, ALGÚN MECANISMO (-índice en el vector del grafo??)  */
-    int clase; /* ESCALAR PUNTERO OBJETO */
+    int estructura; /* ESCALAR PUNTERO OBJETO */
     int direcciones; /* >=1  SI ES VARIABLE 1*/
     int numero_parametros; /* >=0 */
     int numero_variables_locales; /* >=0 */
@@ -87,7 +87,7 @@ int abrirAmbitoEnClase(TablaSimbolosClases * grafo,
 /*inserta en main*/
 int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
         char* id, int clase,
-        int tipo, int categoria,
+        int tipo, int estructura,
         int direcciones, int numero_parametros,
         int numero_variables_locales,int posicion_variable_local,
         int posicion_parametro,
@@ -104,7 +104,7 @@ int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
 /*inserta en clase*/
 int insertarTablaSimbolosClases(TablaSimbolosClases * grafo, char * id_clase,
         char* id, int clase,
-        int tipo, int categoria,
+        int tipo, int estructura,
         int direcciones, int numero_parametros,
         int numero_variables_locales,int posicion_variable_local,
         int posicion_parametro,
@@ -227,11 +227,21 @@ void graph_enrouteParentsLastNode(TablaSimbolosClases * g);
 /*liberar memoria de tabla de clases (para main usa tablaFree)*/
 int liberarTablaSimbolosClases(TablaSimbolosClases* t);
 
+/*imprime la tabla del main*/
+void imprimirTabla(TablaAmbito* tabla, FILE* fsalida);
+
+/*imprime la tabla de una clase*/
+void imprimirTablaClase(TablaSimbolosClases* tabla, char* clase, FILE* fsalida);
+
 /*crea el .dot del grafo de clases en el fichero dado*/
 void tablaSimbolosClasesToDot(TablaSimbolosClases* tabla, FILE* fsalida);
 
 /*crea la lista de elementos declarados en main
   IMPORTANTE: es necesario liberar el ** que se devuelve, pero NO LIBERAR ninguno de los * a elementos que contiene */
 elementoTablaSimbolos** listaElementosTabla(TablaAmbito* tabla, int* num_elementos);
+
+/*devuelve el grafo de la tsc (necesario para generacion de codigo)*/
+Graph* tablaSimbolosClasesGrafo(TablaSimbolosClases* tabla);
+
 
 #endif

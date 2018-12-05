@@ -92,6 +92,7 @@ int AbrirAmbitoPrefijos(TablaAmbito * tabla,
                                     int tipo_metodo,
                                     int posicion_metodo_sobre,
                                     int tamanio) {
+    char nombre_real[MAX_NAME];
                                
     if(strlen(tabla->func_name) > 0) {
         /*ya hay una funcion abierta, no se permite anidar funciones*/
@@ -100,11 +101,11 @@ int AbrirAmbitoPrefijos(TablaAmbito * tabla,
 
     /*inicializa el nombre de funcion*/
     strcpy(tabla->func_name, id_ambito);
+    sprintf(nombre_real, "%s_%s", id_clase, id_ambito);
     
     /*inserta el simbolo de la funcion en su propia tabla*/
-    /*TODO: comprobar esta informacion (con que parametros se tiene que insertar en la tabla de simbolos*/
     insertarTablaSimbolosAmbitos(tabla, id_clase,
-        id_ambito, categoria_ambito,
+        nombre_real, categoria_ambito,
         tipo_metodo, /*??*/ FUNCION,
         0, /*??*/ 0, /*por donde se pasa esto?*/
         0, /*??*/ 0, /*??*/
@@ -128,8 +129,6 @@ int abrirAmbitoEnClase(TablaSimbolosClases * grafo,
                                   int acceso_metodo,
                                   int tipo_metodo,
                                   int posicion_metodo_sobre, int tamanio){
-    /*TODO para que demonios sirve el resto de cosas?¿?¿
-    Son los datos de la funcion que tiene asociado el ambito que abrimos*/
     NodoGrafo * nodo;
     if(grafo == NULL || id_clase == NULL || id_ambito == NULL)
         return -1;
@@ -147,7 +146,7 @@ int abrirAmbitoEnClase(TablaSimbolosClases * grafo,
 
 int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
         char* id, int clase,
-        int tipo, int categoria,
+        int tipo, int estructura,
         int direcciones, int numero_parametros,
         int numero_variables_locales,int posicion_variable_local,
         int posicion_parametro,
@@ -161,30 +160,14 @@ int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
         int posicion_acumulada_metodos_sobreescritura,
         int * tipo_args) {
     elementoTablaSimbolos* elemento;
-    char nombre_real[MAX_NAME];
-    /*char* id_clase_real;                            Esto ya lo hacen los ficheros de entrada*/
     elemento = malloc(sizeof(elementoTablaSimbolos));
     if(elemento == NULL)
         return -1;
-
-    /*hay funcion abierta: inserta el simbolo con prefijo de la funcion */
-    /*a no ser que el simbolo a insertar sea el mismo que el nombre de la funcion: en ese caso se inserta la funcion con el prefijo original
-          HECHO POR LOS FICHEROS DE ENTRADA (IMAGINO)*/
-    /*if(strlen(tabla->func_name) > 0 && strcmp(tabla->func_name, id) != 0) 
-        id_clase_real = tabla->func_name;
-    else
-        id_clase_real = id_clase;*/
-
-    /*  HECHO POR LOS FICHEROS DE ENTRADA
-    strcpy(nombre_real, id_clase_real);
-    strcat(nombre_real, "_");*/
     
-    
-    strcat(nombre_real, id);
-    strcpy(elemento->clave, nombre_real);
+    strcpy(elemento->clave, id);
     elemento->clase = clase;
     elemento->tipo = tipo;
-    elemento->categoria = categoria;
+    elemento->estructura = estructura;
     elemento->direcciones = direcciones;
     elemento->numero_parametros = numero_parametros;
     elemento->numero_variables_locales = numero_variables_locales;
@@ -213,7 +196,7 @@ int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
 
 int insertarTablaSimbolosClases(TablaSimbolosClases * grafo, char * id_clase,
         char* id, int clase,
-        int tipo, int categoria,
+        int tipo, int estructura,
         int direcciones, int numero_parametros,
         int numero_variables_locales,int posicion_variable_local,
         int posicion_parametro,
@@ -234,7 +217,7 @@ int insertarTablaSimbolosClases(TablaSimbolosClases * grafo, char * id_clase,
         return -1;
 
     return insertarTablaSimbolosAmbitos(nodo->tabla, id_clase,
-        id, clase, tipo, categoria, direcciones, numero_parametros,
+        id, clase, tipo, estructura, direcciones, numero_parametros,
         numero_variables_locales,posicion_variable_local,
         posicion_parametro,
         tamanio,
@@ -442,24 +425,16 @@ int buscarParaDeclararIdTablaSimbolosAmbitos(TablaAmbito* t,
                                     elementoTablaSimbolos** e,  
                                     char* id_ambito,
                                     char * nombre_ambito_encontrado) {
-                                            char nombre_real[MAX_NAME];
 
     if(strlen(t->func_name) > 0) {
         /*funcion abierta: busca tambien en la tabla de funcion*/
-        strcpy(nombre_real, t->func_name);
-        strcat(nombre_real, "_");
-        strcat(nombre_real, id);
-
-        *e = find_symbol(&(t->th_func), nombre_real);
+        *e = find_symbol(&(t->th_func), id);
         if(*e != NULL) {
             strcpy(nombre_ambito_encontrado, t->func_name);
             return OK;
         }
     } else {
-        strcpy(nombre_real, id_ambito);
-        strcat(nombre_real, "_");
-        strcat(nombre_real, id);
-        *e = find_symbol(&(t->th_ppal), nombre_real);
+        *e = find_symbol(&(t->th_ppal), id);
         if(*e != NULL) {
             strcpy(nombre_ambito_encontrado, id_ambito);
             return OK;
@@ -522,7 +497,6 @@ int cerrarClase(TablaSimbolosClases* t,
 }
 
 int cerrarTablaSimbolosClases(TablaSimbolosClases* t) {
-    /*TODO: comprobar si necesitamos hacer alguna operacion aqui*/
     return 0;
 }
 
@@ -550,6 +524,42 @@ void tablaSimbolosClasesToDot(TablaSimbolosClases* tabla, FILE* fsalida) {
     graphToDot(tabla->graph, fsalida);
 }
 
+void imprimirTabla(TablaAmbito* tabla, FILE* fsalida) {
+    Hash *point, *tmp;
+    elementoTablaSimbolos* e;
+    int i;
+
+    if(strlen(tabla->func_name) > 0) {
+        i = 0;
+        fprintf(fsalida, "=================== %s =================\n\n", tabla->func_name);
+        HASH_ITER(hh, tabla->th_func, point, tmp) {
+            e = point->value;
+            fprintf(fsalida, "****************Posicion %d ******************\n", i);
+            fprintf(fsalida, "%s\tCATEGORIA: %d\tPOS_LOCAL: %d\tPOS ATR. INSTANCIA %d Y ACUMULADA %d\tESTRUCTURA: %d\tTIPO: %d\tDIR: %d\tACCESO: %d\tMIEMBRO: %d\n", e->clave, e->clase, e->posicion_variable_local, e->posicion_atributo_instancia, e->posicion_acumulada_atributos_instancia, e->estructura, e->tipo, e->direcciones, e->tipo_acceso, e->tipo_miembro);
+            i++;
+        }
+        fprintf(fsalida, "\n");
+    }
+
+    i = 0;
+    fprintf(fsalida, "=================== %s =================\n\n", tabla->name);
+    HASH_ITER(hh, tabla->th_ppal, point, tmp) {
+        e = point->value;
+        fprintf(fsalida, "****************Posicion %d ******************\n", i);
+        fprintf(fsalida, "%s\tCATEGORIA: %d\tPOS_LOCAL: %d\tPOS ATR. INSTANCIA %d Y ACUMULADA %d\tESTRUCTURA: %d\tTIPO: %d\tDIR: %d\tACCESO: %d\tMIEMBRO: %d\n", e->clave, e->clase, e->posicion_variable_local, e->posicion_atributo_instancia, e->posicion_acumulada_atributos_instancia, e->estructura, e->tipo, e->direcciones, e->tipo_acceso, e->tipo_miembro);
+        i++;
+    }
+    fprintf(fsalida, "\n");
+}
+
+void imprimirTablaClase(TablaSimbolosClases* tabla, char* clase, FILE* fsalida) {
+    NodoGrafo* nodo = graphGetClassFromName(tabla->graph, clase);
+    if(nodo == NULL)
+        return;
+
+    imprimirTabla(nodo->tabla, fsalida);
+}
+
 elementoTablaSimbolos** listaElementosTabla(TablaAmbito* tabla, int* num_elementos) {
     int i;
     elementoTablaSimbolos** elementos;
@@ -568,4 +578,10 @@ elementoTablaSimbolos** listaElementosTabla(TablaAmbito* tabla, int* num_element
     }
     
     return elementos;
+}
+
+Graph* tablaSimbolosClasesGrafo(TablaSimbolosClases* tabla) {
+    if(tabla == NULL)
+        return NULL;
+    return tabla->graph;
 }
