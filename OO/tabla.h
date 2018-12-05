@@ -240,8 +240,5 @@ void tablaSimbolosClasesToDot(TablaSimbolosClases* tabla, FILE* fsalida);
   IMPORTANTE: es necesario liberar el ** que se devuelve, pero NO LIBERAR ninguno de los * a elementos que contiene */
 elementoTablaSimbolos** listaElementosTabla(TablaAmbito* tabla, int* num_elementos);
 
-/*devuelve el grafo de la tsc (necesario para generacion de codigo)*/
-Graph* tablaSimbolosClasesGrafo(TablaSimbolosClases* tabla);
-
 
 #endif
