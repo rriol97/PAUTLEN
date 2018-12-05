@@ -1,4 +1,4 @@
-#include "tabla.h"
+#include "../tabla.h"
 
 void asignarDestinoEnPila(FILE* fpasm, int es_variable);
 
