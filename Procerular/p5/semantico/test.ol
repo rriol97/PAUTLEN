@@ -6,26 +6,8 @@ main {
     scanf x2;
     scanf y1;
 
-    if ( (x1 == x2) )
+    while ( y1 )
     {
-        if ( y1 )
-        {
-            printf 110;
-        }
-        else
-        {
-            printf 111;
-        }
-    }
-    else
-    {
-        if ( y1 )
-        {
-            printf 10;
-        }
-        else
-        {
-            printf 11;
-        }
+        if ( )
     }
 }

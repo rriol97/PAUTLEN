@@ -561,7 +561,7 @@ void escribir(FILE* fpasm, int es_variable, int tipo) {
 
 }
 
-void inicio_if_else(FILE* fpasm, int etiqueta, int es_direccion) {
+void ifthenelse_inicio(FILE* fpasm, int es_direccion, int etiqueta) {
 	if (!fpasm) {
 		printf("Error de fichero (lectura)\n");
 	}
@@ -576,7 +576,7 @@ void inicio_if_else(FILE* fpasm, int etiqueta, int es_direccion) {
 	return;
 }
 
-void medio_if_else(FILE* fpasm, int etiqueta) {
+void ifthenelse_fin_then(FILE* fpasm, int etiqueta) {
 	if (!fpasm) {
 		printf("Error de fichero (lectura)\n");
 	}
@@ -587,7 +587,7 @@ void medio_if_else(FILE* fpasm, int etiqueta) {
 	return;
 }
 
-void fin_if_else(FILE* fpasm, int etiqueta) {
+void ifthenelse_fin(FILE* fpasm, int etiqueta) {
 	if (!fpasm) {
 		printf("Error de fichero (lectura)\n");
 	}
@@ -612,4 +612,34 @@ void inicio_if(FILE* fpasm, int etiqueta, int es_direccion) {
 	fprintf(fpasm, "\tje near fin_ifsimple_%d\n", etiqueta);
 
 	return;
+}
+
+void while_inicio(FILE * fpasm, int etiqueta) {
+	if (!fpasm) {
+		return;
+	}
+
+	fprintf(fpasm, "while_%d:\n", etiqueta);
+}
+
+void while_exp_pila(FILE * fpasm, int exp_es_variable, int etiqueta) {
+	if (!fpasm) {
+		return;
+	}
+
+	fprintf(fpasm, "\tpop eax\n");
+	if (exp_es_variable) {
+		fprintf(fpasm, "\tmov eax, [eax]\n");
+	}
+	fprintf(fpasm, "\tcmp eax, 0\n");
+	fprintf(fpasm, "\tje near fin_while_%d\n", etiqueta);
+}
+
+void while_fin(FILE * fpasm, int etiqueta) {
+	if (!fpasm) {
+		return;
+	}
+
+	fprintf(fpasm, "\twhile_%d:\n", etiqueta);
+	fprintf(fpasm, "fin_while_%d:\n", etiqueta);
 }

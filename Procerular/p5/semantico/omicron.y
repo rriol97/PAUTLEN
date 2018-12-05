@@ -272,13 +272,13 @@ identificadores_declaracion: identificador
 
 identificador: TOK_IDENTIFICADOR
 {
-  $$.direcciones = 1;
-  $1.tipo = tipo_declaracion;
+    $$.direcciones = 1;
+    $1.tipo = tipo_declaracion;
 
-  printf("entro en una declaracion de variable (%s) [%d]\n", $1.lexema, $1.tipo);
-  $$.tipo = $1.tipo;
-  declarar_variable(fout, $1.lexema, $1.tipo, 1);
-  insertarTablaSimbolosAmbitos(tabla_main, "main", $1.lexema, ESCALAR, $1.tipo, $1.direcciones, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    printf("entro en una declaracion de variable (%s) [%d]\n", $1.lexema, $1.tipo);
+    $$.tipo = $1.tipo;
+    declarar_variable(fout, $1.lexema, $1.tipo, 1);
+    insertarTablaSimbolosAmbitos(tabla_main, "main", $1.lexema, ESCALAR, $1.tipo, $1.direcciones, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 }
 
 funciones: funcion funciones
@@ -475,7 +475,7 @@ elemento_vector: TOK_IDENTIFICADOR '[' exp ']'
 
 condicional: if_exp_sentencias TOK_ELSE '{' sentencias '}'
     {
-        fin_if_else(fout, $1.etiqueta);
+        ifthenelse_fin(fout, $1.etiqueta);
     }
 ;
 
@@ -483,7 +483,7 @@ if_exp_sentencias: if_exp sentencias '}'
     {
         $$.etiqueta = $1.etiqueta;
 
-        medio_if_else(fout, $1.etiqueta);
+        ifthenelse_fin_then(fout, $1.etiqueta);
     }   
 ;
 
@@ -495,12 +495,26 @@ if_exp: TOK_IF '(' exp ')' '{'
         $$.etiqueta = etiqueta;
         etiqueta++;
 
-        inicio_if_else(fout, $$.etiqueta, $3.direcciones);
+        ifthenelse_inicio(fout, $3.direcciones, $$.etiqueta);
     }
 ;
 
-bucle: TOK_WHILE '(' exp ')' '{' sentencias '}'
+bucle: bucle_inicio sentencias '}'
     {
+        while_fin(fout, $1.etiqueta);
+    }
+;
+
+bucle_inicio: TOK_WHILE '(' exp ')' '{'
+    {
+        if ($3.tipo != BOOLEAN) {
+            sprintf(msg, "condicion del if no booleano");
+        }
+        $$.etiqueta = etiqueta;
+        etiqueta++;
+
+        while_inicio(fout, $$.etiqueta);
+        while_exp_pila(fout, $3.direcciones, $$.etiqueta);
     }
 ;
 
