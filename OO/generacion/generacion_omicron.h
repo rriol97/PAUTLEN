@@ -11,6 +11,9 @@
 #define ENTERO	0
 #define BOOLEANO 	1
 
+#define PREFIJO_TABLA_METODOS_SOBREESCRIBIBLES "_ms"
+#define MAX_ETIQUETAS     32768
+
 
 /* OBSERVACIÓN GENERAL A TODAS LAS FUNCIONES:
    Todas ellas escriben el código NASM a un FILE* proporcionado como primer argumento.

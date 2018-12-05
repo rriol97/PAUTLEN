@@ -1,17 +1,15 @@
 #include <stdio.h>
 #include "generacion_omicron.h"
 
-#define MAX_NUM 1000
-
-elementoTablaSimbolos* mss[MAX_NUM];
+elementoTablaSimbolos* mss[MAX_ETIQUETAS];
 int n_mss = 0; 
-elementoTablaSimbolos* mnss[MAX_NUM];
+elementoTablaSimbolos* mnss[MAX_ETIQUETAS];
 int n_mnss = 0; 
-elementoTablaSimbolos* ais[MAX_NUM];
+elementoTablaSimbolos* ais[MAX_ETIQUETAS];
 int n_ais = 0; 
-elementoTablaSimbolos* acs[MAX_NUM];
+elementoTablaSimbolos* acs[MAX_ETIQUETAS];
 int n_acs = 0; 
-NodoGrafo* clases[MAX_NUM];
+NodoGrafo* clases[MAX_ETIQUETAS];
 int n_clases = 0;
 
 void rellenarLista(TablaSimbolosClases* t) {
@@ -21,7 +19,7 @@ void rellenarLista(TablaSimbolosClases* t) {
     elementoTablaSimbolos* e;
     Graph* grafo = tablaSimbolosClasesGrafo(t);
     for(i = 0; (class=graphGetClass(grafo, i)) != NULL; i++) {
-        clases[i] = clases;
+        clases[i] = class;
         HASH_ITER(hh, class->tabla->th_ppal, point, tmp) {
             e = point->value;
             switch(e->clase) {
@@ -115,7 +113,7 @@ void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t) {
     /*bucle sobre las clases: escribir el tamaño de la tabla de ms*/
     for(i = 0, j = 0; i < n_clases; i++) {
         j += clases[i]->num_me_s;
-        fprintf(fd_asm, "\t_ms%s resd %d\n", clases[i]->nombre, j);
+        fprintf(fd_asm, "\t%s%s resd %d\n", PREFIJO_TABLA_METODOS_SOBREESCRIBIBLES, clases[i]->name, j);
     }
     /*bucle sobre los simbolos: si son objetos, escribirlos aqui*/
     /*no se como va esto, parece necesitar acceso a main que no tenemos*/
