@@ -579,3 +579,9 @@ elementoTablaSimbolos** listaElementosTabla(TablaAmbito* tabla, int* num_element
     
     return elementos;
 }
+
+Graph* tablaSimbolosClasesGrafo(TablaSimbolosClases* tabla) {
+    if(tabla == NULL)
+        return NULL;
+    return tabla->graph;
+}
