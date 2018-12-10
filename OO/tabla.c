@@ -631,7 +631,7 @@ void rellenarLista(TablaSimbolosClases* t) {
 al principio que guarde de que tipo es cada cosa y hacer los demas bucles sobre los
 subconjuntos obtenidos*/
 void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t) {
-    int i, j;
+    int i, j, aux;
     if(fd_asm == NULL) {
         printf("Error de fichero\n");
         return;
@@ -659,7 +659,8 @@ void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t) {
         }
     }
 
-    /*bucle sobre los simbolos: si son at i que no estan sobreescribiendo uno anterior, añadir su offset*/
+    /*bucle sobre los simbolos: si son at i que no estan sobreescribiendo uno anterior,
+     añadir su offset*/
     for(i = 0; i < n_ais; i++) {
         fprintf(fd_asm, "\t_offset_%s dd %d\n", ais[i]->clave, ais[i]->posicion_acumulada_atributos_instancia + 4);
     }
@@ -690,7 +691,16 @@ void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t) {
     for(i = 0; i < n_mss; i++) {
         fprintf(fd_asm, "_%s:\n", mss[i]->clave);
         /*TODO: def?*/
-        fprintf(fd_asm, "\t%s\n", );
+        for(j = 0; j < mss[i]->numero_variables_locales; ++j){
+          fprintf(fd_asm, "\tmov dword [%s], %s\n",ais[/*LALALA*/]->clave ,);
+          /*LALALA: como se exactamente en que posicio esta de ais?¿ recorro todos los
+          mss·[i]->numero_variables_locales y voy suamndo y luego accedo a ais<[loqeuhayadado]?*/
+        }
+        /*¿Como accedo al valor de las variables?¿?¿? o sea por ej ae = 3, donde se guarda
+         ese 3 enla estructura?*/
+         /*¿Como se el numeor de fucniones/cosas que hace el mss, po sea, por ejemplo,
+         si hace 3 prints, como se que son 3 prints y no 4 o mas. Y como se que es un print_int
+         lo que tengo que llamar???*/
 
     }
 
@@ -705,11 +715,25 @@ void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t) {
     for(i = 0; i < n_mnss; i++) {
         fprintf(fd_asm, "_%s:\n", mnss[i]->clave);
         /*TODO: def?*/
+        /*Mismas dudas qye en el anteorior
+        Y como se sabe caundo hay this. y esas coasas?*/
     }
 
-    fprintf(fd_asm, "\t_set_offsets\n"); /*implementado en data*/
+    fprintf(fd_asm, "\t_set_offsets:\n"); /*implementado en data*/
     fprintf(fd_asm, "\t\tret\n");
-    fprintf(fd_asm, "\t_create_ms_table\n");
+    fprintf(fd_asm, "\t_create_ms_table:\n");
 
+    aux = 0;
     /*escribir tabla de ms*/
+    for(i = 0; i < n_clases; ++i){
+      aux+= clases[i]->num_me_s;
+      for(j = 0; j <  aux; ++j){
+        /*NO ESTOY SEGURO DE SI EN MSS LAS COSAS VIENEN EN ORDEN,
+        Y SI EN CASO DE QUE NO HAYA NDA, SI ESTA UN NO_DEFINED_METHOD*/
+          if(j == 0) fprintf(fd_asm, "\t\tmov dword [_ms%s], %s\n", clases[i]->name, mss[j]->clave);
+          else
+            fprintf(fd_asm, "\t\tmov dword [_ms%s+%d], %s\n", clases[i]->name,j*4, );
+      }
+    }
+    fprintf(fd_asm, "\t\tret\n");
 }
