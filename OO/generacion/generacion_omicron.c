@@ -10,7 +10,7 @@ void asignarDestinoEnPila(FILE* fpasm, int es_variable) {
         fprintf(fpasm, "\tmov eax, [eax]\n");
     }
     fprintf(fpasm, "\tmov [esp], eax\n");
-    fprintf(fd_asm, "sub esp, 4\n");
+    fprintf(fpasm, "sub esp, 4\n");
 }
 
 void instance_of (FILE * fd_asm, char * nombre_fuente_clase,

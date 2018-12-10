@@ -627,7 +627,9 @@ void rellenarLista(TablaSimbolosClases* t) {
     n_clases = i;
 }
 
-/*nota: lo que digo sobre los bucles, probablemente convenga hacer un unico bucle al principio que guarde de que tipo es cada cosa y hacer los demas bucles sobre los subconjuntos obtenidos*/
+/*nota: lo que digo sobre los bucles, probablemente convenga hacer un unico bucle
+al principio que guarde de que tipo es cada cosa y hacer los demas bucles sobre los
+subconjuntos obtenidos*/
 void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t) {
     int i, j;
     if(fd_asm == NULL) {
@@ -639,9 +641,10 @@ void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t) {
         return;
     }
     rellenarLista(t);
-    fprintf(fd_asm, "\tglobal ");
+    fprintf(fd_asm, "\tglobal");
     /*bucle sobre todos los simbolos de todas las clases*/
     /*TODO*/
+
     fprintf(fd_asm, "_set_offsets, _create_ms_table, _no_defined_method");
     fprintf(fd_asm, "\n\n");
 
@@ -687,6 +690,8 @@ void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t) {
     for(i = 0; i < n_mss; i++) {
         fprintf(fd_asm, "_%s:\n", mss[i]->clave);
         /*TODO: def?*/
+        fprintf(fd_asm, "\t%s\n", );
+
     }
 
     fprintf(fd_asm, "\t_no_defined_method\n");

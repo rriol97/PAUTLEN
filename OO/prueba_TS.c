@@ -114,7 +114,7 @@ int procesar_linea(char *linea) {
   } else if (!strcmp(token, TOK_OP_CERRAR_TSC)) {
     gestiona_CERRAR_TSC();
   }
-  
+
   return 0;
 }
 
@@ -135,7 +135,7 @@ void gestiona_BUSCAR() {
     elementoTablaSimbolos* e;
     char nombre_ambito_encontrado[MAX_NAME];
     int result = ERR;
-    
+
     token = strtok(NULL, " \r\n\t");
     if(!strcmp(token, TOK_DECLARAR_MAIN)) {
         token = strtok(NULL, " \r\n\t");
@@ -170,7 +170,7 @@ void gestiona_BUSCAR() {
         if(result == OK) {
             if(e->clase == METODO_SOBREESCRIBIBLE) {
                 fprintf(f_out, "Existe el id: se sobreescribe\n");
-                offset = e->posicion_acumulada_metodos_sobreescribibles;
+                offset = e->posicion_acumulada_metodos_sobreescritura;
             } else {
                 fprintf(f_out, "Existe el id: no se puede declarar\n");
             }
@@ -236,7 +236,7 @@ void gestiona_BUSCAR() {
 void gestiona_INSERTAR_TSA_MAIN () {
     char* token;
     int categoria, tipo_basico, estructura, tipo_acceso, tipo_miembro;
-    
+
     token = strtok(NULL, " \r\n\t");
     categoria = atoi(strtok(NULL, " \r\n\t"));
     tipo_basico = atoi(strtok(NULL, " \r\n\t"));
@@ -245,7 +245,7 @@ void gestiona_INSERTAR_TSA_MAIN () {
     tipo_miembro = atoi(strtok(NULL, " \r\n\t"));
 
     fprintf(f_out, "insertar tsa main (%s)\n", token);
-    
+
     insertarTablaSimbolosAmbitos(tablaMain, "main",
         token, categoria,
         tipo_basico, estructura,
@@ -267,10 +267,10 @@ void gestiona_INSERTAR_TSA_MAIN () {
 void gestiona_ABRIR_AMBITO_TSA_MAIN() {
     char* token, *no_prefijo;
     int tipo_basico;
-    
+
     token = strtok(NULL, " \r\n\t");
     tipo_basico = atoi(strtok(NULL, " \r\n\t"));
-    
+
     fprintf(f_out, "abrir ambito tsa main (%s)\n", token);
 
     insertarTablaSimbolosAmbitos(tablaMain, "main",
@@ -288,7 +288,7 @@ void gestiona_ABRIR_AMBITO_TSA_MAIN() {
         0,
         0,
         NULL);
-        
+
     /*quitamos el prefijo*/
     strtok(token, "_");
     no_prefijo = strtok(NULL, "_");
@@ -342,7 +342,7 @@ void gestiona_ABRIR_CLASE_HEREDA() {
 void gestiona_INSERTAR_TSC() {
     char* token, *simbolo;
     int categoria, tipo_basico, estructura, tipo_acceso, tipo_miembro;
-    
+
     token = strtok(NULL, " \r\n\t");
     simbolo = strtok(NULL, " \r\n\t");
     categoria = atoi(strtok(NULL, " \r\n\t"));
@@ -352,7 +352,7 @@ void gestiona_INSERTAR_TSC() {
     tipo_miembro = atoi(strtok(NULL, " \r\n\t"));
 
     fprintf(f_out, "insertar tsc (%s)\n", simbolo);
-    
+
     insertarTablaSimbolosClases(tsc, token,
         simbolo, categoria,
         tipo_basico, estructura,
@@ -368,7 +368,7 @@ void gestiona_INSERTAR_TSC() {
         num_acumulado_at_i*4,
         num_acumulado_met_s*4,
         NULL);
-        
+
     if(categoria == METODO_NO_SOBREESCRIBIBLE) {
         num_met_ns++;
     } else if (categoria == METODO_SOBREESCRIBIBLE) {
@@ -382,13 +382,13 @@ void gestiona_INSERTAR_TSC() {
     }
 
     imprimirTablaClase(tsc, token, f_out);
-    
+
 }
 
 void gestiona_ABRIR_AMBITO_TSC() {
     char* token, *simbolo, *no_prefijo;
     int categoria, tipo_basico, tipo_acceso, tipo_miembro;
-    
+
     token = strtok(NULL, " \r\n\t");
     simbolo = strtok(NULL, " \r\n\t");
     categoria = atoi(strtok(NULL, " \r\n\t"));
@@ -396,9 +396,9 @@ void gestiona_ABRIR_AMBITO_TSC() {
     tipo_acceso = atoi(strtok(NULL, " \r\n\t"));
     tipo_miembro = atoi(strtok(NULL, " \r\n\t"));
 
-    
+
     fprintf(f_out, "abrir ambito tsc (%s)\n", simbolo);
-    
+
     insertarTablaSimbolosClases(tsc, token,
         simbolo, categoria,
         tipo_basico, ESCALAR,
@@ -421,18 +421,18 @@ void gestiona_ABRIR_AMBITO_TSC() {
         num_met_ns++;
         num_acumulado_met_s++;
     }
-        
+
     /*quitamos el prefijo*/
     strtok(simbolo, "_");
     no_prefijo = strtok(NULL, "_");
     abrirAmbitoEnClase(tsc, token, no_prefijo, categoria, tipo_acceso, tipo_miembro, 0, 1);
 
-    imprimirTablaClase(tsc, token, f_out);    
+    imprimirTablaClase(tsc, token, f_out);
 }
 
 void gestiona_CERRAR_AMBITO_TSC() {
     char* token;
-    
+
     token = strtok(NULL, " \r\n\t");
 
     fprintf(f_out, "cerrar ambito tsc (%s)\n", token);
@@ -442,32 +442,32 @@ void gestiona_CERRAR_AMBITO_TSC() {
 
 void gestiona_CERRAR_CLASE() {
     char* token;
-    
+
     token = strtok(NULL, " \r\n\t");
 
-    
+
     fprintf(f_out, "cerrar clase (%s)\n", token);
-    
+
     cerrarClase(tsc, token, num_at_c, num_at_i, num_met_s, num_met_ns);
     num_at_c = 0;
     num_at_i = 0;
     num_met_ns = 0;
     num_met_ns = 0;
-    
+
 }
 
 
 void gestiona_CERRAR_TSA_MAIN() {
     fprintf(f_out, "cerrar tsa main\n");
-    
+
     cerrarAmbito(tablaMain);
 }
 
 void gestiona_CERRAR_TSC() {
     FILE* dot;
-    
+
     fprintf(f_out, "cerrar tsc\n");
-    
+
     cerrarTablaSimbolosClases(tsc);
     dot = fopen("tsc.dot", "w");
     if(dot != NULL) {
@@ -475,4 +475,3 @@ void gestiona_CERRAR_TSC() {
         fclose(dot);
     }
 }
-

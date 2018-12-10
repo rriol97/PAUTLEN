@@ -33,7 +33,7 @@ typedef struct elemento {
 
 typedef struct _TablaSimbolosClases TablaSimbolosClases;
 
-
+#define PREFIJO_TABLA_METODOS_SOBREESCRIBIBLES "_ms"
 #define MAX_ETIQUETAS     32768
 
 /**********************************************************
