@@ -33,6 +33,9 @@ typedef struct elemento {
 
 typedef struct _TablaSimbolosClases TablaSimbolosClases;
 
+
+#define MAX_ETIQUETAS     32768
+
 /**********************************************************
  **********************************************************
  **********************************************************
@@ -171,17 +174,17 @@ int buscarParaDeclararMiembroInstancia(TablaSimbolosClases *t, char * nombre_cla
     char * nombre_ambito_encontrado);
 
 /*busca para declarar en main*/
-int buscarParaDeclararIdTablaSimbolosAmbitos(TablaAmbito* t, 
-                                    char* id, 
-                                    elementoTablaSimbolos** e,  
-                                    char* id_ambito, 
+int buscarParaDeclararIdTablaSimbolosAmbitos(TablaAmbito* t,
+                                    char* id,
+                                    elementoTablaSimbolos** e,
+                                    char* id_ambito,
                                     char * nombre_ambito_encontrado);
 
 /*busca para declarar un id local en un metodo de una clase*/
-int buscarParaDeclararIdLocalEnMetodo(TablaSimbolosClases *t, 
+int buscarParaDeclararIdLocalEnMetodo(TablaSimbolosClases *t,
                             char * nombre_clase,
                             char * nombre_id,
-                            elementoTablaSimbolos ** e, 
+                            elementoTablaSimbolos ** e,
                             char * nombre_ambito_encontrado);
 
 /**********************************************************

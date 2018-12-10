@@ -2,16 +2,6 @@
 #include "generacion_omicron.h"
 
 
-elementoTablaSimbolos* mss[MAX_ETIQUETAS];
-int n_mss = 0;
-elementoTablaSimbolos* mnss[MAX_ETIQUETAS];
-int n_mnss = 0;
-elementoTablaSimbolos* ais[MAX_ETIQUETAS];
-int n_ais = 0;
-elementoTablaSimbolos* acs[MAX_ETIQUETAS];
-int n_acs = 0;
-NodoGrafo* clases[MAX_ETIQUETAS];
-int n_clases = 0;
 
 /*comprobar si tiene sentido*/
 void asignarDestinoEnPila(FILE* fpasm, int es_variable) {

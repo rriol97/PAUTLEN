@@ -12,7 +12,6 @@
 #define BOOLEANO 	1
 
 #define PREFIJO_TABLA_METODOS_SOBREESCRIBIBLES "_ms"
-#define MAX_ETIQUETAS     32768
 
 
 /* OBSERVACIÓN GENERAL A TODAS LAS FUNCIONES:
@@ -45,7 +44,7 @@ void escribir_segmento_codigo(FILE* fpasm);
 */
 
 void escribir_inicio_main(FILE* fpasm);
-/* 
+/*
    En este punto se debe escribir, al menos, la etiqueta main y la sentencia que guarda el puntero de pila en su variable (se recomienda usar __esp).
 */
 void escribir_fin(FILE* fpasm);
@@ -66,7 +65,7 @@ es_referencia indica si este operando es una variable (como por ejemplo b1) con 
 
 void asignar(FILE* fpasm, char* nombre, int es_referencia);
 /*
-Genera el código para asignar valor a la variable de nombre nombre. 
+Genera el código para asignar valor a la variable de nombre nombre.
 Se toma el valor de la cima de la pila.
 El último argumento es el que indica si lo que hay en la cima de la pila es una referencia (1) o ya un valor explícito (0).
 */
@@ -90,19 +89,19 @@ void y(FILE* fpasm, int es_referencia_1, int es_referencia_2);
 
 void cambiar_signo(FILE* fpasm, int es_referencia);
 /*
-   Función aritmética de cambio de signo. 
+   Función aritmética de cambio de signo.
    Es análoga a las binarias, excepto que sólo requiere de un acceso a la pila ya que sólo usa un operando.
 */
 
 void no(FILE* fpasm, int es_referencia, int cuantos_no);
 /*
-   Función monádica lógica de negación. No hay un código de operación de la ALU 
+   Función monádica lógica de negación. No hay un código de operación de la ALU
    que realice esta operación por lo que se debe codificar un algoritmo que, si encuentra en la cima de la pila un 0 deja en la cima un 1 y al contrario.
    El último argumento es el valor de etiqueta que corresponde (sin lugar a dudas, la implementación del algoritmo requerirá etiquetas). Véase en los ejemplos de programa principal como puede gestionarse el número de etiquetas cuantos_no.
 */
 
 /* FUNCIONES COMPARATIVAS */
-/* 
+/*
    Todas estas funciones reciben como argumento si los elementos a comparar son o no variables. El resultado de las operaciones, que siempre será un booleano (“1” si se cumple la comparación y “0” si no se cumple), se deja en la pila como en el resto de operaciones. Se deben usar etiquetas para poder gestionar los saltos necesarios para implementar las comparaciones.
 */
 void igual(FILE* fpasm, int es_referencia1, int es_referencia2, int etiqueta);
@@ -137,14 +136,13 @@ void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros)
 void escribirVariableLocal(FILE* fpasm, int posicion_variable_local);
 
 char * claseATabla(char * nombre_fuente_clase);
-void instance_of(FILE * fd_asm, char * nombre_fuente_clase, int numero_atributos_instancia); 
-void discardPila(FILE * fd_asm);  
-void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fd_asm, char * nombre_metodo); 
-void limpiarPila(FILE * fd_asm, int num_argumentos); 
+void instance_of(FILE * fd_asm, char * nombre_fuente_clase, int numero_atributos_instancia);
+void discardPila(FILE * fd_asm);
+void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fd_asm, char * nombre_metodo);
+void limpiarPila(FILE * fd_asm, int num_argumentos);
 void accederAtributoInstanciaDePila(FILE * fd_asm, char * nombre_atributo);
 void asignarDestinoEnPila(FILE* fpasm, int es_referencia);
 
 void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t);
 
 #endif
-

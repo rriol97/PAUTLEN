@@ -580,6 +580,18 @@ elementoTablaSimbolos** listaElementosTabla(TablaAmbito* tabla, int* num_element
     return elementos;
 }
 
+
+elementoTablaSimbolos* mss[MAX_ETIQUETAS];
+int n_mss = 0;
+elementoTablaSimbolos* mnss[MAX_ETIQUETAS];
+int n_mnss = 0;
+elementoTablaSimbolos* ais[MAX_ETIQUETAS];
+int n_ais = 0;
+elementoTablaSimbolos* acs[MAX_ETIQUETAS];
+int n_acs = 0;
+NodoGrafo* clases[MAX_ETIQUETAS];
+int n_clases = 0;
+
 void rellenarLista(TablaSimbolosClases* t) {
     int i;
     Hash *point, *tmp;
