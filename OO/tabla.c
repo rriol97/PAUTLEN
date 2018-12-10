@@ -53,11 +53,11 @@ int abrirClaseHereda(TablaSimbolosClases* t, char* id_clase, ...) {
     va_list ap;
     NodoGrafo *parent;
     char* next;
-    
+
     int cid = abrirClase(t, id_clase);
     if(cid == -1)
         return -1;
-    
+
     va_start(ap, id_clase);
     while( (next=va_arg(ap, char*)) != NULL) {
         parent = graphGetClassFromName(t->graph, next);
@@ -93,7 +93,7 @@ int AbrirAmbitoPrefijos(TablaAmbito * tabla,
                                     int posicion_metodo_sobre,
                                     int tamanio) {
     char nombre_real[MAX_NAME];
-                               
+
     if(strlen(tabla->func_name) > 0) {
         /*ya hay una funcion abierta, no se permite anidar funciones*/
         return -1;
@@ -102,7 +102,7 @@ int AbrirAmbitoPrefijos(TablaAmbito * tabla,
     /*inicializa el nombre de funcion*/
     strcpy(tabla->func_name, id_ambito);
     sprintf(nombre_real, "%s_%s", id_clase, id_ambito);
-    
+
     /*inserta el simbolo de la funcion en su propia tabla*/
     insertarTablaSimbolosAmbitos(tabla, id_clase,
         nombre_real, categoria_ambito,
@@ -163,7 +163,7 @@ int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
     elemento = malloc(sizeof(elementoTablaSimbolos));
     if(elemento == NULL)
         return -1;
-    
+
     strcpy(elemento->clave, id);
     elemento->clase = clase;
     elemento->tipo = tipo;
@@ -420,9 +420,9 @@ int buscarParaDeclararMiembroInstancia(TablaSimbolosClases *t, char * nombre_cla
            nombre_clase_desde, e, nombre_ambito_encontrado);
 }
 
-int buscarParaDeclararIdTablaSimbolosAmbitos(TablaAmbito* t, 
-                                    char* id, 
-                                    elementoTablaSimbolos** e,  
+int buscarParaDeclararIdTablaSimbolosAmbitos(TablaAmbito* t,
+                                    char* id,
+                                    elementoTablaSimbolos** e,
                                     char* id_ambito,
                                     char * nombre_ambito_encontrado) {
 
@@ -443,15 +443,15 @@ int buscarParaDeclararIdTablaSimbolosAmbitos(TablaAmbito* t,
     return ERR;
 }
 
-int buscarParaDeclararIdLocalEnMetodo(TablaSimbolosClases *t, 
+int buscarParaDeclararIdLocalEnMetodo(TablaSimbolosClases *t,
                             char * nombre_clase,
                             char * nombre_id,
-                            elementoTablaSimbolos ** e, 
+                            elementoTablaSimbolos ** e,
                             char * nombre_ambito_encontrado) {
     NodoGrafo* nodo = graphGetClassFromName(t->graph, nombre_clase);
     if(nodo == NULL)
         return ERR;
-    
+
     return buscarParaDeclararIdTablaSimbolosAmbitos(nodo->tabla, nombre_id, e, nodo->name, nombre_ambito_encontrado);
 }
 
@@ -564,33 +564,21 @@ elementoTablaSimbolos** listaElementosTabla(TablaAmbito* tabla, int* num_element
     int i;
     elementoTablaSimbolos** elementos;
     Hash* s;
-    
+
     if(tabla == NULL || num_elementos == NULL)
         return NULL;
-    
+
     *num_elementos = HASH_COUNT(tabla->th_ppal);
     elementos = malloc((*num_elementos)*sizeof(elementoTablaSimbolos*));
     if (elementos == NULL)
         return NULL;
-    
+
     for(i = 0, s = tabla->th_ppal; i < *num_elementos; i++, s=s->hh.next) {
         elementos[i] = s->value;
     }
-    
+
     return elementos;
 }
-
-
-elementoTablaSimbolos* mss[MAX_ETIQUETAS];
-int n_mss = 0; 
-elementoTablaSimbolos* mnss[MAX_ETIQUETAS];
-int n_mnss = 0; 
-elementoTablaSimbolos* ais[MAX_ETIQUETAS];
-int n_ais = 0; 
-elementoTablaSimbolos* acs[MAX_ETIQUETAS];
-int n_acs = 0; 
-NodoGrafo* clases[MAX_ETIQUETAS];
-int n_clases = 0;
 
 void rellenarLista(TablaSimbolosClases* t) {
     int i;
