@@ -65,7 +65,6 @@ int main(int argc, char *argv[]) {
   while (fgets(linea, MAX, f_in) != NULL) {
     procesar_linea(linea);
   }
-  tablaSimbolosClasesANasm(f_out, tsc);
   /* Cierre de ficheros */
   fclose(f_in);
   fclose(f_out);

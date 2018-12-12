@@ -31,4 +31,4 @@ test: hash.o graph.o tabla.o test.o
 	$(CC) $(FLAGS) -o test hash.o graph.o tabla.o test.o
 
 clean:
-rm -f *.o prueba_TS generacion/generacion test grafo.dot salida.txt tsc.dot
+	rm -f *.o prueba_TS generacion/generacion test grafo.dot salida.txt tsc.dot
