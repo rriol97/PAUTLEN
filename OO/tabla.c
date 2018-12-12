@@ -689,19 +689,12 @@ void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t) {
 
     /*bucle sobre los simbolos: si son ms escribir su def*/
     for(i = 0; i < n_mss; i++) {
-        fprintf(fd_asm, "_%s:\n", mss[i]->clave);
-        /*TODO: def?*/
-        for(j = 0; j < mss[i]->numero_variables_locales; ++j){
-          fprintf(fd_asm, "\tmov dword [%s], %s\n",ais[/*LALALA*/]->clave ,);
-          /*LALALA: como se exactamente en que posicio esta de ais?¿ recorro todos los
-          mss·[i]->numero_variables_locales y voy suamndo y luego accedo a ais<[loqeuhayadado]?*/
-        }
-        /*¿Como accedo al valor de las variables?¿?¿? o sea por ej ae = 3, donde se guarda
-         ese 3 enla estructura?*/
-         /*¿Como se el numeor de fucniones/cosas que hace el mss, po sea, por ejemplo,
-         si hace 3 prints, como se que son 3 prints y no 4 o mas. Y como se que es un print_int
-         lo que tengo que llamar???*/
-
+        fprintf(fd_asm, "\t_%s:\n", mss[i]->clave);
+          fprintf(fd_asm, "\t\tpush dword %d\n",i);
+          fprintf(fd_asm, "\t\tcall print_int");
+          fprintf(fd_asm, "\t\tadd esp,4\n" );
+          fprintf(fd_asm, "\t\tcall print_endofline\n" );
+          fprintf(fd_asm, "\t\tret\n");
     }
 
     fprintf(fd_asm, "\t_no_defined_method\n");
@@ -713,10 +706,14 @@ void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t) {
 
     /*bucle sobre los simbolos: si son mns escribir su def*/
     for(i = 0; i < n_mnss; i++) {
-        fprintf(fd_asm, "_%s:\n", mnss[i]->clave);
-        /*TODO: def?*/
-        /*Mismas dudas qye en el anteorior
-        Y como se sabe caundo hay this. y esas coasas?*/
+      for(i = 0; i < n_mss; i++) {
+          fprintf(fd_asm, "\t_%s:\n", mnss[i]->clave);
+            fprintf(fd_asm, "\t\tpush dword %d\n",i);
+            fprintf(fd_asm, "\t\tcall print_int");
+            fprintf(fd_asm, "\t\tadd esp,4\n" );
+            fprintf(fd_asm, "\t\tcall print_endofline\n" );
+            fprintf(fd_asm, "\t\tret\n");
+      }
     }
 
     fprintf(fd_asm, "\t_set_offsets:\n"); /*implementado en data*/
@@ -732,7 +729,7 @@ void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t) {
         Y SI EN CASO DE QUE NO HAYA NDA, SI ESTA UN NO_DEFINED_METHOD*/
           if(j == 0) fprintf(fd_asm, "\t\tmov dword [_ms%s], %s\n", clases[i]->name, mss[j]->clave);
           else
-            fprintf(fd_asm, "\t\tmov dword [_ms%s+%d], %s\n", clases[i]->name,j*4, );
+            fprintf(fd_asm, "\t\tmov dword [_ms%s+%d], %s\n", clases[i]->name,j*4);
       }
     }
     fprintf(fd_asm, "\t\tret\n");
