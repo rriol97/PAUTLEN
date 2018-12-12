@@ -26,11 +26,11 @@ elementoTablaSimbolos * elem;
 char nombre_ambito_encontrado[MAX_NAME];
 int tipo_declaracion;
 int etiqueta = 1;
-char nombre_fcn[MAX_LEN*2];
 char aux[MAX_LEN];
 char msg[MAX_LEN];
 int i;
 int nlocalvar;
+int hay_return = 0;
 
 Fcn fcn;
 %}
@@ -109,6 +109,9 @@ Fcn fcn;
 %type <atributos> elemento_vector
 %type <atributos> if_exp_sentencias
 %type <atributos> if_exp
+%type <atributos> tipo_retorno
+%type <atributos> bucle
+%type <atributos> bucle_inicio
 
 
 
@@ -195,7 +198,6 @@ modificadores_acceso: TOK_HIDDEN TOK_UNIQUE
     |
     TOK_UNIQUE
     {
-    }
     }
     |
     /*vacio*/
@@ -309,36 +311,38 @@ funciones: funcion funciones
 
 funcion: fn_declaracion sentencias '}'
     {
-    /* cerramos funcion*/
+        if (hay_return == 0) {
+            sprintf(msg, "No hay return en funcion");
+        }
+        hay_return = 0;
     }
 ;
 
 fn_declaracion: fn_complete_name '{' declaraciones_funcion
     {
         /**Ensamblador*/
-        declararFuncion(fout, nombre_fcn, nlocalvar);
+        declararFuncion(fout, fcn.nombre, nlocalvar);
     }
 ;
 
 fn_complete_name: fn_name '(' parametros_funcion ')'
     {
-        strcpy(nombre_fcn, fcn.nombre);
         for (i = 0; i < fcn.nargs; i++) {
             sprintf(aux, "@%d", fcn.tipo_args[i]);
-            strcat(nombre_fcn, aux);
+            strcat(fcn.nombre, aux);
         }
 
-        insertarTablaSimbolosAmbitos(tabla_main, "main", "f1@3", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
-        if (AbrirAmbitoPrefijos(tabla_main, "main", nombre_fcn, ESCALAR, 0, fcn.tipo_retorno, 0, 1) == -1) {
+        insertarTablaSimbolosAmbitos(tabla_main, "main", fcn.nombre, ESCALAR, fcn.tipo_retorno, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+        if (AbrirAmbitoPrefijos(tabla_main, "main", fcn.nombre, ESCALAR, 0, fcn.tipo_retorno, 0, 1) == -1) {
             sprintf(msg, "Variable no encontrada\n");
             return -1;
         }
         /* Bucle para insertar los argumentos de la funcion */
         for (i = 0; i < fcn.nargs; i++) {
-            strcat(aux, nombre_fcn);
+            strcat(aux, fcn.nombre);
             strcat(aux, "_");
             strcat(aux, fcn.nombre_args[i]);
-            insertarTablaSimbolosAmbitos(tabla_main, "main", aux, PARAMETRO, fcn.tipo_args[i], ESCALAR, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+            insertarTablaSimbolosAmbitos(tabla_main, "main", aux, PARAMETRO, fcn.tipo_args[i], ESCALAR, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
         }
 
         nlocalvar = 0;
@@ -624,13 +628,15 @@ escritura: TOK_PRINTF exp
 
 retorno_funcion: TOK_RETURN exp
     {
+        retornarFuncion(fout, $2.direcciones);
+        hay_return = 1;
     }
     |
     TOK_RETURN TOK_NONE
     {
     }
 ;
-  //8  +  x1
+
 exp: exp '+' exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
@@ -730,6 +736,9 @@ exp: exp '+' exp
       }
       //diapo90 gen
       escribir_operando(fout, $1.lexema, 1);
+      if (flag_lista_exp == 1) {
+          operandoEnPilaAArgumento(fout, 1);
+      }
 
       //TODO comprobar que no sea de categoria funcion ni clase vector
       $$.tipo = elem->tipo;
@@ -760,8 +769,10 @@ exp: exp '+' exp
         $$.direcciones = $1.direcciones;
     }
     |
-    TOK_IDENTIFICADOR '(' lista_expresiones ')'
+    TOK_IDENTIFICADOR '(' activar_flag_lista_exp lista_expresiones ')'
     {
+        flag_lista_exp = 0;
+        llamarFuncion(fout, fcn.nombre, fcn.nargs);
     }
     |
     identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'
@@ -772,6 +783,11 @@ exp: exp '+' exp
     {
     }
 ;
+
+activar_flag_lista_exp:
+    {
+        activar_flag_lista_exp = 1;
+    }
 
 
 identificador_clase: TOK_IDENTIFICADOR
@@ -785,6 +801,7 @@ identificador_clase: TOK_IDENTIFICADOR
 
 lista_expresiones: exp resto_lista_expresiones
     {
+
     }
     |
     /*vacio*/

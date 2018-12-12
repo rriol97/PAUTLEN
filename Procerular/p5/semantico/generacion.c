@@ -806,6 +806,7 @@ void escribirParametro(FILE *fpasm, int pos_parametro, int num_total_parametros)
 		return;
 	}
 
+	fprintf(fpasm, "\tlea eax, [ebp + %d]\n\tpush dword eax\n", 4 + 4*(num_total_parametros - pos_parametro));
 
 }
 
@@ -816,6 +817,7 @@ void escribirVariableLocal(FILE *fpasm, int posicion_variable_local)
 		return;
 	}
 
+	fprintf(fpasm, "\tlea eax, [ebp - %d]\n\tpush dword eax\n", 4*posicion_variable_local);
 
 }
 
@@ -826,6 +828,9 @@ void operandoEnPilaAArgumento(FILE *fpasm, int es_variable)
 		return;
 	}
 
+	if (es_variable) {
+		fprintf(fpasm, "\tpop eax\n\tmov eax [eax]\n\tpush eax\n");
+	}
 
 }
 
