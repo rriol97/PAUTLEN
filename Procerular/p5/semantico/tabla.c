@@ -49,7 +49,27 @@ int abrirClase(TablaSimbolosClases* t, char* id_clase) {
     return graphAddClass(t->graph, nodo);
 }
 
-int abrirClaseHereda(TablaSimbolosClases* t, char* id_clase, char** id_clase_hereda, int num_clases_hereda) {
+int abrirClaseHereda(TablaSimbolosClases* t, char* id_clase, ...) {
+    va_list ap;
+    NodoGrafo *parent;
+    char* next;
+
+    int cid = abrirClase(t, id_clase);
+    if(cid == -1)
+        return -1;
+
+    va_start(ap, id_clase);
+    while( (next=va_arg(ap, char*)) != NULL) {
+        parent = graphGetClassFromName(t->graph, next);
+        if(parent != NULL) {
+            graphAddEdge(t->graph, parent->index, cid);
+        }
+    }
+    va_end(ap);
+    return cid;
+}
+
+int abrirClaseHeredaN(TablaSimbolosClases* t, char* id_clase, char** id_clase_hereda, int num_clases_hereda) {
     NodoGrafo *parent;
     int i;
     int cid = abrirClase(t, id_clase);
@@ -72,7 +92,8 @@ int AbrirAmbitoPrefijos(TablaAmbito * tabla,
                                     int tipo_metodo,
                                     int posicion_metodo_sobre,
                                     int tamanio) {
-                               
+    char nombre_real[MAX_NAME];
+
     if(strlen(tabla->func_name) > 0) {
         /*ya hay una funcion abierta, no se permite anidar funciones*/
         return -1;
@@ -80,11 +101,11 @@ int AbrirAmbitoPrefijos(TablaAmbito * tabla,
 
     /*inicializa el nombre de funcion*/
     strcpy(tabla->func_name, id_ambito);
-    
+    sprintf(nombre_real, "%s_%s", id_clase, id_ambito);
+
     /*inserta el simbolo de la funcion en su propia tabla*/
-    /*TODO: comprobar esta informacion (con que parametros se tiene que insertar en la tabla de simbolos*/
     insertarTablaSimbolosAmbitos(tabla, id_clase,
-        id_ambito, categoria_ambito,
+        nombre_real, categoria_ambito,
         tipo_metodo, /*??*/ FUNCION,
         0, /*??*/ 0, /*por donde se pasa esto?*/
         0, /*??*/ 0, /*??*/
@@ -108,8 +129,6 @@ int abrirAmbitoEnClase(TablaSimbolosClases * grafo,
                                   int acceso_metodo,
                                   int tipo_metodo,
                                   int posicion_metodo_sobre, int tamanio){
-    /*TODO para que demonios sirve el resto de cosas?¿?¿
-    Son los datos de la funcion que tiene asociado el ambito que abrimos*/
     NodoGrafo * nodo;
     if(grafo == NULL || id_clase == NULL || id_ambito == NULL)
         return -1;
@@ -127,7 +146,7 @@ int abrirAmbitoEnClase(TablaSimbolosClases * grafo,
 
 int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
         char* id, int clase,
-        int tipo, int categoria,
+        int tipo, int estructura,
         int direcciones, int numero_parametros,
         int numero_variables_locales,int posicion_variable_local,
         int posicion_parametro,
@@ -141,26 +160,14 @@ int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
         int posicion_acumulada_metodos_sobreescritura,
         int * tipo_args) {
     elementoTablaSimbolos* elemento;
-    char nombre_real[MAX_NAME];
-    char* id_clase_real;
     elemento = malloc(sizeof(elementoTablaSimbolos));
     if(elemento == NULL)
         return -1;
 
-    /*hay funcion abierta: inserta el simbolo con prefijo de la funcion */
-    /*a no ser que el simbolo a insertar sea el mismo que el nombre de la funcion: en ese caso se inserta la funcion con el prefijo original*/
-    if(strlen(tabla->func_name) > 0 && strcmp(tabla->func_name, id) != 0) 
-        id_clase_real = tabla->func_name;
-    else
-        id_clase_real = id_clase;
-
-    strcpy(nombre_real, id_clase_real);
-    strcat(nombre_real, "_");
-    strcat(nombre_real, id);
-    strcpy(elemento->clave, nombre_real);
+    strcpy(elemento->clave, id);
     elemento->clase = clase;
     elemento->tipo = tipo;
-    elemento->categoria = categoria;
+    elemento->estructura = estructura;
     elemento->direcciones = direcciones;
     elemento->numero_parametros = numero_parametros;
     elemento->numero_variables_locales = numero_variables_locales;
@@ -189,7 +196,7 @@ int insertarTablaSimbolosAmbitos(TablaAmbito * tabla, char * id_clase,
 
 int insertarTablaSimbolosClases(TablaSimbolosClases * grafo, char * id_clase,
         char* id, int clase,
-        int tipo, int categoria,
+        int tipo, int estructura,
         int direcciones, int numero_parametros,
         int numero_variables_locales,int posicion_variable_local,
         int posicion_parametro,
@@ -210,7 +217,7 @@ int insertarTablaSimbolosClases(TablaSimbolosClases * grafo, char * id_clase,
         return -1;
 
     return insertarTablaSimbolosAmbitos(nodo->tabla, id_clase,
-        id, clase, tipo, categoria, direcciones, numero_parametros,
+        id, clase, tipo, estructura, direcciones, numero_parametros,
         numero_variables_locales,posicion_variable_local,
         posicion_parametro,
         tamanio,
@@ -251,7 +258,6 @@ int buscarTablaSimbolosAmbitosConPrefijos(TablaAmbito * t, char* id, elementoTab
     }
     return ERR;
 }
-
 
 int aplicarAccesos(TablaSimbolosClases* t, char* nombre_clase_ambito_actual, char* clase_declaro, elementoTablaSimbolos* pelem) {
     NodoGrafo* nodo;
@@ -403,7 +409,6 @@ int buscarParaDeclararMiembroClase(TablaSimbolosClases *t,
           nombre_miembro, e, nodo->name, nombre_ambito_encontrado);
 }
 
-
 int buscarParaDeclararMiembroInstancia(TablaSimbolosClases *t, char * nombre_clase_desde,
     char * nombre_miembro, elementoTablaSimbolos ** e,
     char * nombre_ambito_encontrado){
@@ -413,29 +418,21 @@ int buscarParaDeclararMiembroInstancia(TablaSimbolosClases *t, char * nombre_cla
            nombre_clase_desde, e, nombre_ambito_encontrado);
 }
 
-int buscarParaDeclararIdTablaSimbolosAmbitos(TablaAmbito* t, 
-                                    char* id, 
-                                    elementoTablaSimbolos** e,  
+int buscarParaDeclararIdTablaSimbolosAmbitos(TablaAmbito* t,
+                                    char* id,
+                                    elementoTablaSimbolos** e,
                                     char* id_ambito,
                                     char * nombre_ambito_encontrado) {
-                                            char nombre_real[MAX_NAME];
 
     if(strlen(t->func_name) > 0) {
         /*funcion abierta: busca tambien en la tabla de funcion*/
-        strcpy(nombre_real, t->func_name);
-        strcat(nombre_real, "_");
-        strcat(nombre_real, id);
-
-        *e = find_symbol(&(t->th_func), nombre_real);
+        *e = find_symbol(&(t->th_func), id);
         if(*e != NULL) {
             strcpy(nombre_ambito_encontrado, t->func_name);
             return OK;
         }
     } else {
-        strcpy(nombre_real, id_ambito);
-        strcat(nombre_real, "_");
-        strcat(nombre_real, id);
-        *e = find_symbol(&(t->th_ppal), nombre_real);
+        *e = find_symbol(&(t->th_ppal), id);
         if(*e != NULL) {
             strcpy(nombre_ambito_encontrado, id_ambito);
             return OK;
@@ -444,15 +441,15 @@ int buscarParaDeclararIdTablaSimbolosAmbitos(TablaAmbito* t,
     return ERR;
 }
 
-int buscarParaDeclararIdLocalEnMetodo(TablaSimbolosClases *t, 
+int buscarParaDeclararIdLocalEnMetodo(TablaSimbolosClases *t,
                             char * nombre_clase,
                             char * nombre_id,
-                            elementoTablaSimbolos ** e, 
+                            elementoTablaSimbolos ** e,
                             char * nombre_ambito_encontrado) {
     NodoGrafo* nodo = graphGetClassFromName(t->graph, nombre_clase);
     if(nodo == NULL)
         return ERR;
-    
+
     return buscarParaDeclararIdTablaSimbolosAmbitos(nodo->tabla, nombre_id, e, nodo->name, nombre_ambito_encontrado);
 }
 
@@ -498,10 +495,8 @@ int cerrarClase(TablaSimbolosClases* t,
 }
 
 int cerrarTablaSimbolosClases(TablaSimbolosClases* t) {
-    /*TODO: comprobar si necesitamos hacer alguna operacion aqui*/
     return 0;
 }
-
 
 void graph_enrouteParentsLastNode(TablaSimbolosClases * g) {
     return;
@@ -526,22 +521,268 @@ void tablaSimbolosClasesToDot(TablaSimbolosClases* tabla, FILE* fsalida) {
     graphToDot(tabla->graph, fsalida);
 }
 
+void imprimirTabla(TablaAmbito* tabla, FILE* fsalida) {
+    Hash *point, *tmp;
+    elementoTablaSimbolos* e;
+    int i;
+
+    if(strlen(tabla->func_name) > 0) {
+        i = 0;
+        fprintf(fsalida, "=================== %s =================\n\n", tabla->func_name);
+        HASH_ITER(hh, tabla->th_func, point, tmp) {
+            e = point->value;
+            fprintf(fsalida, "****************Posicion %d ******************\n", i);
+            fprintf(fsalida, "%s\tCATEGORIA: %d\tPOS_LOCAL: %d\tPOS ATR. INSTANCIA %d Y ACUMULADA %d\tESTRUCTURA: %d\tTIPO: %d\tDIR: %d\tACCESO: %d\tMIEMBRO: %d\n", e->clave, e->clase, e->posicion_variable_local, e->posicion_atributo_instancia, e->posicion_acumulada_atributos_instancia, e->estructura, e->tipo, e->direcciones, e->tipo_acceso, e->tipo_miembro);
+            i++;
+        }
+        fprintf(fsalida, "\n");
+    }
+
+    i = 0;
+    fprintf(fsalida, "=================== %s =================\n\n", tabla->name);
+    HASH_ITER(hh, tabla->th_ppal, point, tmp) {
+        e = point->value;
+        fprintf(fsalida, "****************Posicion %d ******************\n", i);
+        fprintf(fsalida, "%s\tCATEGORIA: %d\tPOS_LOCAL: %d\tPOS ATR. INSTANCIA %d Y ACUMULADA %d\tESTRUCTURA: %d\tTIPO: %d\tDIR: %d\tACCESO: %d\tMIEMBRO: %d\n", e->clave, e->clase, e->posicion_variable_local, e->posicion_atributo_instancia, e->posicion_acumulada_atributos_instancia, e->estructura, e->tipo, e->direcciones, e->tipo_acceso, e->tipo_miembro);
+        i++;
+    }
+    fprintf(fsalida, "\n");
+}
+
+void imprimirTablaClase(TablaSimbolosClases* tabla, char* clase, FILE* fsalida) {
+    NodoGrafo* nodo = graphGetClassFromName(tabla->graph, clase);
+    if(nodo == NULL)
+        return;
+
+    imprimirTabla(nodo->tabla, fsalida);
+}
+
 elementoTablaSimbolos** listaElementosTabla(TablaAmbito* tabla, int* num_elementos) {
     int i;
     elementoTablaSimbolos** elementos;
     Hash* s;
-    
+
     if(tabla == NULL || num_elementos == NULL)
         return NULL;
-    
+
     *num_elementos = HASH_COUNT(tabla->th_ppal);
     elementos = malloc((*num_elementos)*sizeof(elementoTablaSimbolos*));
     if (elementos == NULL)
         return NULL;
-    
+
     for(i = 0, s = tabla->th_ppal; i < *num_elementos; i++, s=s->hh.next) {
         elementos[i] = s->value;
     }
-    
+
     return elementos;
+}
+
+elementoTablaSimbolos* mss[MAX_ETIQUETAS];
+int n_mss = 0;
+elementoTablaSimbolos* mnss[MAX_ETIQUETAS];
+int n_mnss = 0;
+elementoTablaSimbolos* ais[MAX_ETIQUETAS];
+int n_ais = 0;
+elementoTablaSimbolos* acs[MAX_ETIQUETAS];
+int n_acs = 0;
+NodoGrafo* clases[MAX_ETIQUETAS];
+int n_clases = 0;
+
+void rellenarLista(TablaSimbolosClases* t) {
+    int i;
+    Hash *point, *tmp;
+    NodoGrafo* class;
+    elementoTablaSimbolos* e;
+    Graph* grafo = t->graph;
+    for(i = 0; (class=graphGetClass(grafo, i)) != NULL; i++) {
+        clases[i] = class;
+        HASH_ITER(hh, class->tabla->th_ppal, point, tmp) {
+            e = point->value;
+            switch(e->clase) {
+                case METODO_SOBREESCRIBIBLE:
+                    mss[n_mss] = e;
+                    n_mss++;
+                    break;
+                case METODO_NO_SOBREESCRIBIBLE:
+                    mnss[n_mnss] = e;
+                    n_mnss++;
+                    break;
+                case ATRIBUTO_CLASE:
+                    acs[n_acs] = e;
+                    n_acs++;
+                    break;
+                case ATRIBUTO_INSTANCIA:
+                    ais[n_ais] = e;
+                    n_ais++;
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    n_clases = i;
+}
+
+/*nota: lo que digo sobre los bucles, probablemente convenga hacer un unico bucle
+al principio que guarde de que tipo es cada cosa y hacer los demas bucles sobre los
+subconjuntos obtenidos*/
+void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t) {
+    int i, j, aux, numaux;
+    int auxil[MAX_ETIQUETAS];
+    if(fd_asm == NULL) {
+        printf("Error de fichero\n");
+        return;
+    }
+    if(t == NULL) {
+        printf("Error: tabla de simbolos de clases no definida\n");
+        return;
+    }
+    rellenarLista(t);
+    fprintf(fd_asm, "\tglobal");
+    /*bucle sobre todos los simbolos de todas las clases*/
+    numaux = 0;
+    for(i = 0, j = 0; i < n_mss; i++) {
+        if(mss[i]->posicion_acumulada_metodos_sobreescritura == j*4){
+          fprintf(fd_asm, " _%s,", mss[i]->clave);
+          j++;
+        }
+        else{
+          auxil[numaux] = i;
+          numaux++;
+        }
+    }
+    for(i = 0; i < numaux; ++i){
+      fprintf(fd_asm, " _%s,", mss[auxil[i]]->clave);
+    }
+    fprintf(fd_asm, " _no_defined_method,");
+
+    for(i = 0; i < n_mnss; i++) {
+        fprintf(fd_asm, " _%s,", mnss[i]->clave);
+    }
+
+
+    fprintf(fd_asm, "_set_offsets, _create_ms_table");
+
+    for(i = 0, j = 0; i < n_mss; i++) {
+        if(mss[i]->posicion_acumulada_metodos_sobreescritura == j*4) {
+            /*no sobreescribe sino que lo pone por perimera vez*/
+            fprintf(fd_asm, " _offset_%s,", mss[i]->clave);
+            j++;
+        }
+    }
+
+    for(i = 0; i < n_ais; i++) {
+        fprintf(fd_asm, " _offset_%s,", ais[i]->clave);
+    }
+
+    for(i = 0, j = 0; i < n_clases; i++) {
+        j += clases[i]->num_me_s;
+        fprintf(fd_asm, " %s%s,", PREFIJO_TABLA_METODOS_SOBREESCRIBIBLES, clases[i]->name);
+    }
+
+    fprintf(fd_asm, "\n\n");
+
+    fprintf(fd_asm, "segment .data\n");
+    fprintf(fd_asm, "\tmsg_error_indice_vector\tdb \"Indice de vector fuera de rango\", 0\n");
+    /*bucle sobre los simbolos: si son ms que no estan sobreescribiendo uno anterior, añadir su offset*/
+    for(i = 0, j = 0; i < n_mss; i++) {
+        if(mss[i]->posicion_acumulada_metodos_sobreescritura == j*4) {
+            /*no sobreescribe sino que lo pone por perimera vez*/
+            fprintf(fd_asm, "\t_offset_%s dd %d\n", mss[i]->clave, mss[i]->posicion_acumulada_metodos_sobreescritura);
+            j++;
+        }
+    }
+
+    /*bucle sobre los simbolos: si son atributos de instancia que no estan sobreescribiendo uno anterior,
+     añadir su offset*/
+    for(i = 0; i < n_ais; i++) {
+        fprintf(fd_asm, "\t_offset_%s dd %d\n", ais[i]->clave, ais[i]->posicion_acumulada_atributos_instancia + 4);
+    }
+
+    fprintf(fd_asm, "segment .bss\n");
+    fprintf(fd_asm, "\t__esp resd 4\n");
+    /*bucle sobre las clases: escribir el tamaño de la tabla de ms*/
+    for(i = 0, j = 0; i < n_clases; i++) {
+        j += clases[i]->num_me_s;
+        fprintf(fd_asm, "\t%s%s resd %d\n", PREFIJO_TABLA_METODOS_SOBREESCRIBIBLES, clases[i]->name, j);
+    }
+    /*bucle sobre los simbolos: si son objetos, escribirlos aqui*/
+    /*no se como va esto, parece necesitar acceso a main que no tenemos*/
+    /*posiblemente no sea necesario aqui*/
+
+    /*bucle sobre los simbolos: si son at c escribirlos aqui*/
+    for(i = 0; i < n_acs; i++) {
+        fprintf(fd_asm, "\t_%s resd 1\n", acs[i]->clave);
+    }
+
+    fprintf(fd_asm, "segment .text\n");
+    fprintf(fd_asm, "\textern malloc, free\n");
+    fprintf(fd_asm, "\textern scan_int, print_int, scan_float, print_float, scan_boolean, print_boolean\n");
+    fprintf(fd_asm, "\textern print_endofline, print_blank, print_string\n");
+    fprintf(fd_asm, "\textern alfa_malloc, alfa_free, ld_float\n");
+
+    /*bucle sobre los simbolos: si son ms escribir su def*/
+    /*Pongo priemro los metodos "originales" y luego los sobreescritos*/
+    numaux = 0;
+    for(i = 0, j = 0; i < n_mss; i++) {
+        if(mss[i]->posicion_acumulada_metodos_sobreescritura == j*4){
+          fprintf(fd_asm, "\t_%s:\n", mss[i]->clave);
+          /*Pongo como fucnioalidad por defecto que printee eñl valor de i*/
+          fprintf(fd_asm, "\t\tpush dword %d\n",i);
+          fprintf(fd_asm, "\t\tcall print_int");
+          fprintf(fd_asm, "\t\tadd esp,4\n" );
+          fprintf(fd_asm, "\t\tcall print_endofline\n" );
+          fprintf(fd_asm, "\t\tret\n");
+          j++;
+        }
+        else{
+          auxil[numaux] = i;
+          numaux++;
+        }
+    }
+    for(i = 0; i < numaux; ++i){
+      fprintf(fd_asm, "\t_%s:\n", mss[auxil[i]]->clave);
+      /*Pongo como fucnioalidad por defecto que printee eñl valor de auxil[i](donde esta en mss)*/
+      fprintf(fd_asm, "\t\tpush dword %d\n",auxil[i]);
+      fprintf(fd_asm, "\t\tcall print_int\n");
+      fprintf(fd_asm, "\t\tadd esp,4\n" );
+      fprintf(fd_asm, "\t\tcall print_endofline\n" );
+      fprintf(fd_asm, "\t\tret\n");
+    }
+
+    fprintf(fd_asm, "\t_no_defined_ method\n");
+    fprintf(fd_asm, "\t\tpush dword 0\n");
+    fprintf(fd_asm, "\t\tcall print_int\n");
+    fprintf(fd_asm, "\t\tadd esp, 4\n");
+    fprintf(fd_asm, "\t\tcall print_endofline\n");
+    fprintf(fd_asm, "\t\tret\n");
+
+    /*bucle sobre los simbolos: si son mns escribir su def*/
+    for(i = 0; i < n_mnss; i++) {
+        fprintf(fd_asm, "\t_%s:\n", mnss[i]->clave);
+        /*Pongo como fucnioalidad por defecto que printee eñl valor de i*/
+        fprintf(fd_asm, "\t\tpush dword %d\n",i);
+        fprintf(fd_asm, "\t\tcall print_int");
+        fprintf(fd_asm, "\t\tadd esp,4\n" );
+        fprintf(fd_asm, "\t\tcall print_endofline\n" );
+        fprintf(fd_asm, "\t\tret\n");
+    }
+
+    fprintf(fd_asm, "\t_set_offsets:\n"); /*implementado en data*/
+    fprintf(fd_asm, "\t\tret\n");
+    fprintf(fd_asm, "\t_create_ms_table:\n");
+
+    aux = 0;
+    /*escribir tabla de ms*/
+    for(i = 0; i < n_clases; ++i){
+      aux+= clases[i]->num_me_s;
+      for(j = 0; j <  aux; ++j){
+        /*TODO NO ESTOY SEGURO DE SI EN MSS LAS COSAS VIENEN EN ORDEN(creo que si),
+        Y SI EN CASO DE QUE NO HAYA NDA, SI ESTA UN NO_DEFINED_METHOD*/
+          if(j == 0) fprintf(fd_asm, "\t\tmov dword [_ms%s], %s\n", clases[i]->name, mss[j]->clave);
+          else
+            fprintf(fd_asm, "\t\tmov dword [_ms%s+%d], %s\n", clases[i]->name,j*4, mss[j]->clave);
+      }
+    }
+    fprintf(fd_asm, "\t\tret\n");
 }

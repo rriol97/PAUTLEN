@@ -12,12 +12,27 @@ extern FILE *yyin;
 extern FILE *fout;
 extern int flag_error;
 
+typedef strcut {
+    char nombre[MAX_LEN];
+    char *nombre_args[MAX_LEN];
+    int *tipo_args[MAX_LEN];
+    int nargs;
+    int tipo_retorno;
+} Fcn;
+
 int tipo_id_actual;
 TablaAmbito * tabla_main;
 elementoTablaSimbolos * elem;
 char nombre_ambito_encontrado[MAX_NAME];
 int tipo_declaracion;
 int etiqueta = 1;
+char nombre_fcn[MAX_LEN*2];
+char aux[MAX_LEN];
+char msg[MAX_LEN];
+int i;
+int nlocalvar;
+
+Fcn fcn;
 %}
 
 %union {
@@ -262,6 +277,7 @@ identificadores_declaracion: identificador
     {
         /* Aqui solo se accede al declarar varibles */
         $$.tipo = $1.tipo;
+        nlocalvar++;
     }
     |
     identificador ',' identificadores_declaracion
@@ -271,15 +287,16 @@ identificadores_declaracion: identificador
 ;
 
 identificador: TOK_IDENTIFICADOR
-{
-    $$.direcciones = 1;
-    $1.tipo = tipo_declaracion;
+    {
+        $$.direcciones = 1;
+        $1.tipo = tipo_declaracion;
 
-    printf("entro en una declaracion de variable (%s) [%d]\n", $1.lexema, $1.tipo);
-    $$.tipo = $1.tipo;
-    declarar_variable(fout, $1.lexema, $1.tipo, 1);
-    insertarTablaSimbolosAmbitos(tabla_main, "main", $1.lexema, ESCALAR, $1.tipo, $1.direcciones, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
-}
+        printf("entro en una declaracion de variable (%s) [%d]\n", $1.lexema, $1.tipo);
+        $$.tipo = $1.tipo;
+        declarar_variable(fout, $1.lexema, $1.tipo, 1);
+        insertarTablaSimbolosAmbitos(tabla_main, "main", $1.lexema, ESCALAR, $1.tipo, $1.direcciones, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+    }
+;
 
 funciones: funcion funciones
     {
@@ -290,10 +307,54 @@ funciones: funcion funciones
     }
 ;
 
-funcion: TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'
+funcion: fn_declaracion sentencias '}'
     {
+    /* cerramos funcion*/
     }
 ;
+
+fn_declaracion: fn_complete_name '{' declaraciones_funcion
+    {
+        /**Ensamblador*/
+        declararFuncion(fout, nombre_fcn, nlocalvar);
+    }
+;
+
+fn_complete_name: fn_name '(' parametros_funcion ')'
+    {
+        strcpy(nombre_fcn, fcn.nombre);
+        for (i = 0; i < fcn.nargs; i++) {
+            sprintf(aux, "@%d", fcn.tipo_args[i]);
+            strcat(nombre_fcn, aux);
+        }
+
+        insertarTablaSimbolosAmbitos(tabla_main, "main", "f1@3", ESCALAR, INT, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+        if (AbrirAmbitoPrefijos(tabla_main, "main", nombre_fcn, ESCALAR, 0, fcn.tipo_retorno, 0, 1) == -1) {
+            sprintf(msg, "Variable no encontrada\n");
+            return -1;
+        }
+        /* Bucle para insertar los argumentos de la funcion */
+        for (i = 0; i < fcn.nargs; i++) {
+            strcat(aux, nombre_fcn);
+            strcat(aux, "_");
+            strcat(aux, fcn.nombre_args[i]);
+            insertarTablaSimbolosAmbitos(tabla_main, "main", aux, PARAMETRO, fcn.tipo_args[i], ESCALAR, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+        }
+
+        nlocalvar = 0;
+
+    }
+;
+
+fn_name: TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR
+    {
+        strcpy(fcn.nombre, $4.lexema);
+        fcn.nargs = 0;
+        fcn.tipo_retorno = $3.tipo;
+    }
+;
+
+
 
 tipo_retorno: TOK_NONE
     {
@@ -301,6 +362,7 @@ tipo_retorno: TOK_NONE
     |
     tipo
     {
+        $$.tipo = $1.tipo;
     }
     |
     clase_objeto
@@ -333,6 +395,10 @@ resto_parametros_funcion: ';' parametro_funcion resto_parametros_funcion
 
 parametro_funcion: tipo TOK_IDENTIFICADOR
     {
+        strcpy(fcn.nombre_args[fcn.nargs], $2.lexema);
+        $2.tipo = $1.tipo;
+        fcn.tipo_args[fcn.nargs] = $2.tipo;
+        fcn.args++;
     }
     |
     clase_objeto TOK_IDENTIFICADOR
@@ -784,7 +850,7 @@ comparacion: exp TOK_IGUAL exp
     exp '<' exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, La division requiere que ambos operandos sean numeros");
+            sprintf(msg, "La division requiere que ambos operandos sean numeros");
         }
         $$.tipo = BOOLEAN;
         $$.direcciones = 0;
