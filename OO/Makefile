@@ -18,11 +18,17 @@ prueba_TS.o: prueba_TS.c prueba_TS.h
 test.o: test.c
 	$(CC) $(FLAGS) test.c -c
 
+gentest.o: generacion/test.c
+	$(CC) $(FLAGS) generacion/test.c -c -o gentest.o
+
 generacion_omicron.o: generacion/generacion_omicron.c generacion/generacion_omicron.h
 	$(CC) $(FLAGS) generacion/generacion_omicron.c -c
 
-generacion: hash.o graph.o tabla.o generacion_omicron.o
-	$(CC) $(FLAGS) -o generacion/generacion hash.o graph.o tabla.o generacion_omicron.o
+generacion.o: generacion/generacion.c generacion/generacion_omicron.h
+	$(CC) $(FLAGS) generacion/generacion.c -c
+
+generacion: hash.o graph.o tabla.o generacion_omicron.o generacion.o gentest.o
+	$(CC) $(FLAGS) -o generacion/generacion hash.o graph.o tabla.o generacion_omicron.o generacion.o gentest.o
 
 prueba_TS: hash.o graph.o tabla.o prueba_TS.o
 	$(CC) $(FLAGS) -o prueba_TS hash.o graph.o tabla.o prueba_TS.o

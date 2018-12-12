@@ -121,18 +121,18 @@ void leer(FILE* fpasm, char* nombre, int tipo);
 void escribir(FILE* fpasm, int es_referencia, int tipo);
 
 /* FUNCIONES PARA EL CONTROL DE FLUJO */
-void inicio_if_else(FILE* fpasm, int etiqueta, int es_direccion);
-void medio_if_else(FILE* fpasm, int etiqueta);
-void fin_if_else(FILE* fpasm, int etiqueta);
-void if_exp_pila (FILE * fpasm, int exp_es_referencia, int etiqueta);
+void ifthenelse_inicio(FILE * fpasm, int exp_es_variable, int etiqueta);
+void ifthen_inicio(FILE * fpasm, int exp_es_variable, int etiqueta);
+void ifthen_fin(FILE * fpasm, int etiqueta);
+void if_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta);
 void ifthenelse_fin_then( FILE * fpasm, int etiqueta);
 void ifthenelse_fin( FILE * fpasm, int etiqueta);
 void while_inicio(FILE * fpasm, int etiqueta);
-void while_exp_pila (FILE * fpasm, int exp_es_referencia, int etiqueta);
+void while_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta);
 void while_fin( FILE * fpasm, int etiqueta);
 void escribir_elemento_vector(FILE * fpasm,char * nombre_vector, int tam_max, int exp_es_direccion);
 void declararFuncion(FILE * fd_s, char * nombre_funcion, int num_var_loc);
-void retornarFuncion(FILE * fd_s, int es_referencia);
+void retornarFuncion(FILE * fd_s, int es_variable);
 void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros);
 void escribirVariableLocal(FILE* fpasm, int posicion_variable_local);
 
