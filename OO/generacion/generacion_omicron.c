@@ -23,8 +23,9 @@ void instance_of (FILE * fpasm, char * nombre_fuente_clase,
     fprintf(fpasm, "push dword %d\n", (numero_atributos_instancia + 1)*4);
     fprintf(fpasm, "call malloc\n");
     fprintf(fpasm, "add esp, 4\n");
-    /*se deja el resultado en la cima de la pila*/
+    /*meto la tabla de ms en el lugar correspondiente*/
     fprintf(fpasm, "mov dword [eax], %s\n", nombre_tabla);
+    /*se deja el resultado en la cima de la pila*/
     fprintf(fpasm, "push eax\n");
 
     free(nombre_tabla);
@@ -42,7 +43,8 @@ void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fpasm, char * no
     if(fpasm == NULL || nombre_metodo == NULL)
         return;
 
-    fprintf(fpasm, "mov dword ebx, [esp]\n");
+    fprintf(fpasm, "pop dword ebx\n");
+    /*ebx = [_msa]*/
     fprintf(fpasm, "mov dword ebx, [ebx]\n");
     fprintf(fpasm, "mov dword ecx, [_offset_%s]\n", nombre_metodo);
     fprintf(fpasm, "lea ecx, [ebx+ecx]\n");
@@ -61,7 +63,7 @@ void accederAtributoInstanciaDePila(FILE * fpasm, char * nombre_atributo) {
     if(fpasm == NULL || nombre_atributo == NULL)
         return;
 
-    fprintf(fpasm, "mov dword ebx, [esp]\n");
+    fprintf(fpasm, "pop dword ebx\n");
     fprintf(fpasm, "mov dword ecx, [_offset_%s]\n", nombre_atributo);
     fprintf(fpasm, "lea ecx, [ebx+ecx]\n");
 }
@@ -72,10 +74,11 @@ void asignarDestinoEnPila(FILE* fpasm, int es_variable) {
     if(fpasm == NULL)
         return;
 
+    fprintf(fpasm, "\tpop dword edx\n");
     fprintf(fpasm, "\tpop dword eax\n");
     if (es_variable) {
         fprintf(fpasm, "\tmov eax, [eax]\n");
     }
-    fprintf(fpasm, "\tmov [esp], eax\n");
+    fprintf(fpasm, "mov [edx], eax\n");
     fprintf(fpasm, "sub esp, 4\n");
 }

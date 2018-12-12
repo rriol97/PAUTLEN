@@ -124,6 +124,21 @@ void gestiona_INICIA_TSA_MAIN() {
 
 void gestiona_ABRIR_AMBITO_PPAL_MAIN() {
     fprintf(f_out, "abrir ambito ppal main\n");
+    insertarTablaSimbolosAmbitos(tablaMain, "main",
+        "main_main", CLASE,
+        NINGUNO, OBJETO,
+        1, 0,
+        0, 1,
+        1,
+        1,
+        0, 0,
+        0, 0,
+        ACCESO_TODOS, MIEMBRO_UNICO,
+        0, 0,
+        0, 0,
+        0,
+        0,
+        NULL);
     return; /*nuestra funcion de abrir ambito solo inicializa la tabla, ya hecho antes*/
 }
 
@@ -307,12 +322,31 @@ void gestiona_INICIA_TSC() {
 
 void gestiona_ABRIR_CLASE() {
     char* token;
+    char simbolo_clase[MAX_NAME];
 
     token = strtok(NULL, " \r\n\t");
 
     fprintf(f_out, "abrir clase (%s)\n", token);
 
     abrirClase(tsc, token);
+
+    sprintf(simbolo_clase, "%s_%s", token, token);
+
+    insertarTablaSimbolosClases(tsc, token,
+        simbolo_clase, CLASE,
+        NINGUNO, OBJETO,
+        1, 0,
+        0, 1,
+        1,
+        1,
+        0, 0,
+        0, 0,
+        ACCESO_TODOS, MIEMBRO_UNICO,
+        0, 0,
+        0, 0,
+        0,
+        0,
+        NULL);
 }
 
 void gestiona_ABRIR_CLASE_HEREDA() {
