@@ -640,8 +640,6 @@ void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t) {
     rellenarLista(t);
     fprintf(fd_asm, "\tglobal");
     /*bucle sobre todos los simbolos de todas las clases*/
-    /*TODO*/
-
     numaux = 0;
     for(i = 0, j = 0; i < n_mss; i++) {
         if(mss[i]->posicion_acumulada_metodos_sobreescritura == j*4){
@@ -746,13 +744,13 @@ void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t) {
       fprintf(fd_asm, "\t_%s:\n", mss[auxil[i]]->clave);
       /*Pongo como fucnioalidad por defecto que printee eñl valor de auxil[i](donde esta en mss)*/
       fprintf(fd_asm, "\t\tpush dword %d\n",auxil[i]);
-      fprintf(fd_asm, "\t\tcall print_int");
+      fprintf(fd_asm, "\t\tcall print_int\n");
       fprintf(fd_asm, "\t\tadd esp,4\n" );
       fprintf(fd_asm, "\t\tcall print_endofline\n" );
       fprintf(fd_asm, "\t\tret\n");
     }
 
-    fprintf(fd_asm, "\t_no_defined_method\n");
+    fprintf(fd_asm, "\t_no_defined_ method\n");
     fprintf(fd_asm, "\t\tpush dword 0\n");
     fprintf(fd_asm, "\t\tcall print_int\n");
     fprintf(fd_asm, "\t\tadd esp, 4\n");
@@ -779,7 +777,7 @@ void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t) {
     for(i = 0; i < n_clases; ++i){
       aux+= clases[i]->num_me_s;
       for(j = 0; j <  aux; ++j){
-        /*NO ESTOY SEGURO DE SI EN MSS LAS COSAS VIENEN EN ORDEN(creo que si),
+        /*TODO NO ESTOY SEGURO DE SI EN MSS LAS COSAS VIENEN EN ORDEN(creo que si),
         Y SI EN CASO DE QUE NO HAYA NDA, SI ESTA UN NO_DEFINED_METHOD*/
           if(j == 0) fprintf(fd_asm, "\t\tmov dword [_ms%s], %s\n", clases[i]->name, mss[j]->clave);
           else

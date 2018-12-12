@@ -239,6 +239,9 @@ void imprimirTablaClase(TablaSimbolosClases* tabla, char* clase, FILE* fsalida);
 /*crea el .dot del grafo de clases en el fichero dado*/
 void tablaSimbolosClasesToDot(TablaSimbolosClases* tabla, FILE* fsalida);
 
+/*Convierte en NASM la tabla de Símbolos*/
+void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t);
+
 /*crea la lista de elementos declarados en main
   IMPORTANTE: es necesario liberar el ** que se devuelve, pero NO LIBERAR ninguno de los * a elementos que contiene */
 elementoTablaSimbolos** listaElementosTabla(TablaAmbito* tabla, int* num_elementos);
