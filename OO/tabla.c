@@ -259,7 +259,6 @@ int buscarTablaSimbolosAmbitosConPrefijos(TablaAmbito * t, char* id, elementoTab
     return ERR;
 }
 
-
 int aplicarAccesos(TablaSimbolosClases* t, char* nombre_clase_ambito_actual, char* clase_declaro, elementoTablaSimbolos* pelem) {
     NodoGrafo* nodo;
     NodoLista* padres;
@@ -410,7 +409,6 @@ int buscarParaDeclararMiembroClase(TablaSimbolosClases *t,
           nombre_miembro, e, nodo->name, nombre_ambito_encontrado);
 }
 
-
 int buscarParaDeclararMiembroInstancia(TablaSimbolosClases *t, char * nombre_clase_desde,
     char * nombre_miembro, elementoTablaSimbolos ** e,
     char * nombre_ambito_encontrado){
@@ -500,7 +498,6 @@ int cerrarTablaSimbolosClases(TablaSimbolosClases* t) {
     return 0;
 }
 
-
 void graph_enrouteParentsLastNode(TablaSimbolosClases * g) {
     return;
 }
@@ -580,7 +577,6 @@ elementoTablaSimbolos** listaElementosTabla(TablaAmbito* tabla, int* num_element
     return elementos;
 }
 
-
 elementoTablaSimbolos* mss[MAX_ETIQUETAS];
 int n_mss = 0;
 elementoTablaSimbolos* mnss[MAX_ETIQUETAS];
@@ -631,7 +627,8 @@ void rellenarLista(TablaSimbolosClases* t) {
 al principio que guarde de que tipo es cada cosa y hacer los demas bucles sobre los
 subconjuntos obtenidos*/
 void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t) {
-    int i, j, aux;
+    int i, j, aux, numaux;
+    int auxil[MAX_ETIQUETAS];
     if(fd_asm == NULL) {
         printf("Error de fichero\n");
         return;
@@ -653,13 +650,13 @@ void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t) {
     /*bucle sobre los simbolos: si son ms que no estan sobreescribiendo uno anterior, añadir su offset*/
     for(i = 0, j = 0; i < n_mss; i++) {
         if(mss[i]->posicion_acumulada_metodos_sobreescritura == j*4) {
-            /*no sobreescribe*/
+            /*no sobreescribe sino que lo pone por perimera vez*/
             fprintf(fd_asm, "\t_offset_%s dd %d\n", mss[i]->clave, mss[i]->posicion_acumulada_metodos_sobreescritura);
             j++;
         }
     }
 
-    /*bucle sobre los simbolos: si son at i que no estan sobreescribiendo uno anterior,
+    /*bucle sobre los simbolos: si son atributos de instancia que no estan sobreescribiendo uno anterior,
      añadir su offset*/
     for(i = 0; i < n_ais; i++) {
         fprintf(fd_asm, "\t_offset_%s dd %d\n", ais[i]->clave, ais[i]->posicion_acumulada_atributos_instancia + 4);
@@ -688,13 +685,32 @@ void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t) {
     fprintf(fd_asm, "\textern alfa_malloc, alfa_free, ld_float\n");
 
     /*bucle sobre los simbolos: si son ms escribir su def*/
-    for(i = 0; i < n_mss; i++) {
-        fprintf(fd_asm, "\t_%s:\n", mss[i]->clave);
+    /*Pongo priemro los metodos "originales" y luego los sobreescritos*/
+    numaux = 0;
+    for(i = 0, j = 0; i < n_mss; i++) {
+        if(mss[i]->posicion_acumulada_metodos_sobreescritura == j*4){
+          fprintf(fd_asm, "\t_%s:\n", mss[i]->clave);
+          /*Pongo como fucnioalidad por defecto que printee eñl valor de i*/
           fprintf(fd_asm, "\t\tpush dword %d\n",i);
           fprintf(fd_asm, "\t\tcall print_int");
           fprintf(fd_asm, "\t\tadd esp,4\n" );
           fprintf(fd_asm, "\t\tcall print_endofline\n" );
           fprintf(fd_asm, "\t\tret\n");
+          j++;
+        }
+        else{
+          auxil[numaux] = i;
+          numaux++;
+        }
+    }
+    for(i = 0; i < numaux; ++i){
+      fprintf(fd_asm, "\t_%s:\n", mss[auxil[i]]->clave);
+      /*Pongo como fucnioalidad por defecto que printee eñl valor de auxil[i](donde esta en mss)*/
+      fprintf(fd_asm, "\t\tpush dword %d\n",auxil[i]);
+      fprintf(fd_asm, "\t\tcall print_int");
+      fprintf(fd_asm, "\t\tadd esp,4\n" );
+      fprintf(fd_asm, "\t\tcall print_endofline\n" );
+      fprintf(fd_asm, "\t\tret\n");
     }
 
     fprintf(fd_asm, "\t_no_defined_method\n");
@@ -706,14 +722,13 @@ void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t) {
 
     /*bucle sobre los simbolos: si son mns escribir su def*/
     for(i = 0; i < n_mnss; i++) {
-      for(i = 0; i < n_mss; i++) {
-          fprintf(fd_asm, "\t_%s:\n", mnss[i]->clave);
-            fprintf(fd_asm, "\t\tpush dword %d\n",i);
-            fprintf(fd_asm, "\t\tcall print_int");
-            fprintf(fd_asm, "\t\tadd esp,4\n" );
-            fprintf(fd_asm, "\t\tcall print_endofline\n" );
-            fprintf(fd_asm, "\t\tret\n");
-      }
+        fprintf(fd_asm, "\t_%s:\n", mnss[i]->clave);
+        /*Pongo como fucnioalidad por defecto que printee eñl valor de i*/
+        fprintf(fd_asm, "\t\tpush dword %d\n",i);
+        fprintf(fd_asm, "\t\tcall print_int");
+        fprintf(fd_asm, "\t\tadd esp,4\n" );
+        fprintf(fd_asm, "\t\tcall print_endofline\n" );
+        fprintf(fd_asm, "\t\tret\n");
     }
 
     fprintf(fd_asm, "\t_set_offsets:\n"); /*implementado en data*/
