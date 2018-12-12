@@ -642,7 +642,46 @@ void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t) {
     /*bucle sobre todos los simbolos de todas las clases*/
     /*TODO*/
 
-    fprintf(fd_asm, "_set_offsets, _create_ms_table, _no_defined_method");
+    numaux = 0;
+    for(i = 0, j = 0; i < n_mss; i++) {
+        if(mss[i]->posicion_acumulada_metodos_sobreescritura == j*4){
+          fprintf(fd_asm, " _%s,", mss[i]->clave);
+          j++;
+        }
+        else{
+          auxil[numaux] = i;
+          numaux++;
+        }
+    }
+    for(i = 0; i < numaux; ++i){
+      fprintf(fd_asm, " _%s,", mss[auxil[i]]->clave);
+    }
+    fprintf(fd_asm, " _no_defined_method,");
+
+    for(i = 0; i < n_mnss; i++) {
+        fprintf(fd_asm, " _%s,", mnss[i]->clave);
+    }
+
+
+    fprintf(fd_asm, "_set_offsets, _create_ms_table");
+
+    for(i = 0, j = 0; i < n_mss; i++) {
+        if(mss[i]->posicion_acumulada_metodos_sobreescritura == j*4) {
+            /*no sobreescribe sino que lo pone por perimera vez*/
+            fprintf(fd_asm, " _offset_%s,", mss[i]->clave);
+            j++;
+        }
+    }
+
+    for(i = 0; i < n_ais; i++) {
+        fprintf(fd_asm, " _offset_%s,", ais[i]->clave);
+    }
+
+    for(i = 0, j = 0; i < n_clases; i++) {
+        j += clases[i]->num_me_s;
+        fprintf(fd_asm, " %s%s,", PREFIJO_TABLA_METODOS_SOBREESCRIBIBLES, clases[i]->name);
+    }
+
     fprintf(fd_asm, "\n\n");
 
     fprintf(fd_asm, "segment .data\n");
@@ -740,7 +779,7 @@ void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t) {
     for(i = 0; i < n_clases; ++i){
       aux+= clases[i]->num_me_s;
       for(j = 0; j <  aux; ++j){
-        /*NO ESTOY SEGURO DE SI EN MSS LAS COSAS VIENEN EN ORDEN,
+        /*NO ESTOY SEGURO DE SI EN MSS LAS COSAS VIENEN EN ORDEN(creo que si),
         Y SI EN CASO DE QUE NO HAYA NDA, SI ESTA UN NO_DEFINED_METHOD*/
           if(j == 0) fprintf(fd_asm, "\t\tmov dword [_ms%s], %s\n", clases[i]->name, mss[j]->clave);
           else
