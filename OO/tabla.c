@@ -783,7 +783,7 @@ void tablaSimbolosClasesANasm(FILE * fd_asm, TablaSimbolosClases* t) {
         Y SI EN CASO DE QUE NO HAYA NDA, SI ESTA UN NO_DEFINED_METHOD*/
           if(j == 0) fprintf(fd_asm, "\t\tmov dword [_ms%s], %s\n", clases[i]->name, mss[j]->clave);
           else
-            fprintf(fd_asm, "\t\tmov dword [_ms%s+%d], %s\n", clases[i]->name,j*4);
+            fprintf(fd_asm, "\t\tmov dword [_ms%s+%d], %s\n", clases[i]->name,j*4, mss[j]->clave);
       }
     }
     fprintf(fd_asm, "\t\tret\n");
