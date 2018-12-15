@@ -156,9 +156,9 @@ void gestiona_BUSCAR() {
         fprintf(f_out, "buscar declarar main (%s)\n", token);
         result = buscarParaDeclararIdTablaSimbolosAmbitos(tablaMain, token, &e, "main", nombre_ambito_encontrado);
         if(result == OK) {
-            fprintf(f_out, "Existe el id: no se puede declarar\n");
+            fprintf(f_out, "Encontrado el id (en %s): no se puede declarar\n", nombre_ambito_encontrado);
         } else {
-            fprintf(f_out, "No existe el id: se puede declarar\n");
+            fprintf(f_out, "No encontrado el id: se puede declarar\n");
         }
     } else if(!strcmp(token, TOK_DECLARAR_MIEMBRO_CLASE)) {
         clase = strtok(NULL, " \r\n\t");
@@ -169,9 +169,9 @@ void gestiona_BUSCAR() {
         instancia = strtok(NULL, "_");
         result = buscarParaDeclararMiembroClase(tsc, clase, instancia, &e, nombre_ambito_encontrado);
         if(result == OK) {
-            fprintf(f_out, "Existe el id: no se puede declarar\n");
+            fprintf(f_out, "Encontrado el id (en %s): no se puede declarar\n", nombre_ambito_encontrado);
         } else {
-            fprintf(f_out, "No existe el id: se puede declarar\n");
+            fprintf(f_out, "No encontrado el id: se puede declarar\n");
         }
     } else if(!strcmp(token, TOK_DECLARAR_MIEMBRO_INSTANCIA)) {
         clase = strtok(NULL, " \r\n\t");
@@ -183,13 +183,13 @@ void gestiona_BUSCAR() {
         result = buscarParaDeclararMiembroInstancia(tsc, clase, instancia, &e, nombre_ambito_encontrado);
         if(result == OK) {
             if(e->clase == METODO_SOBREESCRIBIBLE) {
-                fprintf(f_out, "Existe el id: se sobreescribe\n");
+                fprintf(f_out, "Encontrado el id (en %s): se puede sobreescribir\n", nombre_ambito_encontrado);
                 offset = e->posicion_acumulada_metodos_sobreescritura;
             } else {
-                fprintf(f_out, "Existe el id: no se puede declarar\n");
+                fprintf(f_out, "Encontrado el id (en %s): no se puede declarar\n", nombre_ambito_encontrado);
             }
         } else {
-            fprintf(f_out, "No existe el id: se puede declarar\n");
+            fprintf(f_out, "No encontrado el id: se puede declarar\n");
         }
     } else if(!strcmp(token, TOK_DECLARAR_ID_LOCAL_METODO)) {
         clase = strtok(NULL, " \r\n\t");
@@ -197,9 +197,9 @@ void gestiona_BUSCAR() {
         fprintf(f_out, "buscar declarar id local metodo (%s)\n", token);
         result = buscarParaDeclararIdLocalEnMetodo(tsc, clase, token, &e, nombre_ambito_encontrado);
         if(result == OK) {
-            fprintf(f_out, "Existe el id: no se puede declarar\n");
+            fprintf(f_out, "Encontrado el id (en %s): no se puede declarar\n", nombre_ambito_encontrado);
         } else {
-            fprintf(f_out, "No existe el id: se puede declarar\n");
+            fprintf(f_out, "No encontrado el id: se puede declarar\n");
         }
     } else if(!strcmp(token, TOK_JERARQUIA)) {
         token = strtok(NULL, " \r\n\t");
@@ -207,9 +207,9 @@ void gestiona_BUSCAR() {
         fprintf(f_out, "buscar jerarquia (%s)\n", token);
         result = buscarIdEnJerarquiaDesdeClase(tsc, token, clase, &e, nombre_ambito_encontrado);
         if(result == OK) {
-            fprintf(f_out, "Existe el id en la jerarquía\n");
+            fprintf(f_out, "Encontrado el id (en %s) en la jerarquía\n", nombre_ambito_encontrado);
         } else {
-            fprintf(f_out, "No existe el id en la jerarquía\n");
+            fprintf(f_out, "No encontrado el id en la jerarquía\n");
         }
     } else if(!strcmp(token, TOK_ID_NO_CUALIFICADO)) {
         token = strtok(NULL, " \r\n\t");
@@ -217,9 +217,9 @@ void gestiona_BUSCAR() {
         fprintf(f_out, "buscar id no cualificado (%s)\n", token);
         result = buscarIdNoCualificado(tsc, tablaMain, token, clase, &e, nombre_ambito_encontrado);
         if(result == OK) {
-            fprintf(f_out, "Existe el id no cualificado\n");
+            fprintf(f_out, "Encontrado el id (en %s) no cualificado\n", nombre_ambito_encontrado);
         } else {
-            fprintf(f_out, "No existe el id no cualificado\n");
+            fprintf(f_out, "No encontrado el id no cualificado\n");
         }
     } else if(!strcmp(token, TOK_ID_CUALIFICADO_INSTANCIA)) {
         instancia = strtok(NULL, " \r\n\t");
@@ -228,9 +228,9 @@ void gestiona_BUSCAR() {
         fprintf(f_out, "buscar id cualificado instancia (instancia: %s id: %s)\n", instancia, token);
         result = buscarIdCualificadoInstancia(tsc, tablaMain, instancia, token, clase, &e, nombre_ambito_encontrado);
         if(result == OK) {
-            fprintf(f_out, "Existe el id cualificado por instancia\n");
+            fprintf(f_out, "Encontrado el id (en %s) cualificado por instancia\n", nombre_ambito_encontrado);
         } else {
-            fprintf(f_out, "No existe el id cualificado por instancia\n");
+            fprintf(f_out, "No encontrado el id cualificado por instancia\n");
         }
     } else if(!strcmp(token, TOK_ID_CUALIFICADO_CLASE)) {
         instancia = strtok(NULL, " \r\n\t");
@@ -239,9 +239,9 @@ void gestiona_BUSCAR() {
         fprintf(f_out, "buscar id cualificado clase (clase: %s id: %s)\n", instancia, token);
         result = buscarIdCualificadoClase(tsc, instancia, token, clase, &e, nombre_ambito_encontrado);
         if(result == OK) {
-            fprintf(f_out, "Existe el id cualificado por clase\n");
+            fprintf(f_out, "Encontrado el id (en %s) cualificado por clase\n", nombre_ambito_encontrado);
         } else {
-            fprintf(f_out, "No existe el id cualificado por clase\n");
+            fprintf(f_out, "No encontrado el id cualificado por clase\n");
         }
     }
 
