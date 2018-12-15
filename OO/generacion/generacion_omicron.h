@@ -5,10 +5,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 /* Declaraciones de tipos de datos del compilador */
 #define ENTERO	0
-#define BOOLEANO 	1
+#define BOOLEAN 	1
 
 #define PREFIJO_TABLA_METODOS_SOBREESCRIBIBLES "_ms"
 #define MAX_ETIQUETAS     32768
@@ -143,7 +142,5 @@ void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fpasm, char * no
 void limpiarPila(FILE * fpasm, int num_argumentos);
 void accederAtributoInstanciaDePila(FILE * fpasm, char * nombre_atributo);
 void asignarDestinoEnPila(FILE* fpasm, int es_referencia);
-
-void tablaSimbolosClasesANasm(FILE * fpasm, TablaSimbolosClases* t);
 
 #endif
