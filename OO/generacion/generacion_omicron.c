@@ -68,8 +68,6 @@ void accederAtributoInstanciaDePila(FILE * fpasm, char * nombre_atributo) {
     fprintf(fpasm, "lea ecx, [ebx+ecx]\n");
 }
 
-
-/*comprobar si tiene sentido*/
 void asignarDestinoEnPila(FILE* fpasm, int es_variable) {
     if(fpasm == NULL)
         return;
@@ -80,5 +78,4 @@ void asignarDestinoEnPila(FILE* fpasm, int es_variable) {
         fprintf(fpasm, "\tmov eax, [eax]\n");
     }
     fprintf(fpasm, "mov [edx], eax\n");
-    fprintf(fpasm, "sub esp, 4\n");
 }
