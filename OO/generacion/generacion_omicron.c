@@ -19,7 +19,7 @@ void instance_of (FILE * fpasm, char * nombre_fuente_clase,
     nombre_tabla = claseATabla(nombre_fuente_clase);
     if(nombre_tabla == NULL)
         return;
-
+    /*Reservo memoria para la instancia*/
     fprintf(fpasm, "push dword %d\n", (numero_atributos_instancia + 1)*4);
     fprintf(fpasm, "call malloc\n");
     fprintf(fpasm, "add esp, 4\n");
@@ -34,7 +34,11 @@ void instance_of (FILE * fpasm, char * nombre_fuente_clase,
 void discardPila (FILE * fpasm) {
     if(fpasm == NULL)
         return;
-
+    /*la direccion esta en la cima de la pila, sacamos la instancia a liberar*/
+    fprintf(fpasm, "pop dword ebx\n");
+    /*metemos la instancia como parametro*/
+    fprintf(fpasm, "push dword [ebx]\n");
+    /*llamamos a free*/
     fprintf(fpasm, "call free\n");
     fprintf(fpasm, "add esp, 4\n");
 }
@@ -42,14 +46,20 @@ void discardPila (FILE * fpasm) {
 void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fpasm, char * nombre_metodo) {
     if(fpasm == NULL || nombre_metodo == NULL)
         return;
-
+    
+    /*saco la instancia de la pila*/
     fprintf(fpasm, "pop dword ebx\n");
-    /*ebx = [_msa]*/
+    /*TODO: comprobar si hay que hacer otro mov dword ebx, [ebx]*/
+    /*obtengo la direccion de la tabla de metodos*/
     fprintf(fpasm, "mov dword ebx, [ebx]\n");
+    /*obtengo el offset del metodo*/
     fprintf(fpasm, "mov dword ecx, [_offset_%s]\n", nombre_metodo);
+    /*obtengo la direccion del metodo*/
     fprintf(fpasm, "lea ecx, [ebx+ecx]\n");
+    /*obtengo el metodo*/
     fprintf(fpasm, "mov ecx, [ecx]\n");
-    /*gestion de parametros?*/
+    /*suponemos que la gestion de parametros se ha hecho previamente
+    de forma que los parametros estan en la pila por debajo de la instancia*/
     fprintf(fpasm, "call ecx\n");
 }
 
@@ -63,19 +73,29 @@ void accederAtributoInstanciaDePila(FILE * fpasm, char * nombre_atributo) {
     if(fpasm == NULL || nombre_atributo == NULL)
         return;
 
+    /*extraigo la instancia de la pila*/
     fprintf(fpasm, "pop dword ebx\n");
+    /*TODO: comprobar si hay que hacer otro mov dword ebx, [ebx]*/
+    /*obtengo el offset del atributo*/
     fprintf(fpasm, "mov dword ecx, [_offset_%s]\n", nombre_atributo);
+    /*obtengo la direccion del atributo*/
     fprintf(fpasm, "lea ecx, [ebx+ecx]\n");
+    /*introduzco la direccion del atributo en pila*/
+    fprintf(fpasm, "push dword ecx\n");
 }
 
 void asignarDestinoEnPila(FILE* fpasm, int es_variable) {
     if(fpasm == NULL)
         return;
 
+    /*obtengo la direccion donde dejar el valor*/
     fprintf(fpasm, "\tpop dword edx\n");
+    /*obtengo el valor*/
     fprintf(fpasm, "\tpop dword eax\n");
     if (es_variable) {
+        /*si es variable obtengo el valor que contiene*/
         fprintf(fpasm, "\tmov eax, [eax]\n");
     }
+    /*asigno el valor en la direccion*/
     fprintf(fpasm, "mov [edx], eax\n");
 }
