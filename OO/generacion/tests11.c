@@ -7,13 +7,17 @@ int main(int argc, char ** argv)
 {
     FILE * fd_asm;
 
+    if(argc < 2){
+      printf("Error en la introducción de argumentos\n");
+      return -1;
+    }
 
     fd_asm = fopen(argv[1],"w");
     escribir_subseccion_data(fd_asm);
 
-    
+
     escribir_cabecera_bss(fd_asm);
-    
+
     declarar_variable(fd_asm, "a", 0, 1);
     declarar_variable(fd_asm, "b",  1,  1);
     declarar_variable(fd_asm, "c",  2,  1);
@@ -36,7 +40,7 @@ int main(int argc, char ** argv)
     escribir_operando(fd_asm,"c",1);
     escribir_operando(fd_asm,"b",1);
     asignarDestinoEnPila(fd_asm,1);
-    
+
     escribir_operando(fd_asm,"b",1);
     escribir_operando(fd_asm,"a",1);
     asignarDestinoEnPila(fd_asm,1);
@@ -61,7 +65,7 @@ int main(int argc, char ** argv)
     discardPila(fd_asm);
 
     escribir_fin(fd_asm);
-    fclose(fd_asm);    
+    fclose(fd_asm);
 
     return 0;
 }

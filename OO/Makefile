@@ -18,7 +18,7 @@ prueba_TS.o: prueba_TS.c prueba_TS.h
 
 test.o: test.c
 	$(CC) $(FLAGS) test.c -c
-    
+
 tests11.o: generacion/tests11.c
 	$(CC) $(FLAGS) generacion/tests11.c -c
 
@@ -30,7 +30,7 @@ generacion_omicron.o: generacion/generacion_omicron.c generacion/generacion_omic
 
 generacion.o: generacion/generacion.c generacion/generacion_omicron.h
 	$(CC) $(FLAGS) generacion/generacion.c -c
-    
+
 tests11: hash.o graph.o tabla.o generacion_omicron.o generacion.o tests11.o
 	$(CC) $(FLAGS) -o generacion/tests11 hash.o graph.o tabla.o generacion_omicron.o generacion.o tests11.o
 
