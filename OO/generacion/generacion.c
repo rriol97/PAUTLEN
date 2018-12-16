@@ -4,9 +4,9 @@ Author: Francisco de Vicente y Ricardo Riol
 Desc: En este fichero se implementan las funciones que permiten la genración del
 	codigo NASM
  */
-#include "generacion_omicron.h"
+#include "generacion.h"
 
-#define LISTA_OP_EXTERNAS "scan_int, print_int, scan_float, print_float, scan_boolean, print_boolean, print_endofline, print_blank, print_string, malloc, free"
+#define LISTA_OP_EXTERNAS "scan_int, print_int, scan_float, print_float, scan_boolean, print_boolean, print_endofline, print_blank, print_string"
 #define PUNTERO_A_PILA "__esp"
 #define VARIABLE 1
 #define NO_VARIABLE 0
@@ -17,11 +17,15 @@ Con seguridad sabes que deberás reservar una variable entera para guardar
 el puntero de pila extendido (esp).
 Se te sugiere el nombre __esp para esta variable.
 */
-void escribir_cabecera_bss(FILE* fpasm) {
+void escribir_cabecera_bss(FILE *fpasm)
+{
 
-	if (!fpasm) {
+	if (!fpasm)
+	{
 		printf("Error de fichero (escribir_cabecera_bss)\n");
-	} else {
+	}
+	else
+	{
 		fprintf(fpasm, "segment .bss\n\t__esp resd 1\n");
 	}
 	return;
@@ -32,11 +36,15 @@ void escribir_cabecera_bss(FILE* fpasm) {
 mensajes para la identificación de errores en tiempo de ejecución.
 En este punto, al menos, debes ser capaz de detectar la división por 0.
 */
-void escribir_subseccion_data(FILE* fpasm) {
+void escribir_subseccion_data(FILE *fpasm)
+{
 
-	if (!fpasm) {
+	if (!fpasm)
+	{
 		printf("Error de fichero (escribir_subsection_data)\n");
-	} else {
+	}
+	else
+	{
 		fprintf(fpasm, "segment .data\n\tmsg_error_division_por_0\tdb \"Division por 0\", 0\n");
 	}
 	return;
@@ -51,11 +59,15 @@ Esta misma función se invocará cuando en el compilador se declaren vectores, p
 eso se adjunta un argumento final (tamano) que para esta primera práctica siempre
 recibirá el valor 1.
 */
-void declarar_variable(FILE* fpasm, char * nombre,  int tipo,  int tamano) {
+void declarar_variable(FILE *fpasm, char *nombre, int tipo, int tamano)
+{
 
-	if (!fpasm) {
+	if (!fpasm)
+	{
 		printf("Error de fichero (declarar_variable)");
-	} else {
+	}
+	else
+	{
 		fprintf(fpasm, "\t_%s resd %d\n", nombre, tamano);
 	}
 	return;
@@ -66,11 +78,15 @@ void declarar_variable(FILE* fpasm, char * nombre,  int tipo,  int tamano) {
 exporta la etiqueta main y que se usarán las funciones declaradas en la
 librería olib.o
 */
-void escribir_segmento_codigo(FILE* fpasm) {
+void escribir_segmento_codigo(FILE *fpasm)
+{
 
-	if (!fpasm) {
+	if (!fpasm)
+	{
 		printf("Error de fichero (escribir_segmento_codigo)\n");
-	} else {
+	}
+	else
+	{
 		fprintf(fpasm, "segment .text\n\tglobal main\nextern %s\n", LISTA_OP_EXTERNAS);
 	}
 	return;
@@ -80,11 +96,15 @@ void escribir_segmento_codigo(FILE* fpasm) {
    En este punto se debe escribir, al menos, la etiqueta main y la sentencia que
 guarda el puntero de pila en su variable (se recomienda usar __esp).
 */
-void escribir_inicio_main(FILE* fpasm) {
+void escribir_inicio_main(FILE *fpasm)
+{
 
-	if (!fpasm) {
+	if (!fpasm)
+	{
 		printf("Error de fichero (escribir_inicio_main)\n");
-	} else {
+	}
+	else
+	{
 		fprintf(fpasm, "main:\n\tmov dword [%s], %s\n", PUNTERO_A_PILA, PUNTERO_A_PILA);
 	}
 	return;
@@ -100,11 +120,15 @@ En el final del programa se debe:
  ·Restaurar el valor del puntero de pila (a partir de su variable __esp)
  ·Salir del programa (ret).
 */
-void escribir_fin(FILE* fpasm) {
+void escribir_fin(FILE *fpasm)
+{
 
-	if (!fpasm) {
+	if (!fpasm)
+	{
 		printf("Error de fichero (escribir_fin)\n");
-	} else {
+	}
+	else
+	{
 		fprintf(fpasm, "fin:\n\tmov dword [%s], %s\n\tret\n", PUNTERO_A_PILA, PUNTERO_A_PILA);
 	}
 	return;
@@ -121,16 +145,20 @@ es_variable indica si este operando es una variable (como por ejemplo b1) con un
 internamente se representará como _b1 y, sin embargo, en el segundo se
 representará tal y como esté en el argumento (34).
 */
-void escribir_operando(FILE* fpasm, char* nombre, int es_variable) {
+void escribir_operando(FILE *fpasm, char *nombre, int es_variable)
+{
 
-	if (!fpasm) {
+	if (!fpasm)
+	{
 		printf("Error de fichero (escribir_operando)\n");
 	}
-	if (es_variable) {
+	if (es_variable)
+	{
 		fprintf(fpasm, "\tpush dword _%s\n", nombre);
 	}
-	else if (fprintf(fpasm, "\tpush dword %s\n", nombre) <= 0) {
-			printf("Error al meter el operando en la pila");
+	else if (fprintf(fpasm, "\tpush dword %s\n", nombre) <= 0)
+	{
+		printf("Error al meter el operando en la pila");
 	}
 	fprintf(fpasm, "\t;fin escritura operando -----\n");
 
@@ -142,14 +170,18 @@ void escribir_operando(FILE* fpasm, char* nombre, int es_variable) {
 Se toma el valor de la cima de la pila. El último argumento es el que indica si
 lo que hay en la cima de la pila es una referencia (1) o ya un valor explícito (0).
 */
-void asignar(FILE* fpasm, char* nombre, int es_variable) {
-	if (!fpasm) {
+void asignar(FILE *fpasm, char *nombre, int es_variable)
+{
+	if (!fpasm)
+	{
 		printf("Error de fichero (asignar)");
 	}
-	else if (es_variable) {
+	else if (es_variable)
+	{
 		fprintf(fpasm, "\tpop dword eax\n\tmov eax, [eax]\n\tmov [_%s], eax\n", nombre);
 	}
-	else {
+	else
+	{
 		fprintf(fpasm, "\tpop dword eax\n\tmov [_%s], eax\n", nombre);
 	}
 	fprintf(fpasm, "\t;fin asignacion -----\n\n");
@@ -166,63 +198,76 @@ Se guarda el resultado en la pila
 Los dos últimos argumentos indican respectivamente si lo que hay en la pila es una referencia a un valor o un valor explícito.
 Deben tenerse en cuenta las peculiaridades de cada operación. En este sentido sí hay que mencionar explícitamente que, en el caso de la división, se debe controlar si el divisor es “0” y en ese caso se debe saltar a la rutina de error controlado (restaurando el puntero de pila en ese caso y comprobando en el retorno que no se produce “Segmentation Fault”)
 */
-void sumar(FILE* fpasm, int es_variable_1, int es_variable_2) {
+void sumar(FILE *fpasm, int es_variable_1, int es_variable_2)
+{
 
-	if (!fpasm) {
+	if (!fpasm)
+	{
 		printf("Error de fichero (sumar)\n");
 	}
-	else {
+	else
+	{
 		fprintf(fpasm, "\tpop eax\n\tpop edx\n");
 
-		if (es_variable_1) {
+		if (es_variable_1)
+		{
 			fprintf(fpasm, "\tmov edx, [edx]\n");
 		}
 
-		if (es_variable_2) {
+		if (es_variable_2)
+		{
 			fprintf(fpasm, "\tmov eax, [eax]\n");
 		}
 
 		fprintf(fpasm, "\tadd edx, eax\n\tpush edx\n");
 		fprintf(fpasm, "\t;fin suma -----\n\n");
-
 	}
 	return;
 }
-void restar(FILE* fpasm, int es_variable_1, int es_variable_2){
+void restar(FILE *fpasm, int es_variable_1, int es_variable_2)
+{
 
-	if (!fpasm) {
+	if (!fpasm)
+	{
 		printf("Error de fichero (restar)\n");
 	}
-	else {
+	else
+	{
 		fprintf(fpasm, "\tpop eax\n\tpop edx\n");
 
-		if(es_variable_1) {
+		if (es_variable_1)
+		{
 			fprintf(fpasm, "\tmov edx, [edx]\n");
 		}
 
-		if (es_variable_2) {
+		if (es_variable_2)
+		{
 			fprintf(fpasm, "\tmov eax, [eax]\n");
 		}
 
 		fprintf(fpasm, "\tsub edx, eax\n\tpush edx\n");
-
 	}
 	return;
 }
 
-void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2) {
+void multiplicar(FILE *fpasm, int es_variable_1, int es_variable_2)
+{
 
-	if (!fpasm) {
+	if (!fpasm)
+	{
 		printf("Error del fichero (multiplicar)\n");
 	}
-	else {
+	else
+	{
 		fprintf(fpasm, "\tpop ecx\n\tpop eax\n");
 
-		if (es_variable_1) {
+		if (es_variable_1)
+		{
 			fprintf(fpasm, "\tmov eax, [eax]\n");
 		}
 
-		if (es_variable_2) {
+		if (es_variable_2)
+		{
 			fprintf(fpasm, "\tmov ecx, [ecx]\n");
 		}
 
@@ -230,20 +275,25 @@ void multiplicar(FILE* fpasm, int es_variable_1, int es_variable_2) {
 	}
 	return;
 }
-void dividir(FILE* fpasm, int es_variable_1, int es_variable_2) {
+void dividir(FILE *fpasm, int es_variable_1, int es_variable_2)
+{
 
-	if (!fpasm) {
+	if (!fpasm)
+	{
 		printf("Error del fichero (dividir)\n");
 	}
 
-	else {
+	else
+	{
 		fprintf(fpasm, "\tpop ecx\n\tpop eax\n");
 
-		if (es_variable_1) {
+		if (es_variable_1)
+		{
 			fprintf(fpasm, "\tmov eax, [eax]\n");
 		}
 
-		if (es_variable_2) {
+		if (es_variable_2)
+		{
 			fprintf(fpasm, "\tmov ecx, [ecx]\n");
 		}
 
@@ -253,19 +303,24 @@ void dividir(FILE* fpasm, int es_variable_1, int es_variable_2) {
 	return;
 }
 
-void o(FILE* fpasm, int es_variable_1, int es_variable_2){
-	if (!fpasm) {
+void o(FILE *fpasm, int es_variable_1, int es_variable_2)
+{
+	if (!fpasm)
+	{
 		printf("Error de fichero (or)\n");
 	}
 
-	else {
-		fprintf(fpasm,"\tpop ecx\n\tpop eax\n");     /* Sacamos ambos operandos de la pila */
+	else
+	{
+		fprintf(fpasm, "\tpop ecx\n\tpop eax\n"); //* Sacamos ambos operandos de la pila */
 
-		if (es_variable_1) {
+		if (es_variable_1)
+		{
 			fprintf(fpasm, "\tmov eax, [eax]\n");
 		}
 
-		if (es_variable_2) {
+		if (es_variable_2)
+		{
 			fprintf(fpasm, "\tmov ecx, [ecx]\n");
 		}
 
@@ -275,20 +330,25 @@ void o(FILE* fpasm, int es_variable_1, int es_variable_2){
 	return;
 }
 
-void y(FILE* fpasm, int es_variable_1, int es_variable_2){
+void y(FILE *fpasm, int es_variable_1, int es_variable_2)
+{
 
-	if (!fpasm) {
+	if (!fpasm)
+	{
 		printf("Error de fichero (and)\n");
 	}
 
-	else {
-		fprintf(fpasm,"\tpop ecx\n\tpop eax\n");     /* Sacamos ambos operandos de la pila */
+	else
+	{
+		fprintf(fpasm, "\tpop ecx\n\tpop eax\n"); //* Sacamos ambos operandos de la pila */
 
-		if (es_variable_1) {
+		if (es_variable_1)
+		{
 			fprintf(fpasm, "\tmov eax, [eax]\n");
 		}
 
-		if (es_variable_2) {
+		if (es_variable_2)
+		{
 			fprintf(fpasm, "\tmov ecx, [ecx]\n");
 		}
 
@@ -302,17 +362,23 @@ void y(FILE* fpasm, int es_variable_1, int es_variable_2){
    Función aritmética de cambio de signo.
    Es análoga a las binarias, excepto que sólo requiere de un acceso a la pila ya que sólo usa un operando.
 */
-void cambiar_signo(FILE* fpasm, int es_variable) {
+void cambiar_signo(FILE *fpasm, int es_variable)
+{
 
-	if (!fpasm) {
+	if (!fpasm)
+	{
 		printf("Error de fichero (cambiar signo)\n");
 	}
-	else {
+	else
+	{
 		fprintf(fpasm, "\tpush -1\n");
 
-		if (es_variable) {
+		if (es_variable)
+		{
 			multiplicar(fpasm, VARIABLE, NO_VARIABLE);
-		} else {
+		}
+		else
+		{
 			multiplicar(fpasm, VARIABLE, VARIABLE);
 		}
 	}
@@ -325,21 +391,25 @@ void cambiar_signo(FILE* fpasm, int es_variable) {
    que realice esta operación por lo que se debe codificar un algoritmo que, si encuentra en la cima de la pila un 0 deja en la cima un 1 y al contrario.
    El último argumento es el valor de etiqueta que corresponde (sin lugar a dudas, la implementación del algoritmo requerirá etiquetas). Véase en los ejemplos de programa principal como puede gestionarse el número de etiquetas cuantos_no.
 */
-void no(FILE* fpasm, int es_variable, int cuantos_no) {
+void no(FILE *fpasm, int es_variable, int cuantos_no)
+{
 
-	if (!fpasm) {
+	if (!fpasm)
+	{
 		printf("Error de fichero (negacion)\n");
 	}
 
-	else {
-		/*Metemos en eax el argumento*/
+	else
+	{
+		//Metemos en eax el argumento
 		fprintf(fpasm, "\tpop eax\n");
 
-		if (es_variable) {
+		if (es_variable)
+		{
 			fprintf(fpasm, "\tmov eax, [eax]\n");
 		}
 
-		/*Comparamos con 0 el argumento */
+		//Comparamos con 0 el argumentoç
 		fprintf(fpasm, "\tcmp eax, 0\n");
 		fprintf(fpasm, "\tje near escribir1_%d\n\tpush dword 0\n\tjmp near fin_no_%d\nescribir1_%d:\n\tpush dword 1\nfin_no_%d:\n", cuantos_no, cuantos_no, cuantos_no, cuantos_no);
 	}
@@ -347,27 +417,31 @@ void no(FILE* fpasm, int es_variable, int cuantos_no) {
 	return;
 }
 
-
 /* FUNCIONES COMPARATIVAS */
 /*
    Todas estas funciones reciben como argumento si los elementos a comparar son o no variables. El resultado de las operaciones,
    que siempre será un BOOLEAN (“1” si se cumple la comparación y “0” si no se cumple), se deja en la pila como en el resto de
    operaciones. Se deben usar etiquetas para poder gestionar los saltos necesarios para implementar las comparaciones.
 */
-void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
-	if (!fpasm) {
+void igual(FILE *fpasm, int es_variable1, int es_variable2, int etiqueta)
+{
+	if (!fpasm)
+	{
 		printf("Error de fichero (negacion)\n");
 	}
 
-	else {
+	else
+	{
 
-		fprintf (fpasm, "\tpop ecx\n\tpop eax\n");
+		fprintf(fpasm, "\tpop ecx\n\tpop eax\n");
 
-		if (es_variable1) {
+		if (es_variable1)
+		{
 			fprintf(fpasm, "\tmov eax, [eax]\n");
 		}
 
-		if (es_variable2) {
+		if (es_variable2)
+		{
 			fprintf(fpasm, "\tmov ecx, [ecx]\n");
 		}
 
@@ -378,20 +452,25 @@ void igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
 	return;
 }
 
-void distinto(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
-	if (!fpasm) {
+void distinto(FILE *fpasm, int es_variable1, int es_variable2, int etiqueta)
+{
+	if (!fpasm)
+	{
 		printf("Error de fichero (negacion)\n");
 	}
 
-	else {
+	else
+	{
 
-		fprintf (fpasm, "\tpop ecx\n\tpop eax\n");
+		fprintf(fpasm, "\tpop ecx\n\tpop eax\n");
 
-		if (es_variable1) {
+		if (es_variable1)
+		{
 			fprintf(fpasm, "\tmov eax, [eax]\n");
 		}
 
-		if (es_variable2) {
+		if (es_variable2)
+		{
 			fprintf(fpasm, "\tmov ecx, [ecx]\n");
 		}
 
@@ -401,20 +480,25 @@ void distinto(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
 	return;
 }
 
-void menor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
-	if (!fpasm) {
+void menor_igual(FILE *fpasm, int es_variable1, int es_variable2, int etiqueta)
+{
+	if (!fpasm)
+	{
 		printf("Error de fichero (negacion)\n");
 	}
 
-	else {
+	else
+	{
 
-		fprintf (fpasm, "\tpop edx\n\tpop eax\n");
+		fprintf(fpasm, "\tpop edx\n\tpop eax\n");
 
-		if (es_variable1) {
+		if (es_variable1)
+		{
 			fprintf(fpasm, "\tmov eax, [eax]\n");
 		}
 
-		if (es_variable2) {
+		if (es_variable2)
+		{
 			fprintf(fpasm, "\tmov edx, [edx]\n");
 		}
 
@@ -423,20 +507,25 @@ void menor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) 
 
 	return;
 }
-void mayor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
-	if (!fpasm) {
+void mayor_igual(FILE *fpasm, int es_variable1, int es_variable2, int etiqueta)
+{
+	if (!fpasm)
+	{
 		printf("Error de fichero (negacion)\n");
 	}
 
-	else {
+	else
+	{
 
-		fprintf (fpasm, "\tpop edx\n\tpop eax\n");
+		fprintf(fpasm, "\tpop edx\n\tpop eax\n");
 
-		if (es_variable1) {
+		if (es_variable1)
+		{
 			fprintf(fpasm, "\tmov eax, [eax]\n");
 		}
 
-		if (es_variable2) {
+		if (es_variable2)
+		{
 			fprintf(fpasm, "\tmov edx, [edx]\n");
 		}
 
@@ -446,20 +535,25 @@ void mayor_igual(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) 
 	return;
 }
 
-void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
-	if (!fpasm) {
+void menor(FILE *fpasm, int es_variable1, int es_variable2, int etiqueta)
+{
+	if (!fpasm)
+	{
 		printf("Error de fichero (negacion)\n");
 	}
 
-	else {
+	else
+	{
 
-		fprintf (fpasm, "\tpop edx\n\tpop eax\n");
+		fprintf(fpasm, "\tpop edx\n\tpop eax\n");
 
-		if (es_variable1) {
+		if (es_variable1)
+		{
 			fprintf(fpasm, "\tmov eax, [eax]\n");
 		}
 
-		if (es_variable2) {
+		if (es_variable2)
+		{
 			fprintf(fpasm, "\tmov edx, [edx]\n");
 		}
 
@@ -469,20 +563,25 @@ void menor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
 	return;
 }
 
-void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
-	if (!fpasm) {
+void mayor(FILE *fpasm, int es_variable1, int es_variable2, int etiqueta)
+{
+	if (!fpasm)
+	{
 		printf("Error de fichero (negacion)\n");
 	}
 
-	else {
+	else
+	{
 
-		fprintf (fpasm, "\tpop edx\n\tpop eax\n");
+		fprintf(fpasm, "\tpop edx\n\tpop eax\n");
 
-		if (es_variable1) {
+		if (es_variable1)
+		{
 			fprintf(fpasm, "\tmov eax, [eax]\n");
 		}
 
-		if (es_variable2) {
+		if (es_variable2)
+		{
 			fprintf(fpasm, "\tmov edx, [edx]\n");
 		}
 
@@ -497,24 +596,30 @@ void mayor(FILE* fpasm, int es_variable1, int es_variable2, int etiqueta) {
    Se necesita saber el tipo de datos que se va a procesar (ENTERO o BOOLEAN) ya que hay diferentes funciones de librería para la lectura (idem. escritura) de cada tipo.
    Se deben insertar en la pila los argumentos necesarios, realizar la llamada (call) a la función de librería correspondiente y limpiar la pila.
 */
-void leer(FILE* fpasm, char* nombre, int tipo) {
-	if (!fpasm) {
+void leer(FILE *fpasm, char *nombre, int tipo)
+{
+	if (!fpasm)
+	{
 		printf("Error de fichero (lectura)\n");
 	}
 
-	else {
+	else
+	{
 
-		/*fprintf(fpasm, "\tpush dword _%s\n", nombre);*/
+		//fprintf(fpasm, "\tpush dword _%s\n", nombre);
 
-		if (tipo == ENTERO) {
+		if (tipo == ENTERO)
+		{
 			fprintf(fpasm, "\tcall scan_int\n");
 		}
 
-		else if (tipo == BOOLEAN) {
+		else if (tipo == BOOLEAN)
+		{
 			fprintf(fpasm, "\tcall scan_boolean\n");
 		}
 
-		else {
+		else
+		{
 			printf("Error en la lectura. Tipo no reconocido\n");
 		}
 
@@ -525,31 +630,38 @@ void leer(FILE* fpasm, char* nombre, int tipo) {
 	return;
 }
 
-void escribir(FILE* fpasm, int es_variable, int tipo) {
+void escribir(FILE *fpasm, int es_variable, int tipo)
+{
 
-	if (!fpasm) {
+	if (!fpasm)
+	{
 		printf("Error de fichero (lectura)\n");
 	}
 
-	else {
+	else
+	{
 
 		fprintf(fpasm, "\tpop eax\n");
 
-		if (es_variable) {
+		if (es_variable)
+		{
 			fprintf(fpasm, "\tmov eax, [eax]\n");
 		}
 
 		fprintf(fpasm, "\tpush dword eax\n");
 
-		if (tipo == ENTERO) {
+		if (tipo == ENTERO)
+		{
 			fprintf(fpasm, "\tcall print_int\n");
 		}
 
-		else if(tipo == BOOLEAN) {
+		else if (tipo == BOOLEAN)
+		{
 			fprintf(fpasm, "\tcall print_boolean\n");
 		}
 
-		else {
+		else
+		{
 			printf("Error en la escritura. Tipo no reconocido\n");
 		}
 
@@ -558,16 +670,18 @@ void escribir(FILE* fpasm, int es_variable, int tipo) {
 	}
 
 	return;
-
 }
 
-void ifthenelse_inicio(FILE* fpasm, int es_direccion, int etiqueta) {
-	if (!fpasm) {
+void ifthenelse_inicio(FILE *fpasm, int es_direccion, int etiqueta)
+{
+	if (!fpasm)
+	{
 		printf("Error de fichero (lectura)\n");
 	}
 
 	fprintf(fpasm, "\tpop eax\n");
-	if (es_direccion) {
+	if (es_direccion)
+	{
 		fprintf(fpasm, "\tmov eax, [eax]\n");
 	}
 	fprintf(fpasm, "\tcmp eax, 0\n");
@@ -576,8 +690,10 @@ void ifthenelse_inicio(FILE* fpasm, int es_direccion, int etiqueta) {
 	return;
 }
 
-void ifthenelse_fin_then(FILE* fpasm, int etiqueta) {
-	if (!fpasm) {
+void ifthenelse_fin_then(FILE *fpasm, int etiqueta)
+{
+	if (!fpasm)
+	{
 		printf("Error de fichero (lectura)\n");
 	}
 
@@ -587,8 +703,10 @@ void ifthenelse_fin_then(FILE* fpasm, int etiqueta) {
 	return;
 }
 
-void ifthenelse_fin(FILE* fpasm, int etiqueta) {
-	if (!fpasm) {
+void ifthenelse_fin(FILE *fpasm, int etiqueta)
+{
+	if (!fpasm)
+	{
 		printf("Error de fichero (lectura)\n");
 	}
 
@@ -597,15 +715,16 @@ void ifthenelse_fin(FILE* fpasm, int etiqueta) {
 	return;
 }
 
-
-
-void inicio_if(FILE* fpasm, int etiqueta, int es_direccion) {
-	if (!fpasm) {
+void inicio_if(FILE *fpasm, int etiqueta, int es_direccion)
+{
+	if (!fpasm)
+	{
 		printf("Error de fichero (lectura)\n");
 	}
 
 	fprintf(fpasm, "\tpop eax\n");
-	if (es_direccion) {
+	if (es_direccion)
+	{
 		fprintf(fpasm, "\tmov eax, [eax]\n");
 	}
 	fprintf(fpasm, "\tcmp eax, 0\n");
@@ -614,32 +733,127 @@ void inicio_if(FILE* fpasm, int etiqueta, int es_direccion) {
 	return;
 }
 
-void while_inicio(FILE * fpasm, int etiqueta) {
-	if (!fpasm) {
+void while_inicio(FILE *fpasm, int etiqueta)
+{
+	if (!fpasm)
+	{
 		return;
 	}
 
 	fprintf(fpasm, "while_%d:\n", etiqueta);
 }
 
-void while_exp_pila(FILE * fpasm, int exp_es_variable, int etiqueta) {
-	if (!fpasm) {
+void while_exp_pila(FILE *fpasm, int exp_es_variable, int etiqueta)
+{
+	if (!fpasm)
+	{
 		return;
 	}
 
 	fprintf(fpasm, "\tpop eax\n");
-	if (exp_es_variable) {
+	if (exp_es_variable)
+	{
 		fprintf(fpasm, "\tmov eax, [eax]\n");
 	}
 	fprintf(fpasm, "\tcmp eax, 0\n");
 	fprintf(fpasm, "\tje near fin_while_%d\n", etiqueta);
 }
 
-void while_fin(FILE * fpasm, int etiqueta) {
-	if (!fpasm) {
+void while_fin(FILE *fpasm, int etiqueta)
+{
+	if (!fpasm)
+	{
 		return;
 	}
 
 	fprintf(fpasm, "\twhile_%d:\n", etiqueta);
 	fprintf(fpasm, "fin_while_%d:\n", etiqueta);
+}
+
+/* -------------------------- FUNCIONES -------------------------------- */
+
+void declararFuncion(FILE *fpasm, char *nombre_funcion, int num_var_loc)
+{
+	if (!fpasm || nombre_funcion || num_var_loc < 0)
+	{
+		return;
+	}
+
+	fprintf(fpasm, "_%s:\n\tpush ebp\n\tmov ebp, esp\n\tsub esp %d\n", nombre_funcion, 4*num_var_loc);
+
+	return;
+}
+
+void retornarFuncion(FILE *fpasm, int es_variable)
+{
+	if (!fpasm)
+	{
+		return;
+	}
+
+	fprintf(fpasm, "\tpop eax\n");
+	if (es_variable) {
+		fprintf(fpasm, "\tmov eax, [eax]\n");
+	}
+	fprintf(fpasm, "\tmov esp, ebp\n\tpop ebp\n\tret\n");
+
+}
+
+void escribirParametro(FILE *fpasm, int pos_parametro, int num_total_parametros)
+{
+	if (!fpasm)
+	{
+		return;
+	}
+
+	fprintf(fpasm, "\tlea eax, [ebp + %d]\n\tpush dword eax\n", 4 + 4*(num_total_parametros - pos_parametro));
+
+}
+
+void escribirVariableLocal(FILE *fpasm, int posicion_variable_local)
+{
+	if (!fpasm)
+	{
+		return;
+	}
+
+	fprintf(fpasm, "\tlea eax, [ebp - %d]\n\tpush dword eax\n", 4*posicion_variable_local);
+
+}
+
+void operandoEnPilaAArgumento(FILE *fpasm, int es_variable)
+{
+	if (!fpasm)
+	{
+		return;
+	}
+
+	if (es_variable) {
+		fprintf(fpasm, "\tpop eax\n\tmov eax [eax]\n\tpush eax\n");
+	}
+
+}
+
+void llamarFuncion(FILE *fpasm, char *nombre_funcion, int num_argumentos)
+{
+	if (!fpasm)
+	{
+		return;
+	}
+
+	fprintf(fpasm, "\tcall _%s\n", nombre_funcion);
+	limpiarPila(fpasm, num_argumentos);
+	fprintf(fpasm, "\tpush dword eax\n");
+
+}
+
+void limpiarPila(FILE *fpasm, int num_argumentos)
+{
+	if (!fpasm)
+	{
+		return;
+	}
+
+	fprintf(fpasm, "\tadd esp, %d\n", 4*num_argumentos);
+
 }
