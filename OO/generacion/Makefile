@@ -35,6 +35,10 @@ tests12: generacion_omicron.o generacion.o tests12.o
 
 generacion: generacion_omicron.o generacion.o test.o
 	$(CC) $(FLAGS) -o generacion generacion_omicron.o generacion.o test.o
+	./generacion prtest.asm
+	nasm -felf32 prtest.asm
+	nasm -felf32 ts.asm
+	gcc -o test -g -m32 prtest.o ts.o olib/olib.o
 
 clean:
-	rm -f *.o generacion auxs11 auxs12 tests11 tests12 test
+	rm -f *.o generacion auxs11 auxs12 tests11 tests12 test generacion
