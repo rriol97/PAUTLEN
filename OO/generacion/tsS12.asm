@@ -1,5 +1,5 @@
 
-	global _A, _B, _C, _BmsA, _CmsA, _CmsB, _no_defined_method, _mcA, _mcB, _mcC, _set_offsets, _create_ms_table, _offset_msA1, _offset_msA2, _offset_msB1, _offset_msB2, _offset_msC1, _offset_msC2, _offset_msD1, 	_offset_msD2, _offset_aiA1, _offset_aiA2, _offset_aiB1, _offset_aiB2, _offset_aiC1, _offset_aiC2, _offset_aiD1, _offset_aiD2, _msA, _msB, _msC, _msD, _acA1, _acB1, _acC1, _acD1
+	global _A, _B, _C, _BmsA, _CmsA, _CmsB, _no_defined_method, _mcA, _mcB, _mcC, _set_offsets, _create_ms_table, _offset_msbA, _offset_msbB, _offset_msbC, _offset_aia, _offset_aib, _offset_aic, _msA, _msB, _msC, _msD, _acA1, _acB1, _acC1, _acD1
 
 
 segment .data
@@ -12,14 +12,9 @@ segment .data
 ; SE ESTÁ SUPONIENDO LA LINEALIZACIÓN  A B C D
 ; RESPECTO A MÉTODOS SOBREESCRIBIBLES CADA UNA TIENE 2 DE NOMBRES RESPECTIVAMENTE 
 ; (ms)A1 (ms)A2 (m2)B2 (ms)B2 (ms)C1 (ms)C2 (ms)D1 (ms)D2
-	_offset_msA1 dd 0    ; ESTO SE DEBE ESCRIBIR CUANDO SE ESCRIBA LA TABLA DE SÍMBOLOS Y SE ENCUENTRE UN MÉTODO SOBREESCRIBIBLE
-	_offset_msA2 dd 4
-	_offset_msB1 dd 8
-	_offset_msB2 dd 12
-	_offset_msC1 dd 16
-	_offset_msC2 dd 20
-	_offset_msD1 dd 24
-	_offset_msD2 dd 28
+	_offset_msbA dd 0
+	_offset_msbB dd 4
+	_offset_msbC dd 8
 
 ; SET ATRIBUTOS INSTANCIA OFFSET
 ; SE ESTÁ SUPONIENDO LA LINEALIZACIÓN  A B C D
@@ -113,7 +108,7 @@ _CmsA:
 ; En Class C se sobreescirbe msB
 ; msB() { printf 8; return 8; }
 _CmsB:
-	push dword 9
+	push dword 8
 	call print_int
 	add esp,4
 	call print_endofline
@@ -128,19 +123,19 @@ _no_defined_method:
 	ret
 ; LOS MÉTODOS NO SOBREESCRIBIBLES
 _mcA:
-	push dword 12
+	push dword 1
 	call print_int
 	add esp,4
 	call print_endofline
 	ret
 _mcB:
-	push dword 34
+	push dword 3
 	call print_int
 	add esp,4
 	call print_endofline
 	ret
 _mcC:
-	push dword 56
+	push dword 6
 	call print_int
 	add esp,4
 	call print_endofline

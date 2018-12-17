@@ -65,8 +65,10 @@ extern int flag_error;
 %token TOK_CONTAINS
 %token TOK_CONSTANTE_REAL
 
+%left '?'
 %left '+' '-' TOK_OR
 %left '*' '/' TOK_AND
+%right LONG
 %right UNARIO '!'
 
 %start programa
@@ -495,6 +497,11 @@ exp: exp '+' exp
         fprintf(fout, ";R:\texp: exp TOK_OR exp\n");
     }
     |
+    ';' exp %prec LONG
+    {
+        fprintf(fout, ";R:\texp: ';' exp\n");
+    }
+    |
     '!' exp
     {
         fprintf(fout, ";R:\texp: '!' exp\n");
@@ -538,7 +545,12 @@ exp: exp '+' exp
     identificador_clase '.' TOK_IDENTIFICADOR
     {
         fprintf(fout, ";R:\texp: identificador_clase '.' TOK_IDENTIFICADOR\n");
-    }                   
+    }              
+    |
+    TOK_IDENTIFICADOR '?' exp
+    {
+        fprintf(fout, ";R:\texp: TOK_IDENTIFICADOR '?' exp\n");
+    }    
 ;
 
 identificador_clase: TOK_IDENTIFICADOR

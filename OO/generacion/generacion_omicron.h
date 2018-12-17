@@ -133,13 +133,15 @@ void declararFuncion(FILE * fd_s, char * nombre_funcion, int num_var_loc);
 void retornarFuncion(FILE * fd_s, int es_variable);
 void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros);
 void escribirVariableLocal(FILE* fpasm, int posicion_variable_local);
+void operandoEnPilaAArgumento(FILE *fpasm, int es_variable);
+void llamarFuncion(FILE *fpasm, char *nombre_funcion, int num_argumentos);
+void limpiarPila(FILE * fpasm, int num_argumentos);
 
 /* FUNCIONES DE OO */
 char * claseATabla(char * nombre_fuente_clase);
 void instance_of(FILE * fpasm, char * nombre_fuente_clase, int numero_atributos_instancia);
 void discardPila(FILE * fpasm);
 void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fpasm, char * nombre_metodo);
-void limpiarPila(FILE * fpasm, int num_argumentos);
 void accederAtributoInstanciaDePila(FILE * fpasm, char * nombre_atributo);
 void asignarDestinoEnPila(FILE* fpasm, int es_referencia);
 

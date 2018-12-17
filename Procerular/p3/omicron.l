@@ -72,6 +72,7 @@ true { columna += yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_TRUE;}
 "&" { columna += yyleng; fprintf(fout, ";D:\t%c\n", yytext[0]); return yytext[0];}
 "!" { columna += yyleng; fprintf(fout, ";D:\t%c\n", yytext[0]); return yytext[0];}
 "." { columna += yyleng; fprintf(fout, ";D:\t%c\n", yytext[0]); return yytext[0];}
+"?" { columna += yyleng; fprintf(fout, ";D:\t%c\n", yytext[0]); return yytext[0];}
 
 "==" { columna += yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_IGUAL;}
 "!=" { columna += yyleng; fprintf(fout, ";D:\t%s\n", yytext); return TOK_DISTINTO;}

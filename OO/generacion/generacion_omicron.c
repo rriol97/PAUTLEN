@@ -49,7 +49,7 @@ void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fpasm, char * no
     
     /*saco la instancia de la pila*/
     fprintf(fpasm, "\tpop dword ebx\n");
-    /*TODO: comprobar si hay que hacer otro mov dword ebx, [ebx]*/
+    fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
     /*obtengo la direccion de la tabla de metodos*/
     fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
     /*obtengo el offset del metodo*/
@@ -63,19 +63,13 @@ void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fpasm, char * no
     fprintf(fpasm, "\tcall ecx\n");
 }
 
-void limpiarPila(FILE * fpasm, int num_argumentos) {
-    if(fpasm == NULL || num_argumentos < 0)
-        return;
-    fprintf(fpasm, "\tadd esp, %d\n", 4*num_argumentos);
-}
-
 void accederAtributoInstanciaDePila(FILE * fpasm, char * nombre_atributo) {
     if(fpasm == NULL || nombre_atributo == NULL)
         return;
 
     /*extraigo la instancia de la pila*/
     fprintf(fpasm, "\tpop dword ebx\n");
-    /*TODO: comprobar si hay que hacer otro mov dword ebx, [ebx]*/
+    fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
     /*obtengo el offset del atributo*/
     fprintf(fpasm, "\tmov dword ecx, [_offset_%s]\n", nombre_atributo);
     /*obtengo la direccion del atributo*/
