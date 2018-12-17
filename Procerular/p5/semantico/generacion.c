@@ -6,7 +6,7 @@ Desc: En este fichero se implementan las funciones que permiten la genración de
  */
 #include "generacion.h"
 
-#define LISTA_OP_EXTERNAS "scan_int, print_int, scan_float, print_float, scan_boolean, print_boolean, print_endofline, print_blank, print_string"
+#define LISTA_OP_EXTERNAS "scan_int, print_int, scan_float, print_float, scan_boolean, print_boolean, print_endofline, print_blank, print_string, malloc, free"
 #define PUNTERO_A_PILA "__esp"
 #define VARIABLE 1
 #define NO_VARIABLE 0
@@ -774,12 +774,12 @@ void while_fin(FILE *fpasm, int etiqueta)
 
 void declararFuncion(FILE *fpasm, char *nombre_funcion, int num_var_loc)
 {
-	if (!fpasm || nombre_funcion || num_var_loc < 0)
+	if (!fpasm || !nombre_funcion || num_var_loc < 0)
 	{
 		return;
 	}
 
-	fprintf(fpasm, "_%s:\n\tpush ebp\n\tmov ebp, esp\n\tsub esp %d\n", nombre_funcion, 4*num_var_loc);
+	fprintf(fpasm, "_%s:\n\tpush ebp\n\tmov ebp, esp\n\tsub esp, %d\n", nombre_funcion, 4*num_var_loc);
 
 	return;
 }
@@ -829,7 +829,7 @@ void operandoEnPilaAArgumento(FILE *fpasm, int es_variable)
 	}
 
 	if (es_variable) {
-		fprintf(fpasm, "\tpop eax\n\tmov eax [eax]\n\tpush eax\n");
+		fprintf(fpasm, "\tpop eax\n\tmov eax, [eax]\n\tpush eax\n");
 	}
 
 }

@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include "generacion_omicron.h"
 
-
-
 int main(int argc, char ** argv)
 {
     FILE * fd_asm;

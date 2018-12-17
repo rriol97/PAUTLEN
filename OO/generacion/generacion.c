@@ -4,7 +4,7 @@ Author: Francisco de Vicente y Ricardo Riol
 Desc: En este fichero se implementan las funciones que permiten la genración del
 	codigo NASM
  */
-#include "generacion_omicron.h"
+#include "generacion.h"
 
 #define LISTA_OP_EXTERNAS "scan_int, print_int, scan_float, print_float, scan_boolean, print_boolean, print_endofline, print_blank, print_string, malloc, free"
 #define PUNTERO_A_PILA "__esp"
@@ -312,7 +312,7 @@ void o(FILE *fpasm, int es_variable_1, int es_variable_2)
 
 	else
 	{
-		fprintf(fpasm, "\tpop ecx\n\tpop eax\n"); /* Sacamos ambos operandos de la pila */
+		fprintf(fpasm, "\tpop ecx\n\tpop eax\n"); //* Sacamos ambos operandos de la pila */
 
 		if (es_variable_1)
 		{
@@ -340,7 +340,7 @@ void y(FILE *fpasm, int es_variable_1, int es_variable_2)
 
 	else
 	{
-		fprintf(fpasm, "\tpop ecx\n\tpop eax\n"); /* Sacamos ambos operandos de la pila */
+		fprintf(fpasm, "\tpop ecx\n\tpop eax\n"); //* Sacamos ambos operandos de la pila */
 
 		if (es_variable_1)
 		{
@@ -401,6 +401,7 @@ void no(FILE *fpasm, int es_variable, int cuantos_no)
 
 	else
 	{
+		//Metemos en eax el argumento
 		fprintf(fpasm, "\tpop eax\n");
 
 		if (es_variable)
@@ -408,6 +409,7 @@ void no(FILE *fpasm, int es_variable, int cuantos_no)
 			fprintf(fpasm, "\tmov eax, [eax]\n");
 		}
 
+		//Comparamos con 0 el argumentoç
 		fprintf(fpasm, "\tcmp eax, 0\n");
 		fprintf(fpasm, "\tje near escribir1_%d\n\tpush dword 0\n\tjmp near fin_no_%d\nescribir1_%d:\n\tpush dword 1\nfin_no_%d:\n", cuantos_no, cuantos_no, cuantos_no, cuantos_no);
 	}
@@ -603,6 +605,8 @@ void leer(FILE *fpasm, char *nombre, int tipo)
 
 	else
 	{
+
+		//fprintf(fpasm, "\tpush dword _%s\n", nombre);
 
 		if (tipo == ENTERO)
 		{
