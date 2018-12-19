@@ -780,8 +780,6 @@ void declararFuncion(FILE *fpasm, char *nombre_funcion, int num_var_loc)
 	}
 
 	fprintf(fpasm, "_%s:\n\tpush ebp\n\tmov ebp, esp\n\tsub esp, %d\n", nombre_funcion, 4*num_var_loc);
-
-	return;
 }
 
 void retornarFuncion(FILE *fpasm, int es_variable)
@@ -796,7 +794,6 @@ void retornarFuncion(FILE *fpasm, int es_variable)
 		fprintf(fpasm, "\tmov eax, [eax]\n");
 	}
 	fprintf(fpasm, "\tmov esp, ebp\n\tpop ebp\n\tret\n");
-
 }
 
 void escribirParametro(FILE *fpasm, int pos_parametro, int num_total_parametros)
@@ -807,7 +804,6 @@ void escribirParametro(FILE *fpasm, int pos_parametro, int num_total_parametros)
 	}
 
 	fprintf(fpasm, "\tlea eax, [ebp + %d]\n\tpush dword eax\n", 4 + 4*(num_total_parametros - pos_parametro));
-
 }
 
 void escribirVariableLocal(FILE *fpasm, int posicion_variable_local)
@@ -818,7 +814,6 @@ void escribirVariableLocal(FILE *fpasm, int posicion_variable_local)
 	}
 
 	fprintf(fpasm, "\tlea eax, [ebp - %d]\n\tpush dword eax\n", 4*posicion_variable_local);
-
 }
 
 void operandoEnPilaAArgumento(FILE *fpasm, int es_variable)
@@ -831,7 +826,6 @@ void operandoEnPilaAArgumento(FILE *fpasm, int es_variable)
 	if (es_variable) {
 		fprintf(fpasm, "\tpop eax\n\tmov eax, [eax]\n\tpush eax\n");
 	}
-
 }
 
 void llamarFuncion(FILE *fpasm, char *nombre_funcion, int num_argumentos)
@@ -844,7 +838,6 @@ void llamarFuncion(FILE *fpasm, char *nombre_funcion, int num_argumentos)
 	fprintf(fpasm, "\tcall _%s\n", nombre_funcion);
 	limpiarPila(fpasm, num_argumentos);
 	fprintf(fpasm, "\tpush dword eax\n");
-
 }
 
 void limpiarPila(FILE *fpasm, int num_argumentos)
@@ -855,5 +848,4 @@ void limpiarPila(FILE *fpasm, int num_argumentos)
 	}
 
 	fprintf(fpasm, "\tadd esp, %d\n", 4*num_argumentos);
-
 }

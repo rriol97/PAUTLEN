@@ -27,6 +27,8 @@ char nombre_ambito_encontrado[MAX_NAME];
 int tipo_declaracion;
 int etiqueta = 1;
 char aux[MAX_LEN];
+char fname_aux[MAX_LEN];
+int nargs;
 char msg[MAX_LEN];
 int i;
 int nlocalvar;
@@ -340,14 +342,13 @@ fn_complete_name: fn_name '(' parametros_funcion ')'
         }
         /* Bucle para insertar los argumentos de la funcion */
         for (i = 0; i < fcn.nargs; i++) {
-            strcat(aux, fcn.nombre);
+            strcpy(aux, fcn.nombre);
             strcat(aux, "_");
             strcat(aux, fcn.nombre_args[i]);
             insertarTablaSimbolosAmbitos(tabla_main, "main", aux, PARAMETRO, fcn.tipo_args[i], ESCALAR, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
         }
 
         nlocalvar = 0;
-
     }
 ;
 
@@ -460,6 +461,24 @@ sentencia_simple: asignacion
     |
     TOK_IDENTIFICADOR '(' lista_expresiones ')'
     {
+        flag_lista_exp = 0;
+
+        strcat(fname_aux, $1.lexema);
+        strcat(fname_aux, aux);
+
+        if (buscarIdNoCualificado(NULL, tabla_main, fname_aux, "main", &elem, nombre_ambito_encontrado) != OK) {
+            sprintf(msg, "la funcion no existe");
+            return -1;
+        }
+        if (elem->clase != FUNCION) {
+            sprintf(msg, "la funcion no existe");
+            return -1;
+        }
+
+        llamarFuncion(fout, fname_aux, fcn.nargs);
+
+        $$.tipo = elem->tipo;
+        $$.direcciones = 0;
     }
     |
     destruir_objeto
@@ -729,7 +748,7 @@ exp: exp '+' exp
     |
     TOK_IDENTIFICADOR
     {
-      if (buscarIdNoCualificado(NULL, tabla_main, $1.lexema, "main", &elem, nombre_ambito_encontrado) == OK){
+      if (buscarIdNoCualificado(NULL, tabla_main, $1.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
           $1.tipo = elem->tipo;
       }
       else {
@@ -773,7 +792,23 @@ exp: exp '+' exp
     TOK_IDENTIFICADOR '(' activar_flag_lista_exp lista_expresiones ')'
     {
         flag_lista_exp = 0;
-        llamarFuncion(fout, fcn.nombre, fcn.nargs);
+
+        strcat(fname_aux, $1.lexema);
+        strcat(fname_aux, aux);
+
+        if (buscarIdNoCualificado(NULL, tabla_main, fname_aux, "main", &elem, nombre_ambito_encontrado) != OK) {
+            sprintf(msg, "la funcion no existe");
+            return -1;
+        }
+        if (elem->clase != FUNCION) {
+            sprintf(msg, "la funcion no existe");
+            return -1;
+        }
+
+        llamarFuncion(fout, fname_aux, nargs);
+
+        $$.tipo = elem->tipo;
+        $$.direcciones = 0;
     }
     |
     identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'
@@ -787,9 +822,13 @@ exp: exp '+' exp
 
 activar_flag_lista_exp:
     {
+        if (flag_lista_exp) {
+            sprintf(msg, "No puedes declrarar funciones dentro de otra");
+            return -1;
+
+        }
         flag_lista_exp = 1;
     }
-
 
 identificador_clase: TOK_IDENTIFICADOR
     {
@@ -802,16 +841,29 @@ identificador_clase: TOK_IDENTIFICADOR
 
 lista_expresiones: exp resto_lista_expresiones
     {
-
+        nargs = 1;
+        aux[0] = '\0';
+        if ($1.tipo == ENTERO) {
+            strcat(aux, "@1");
+        } else {
+            strcat(aux, "@3");
+        }
     }
     |
     /*vacio*/
     {
+        nargs = 0;
     }
 ;
 
 resto_lista_expresiones: ',' exp resto_lista_expresiones
     {
+        nargs++;
+        if ($2.tipo == ENTERO) {
+            strcat(aux, "@1");
+        } else {
+            strcat(aux, "@3");
+        }
     }
     |
     /*vacio*/

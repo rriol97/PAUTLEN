@@ -123,17 +123,11 @@ void while_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta);
 void while_fin( FILE * fpasm, int etiqueta);
 
 void declararFuncion(FILE * fd_asm, char * nombre_funcion, int num_var_loc);
-
 void retornarFuncion(FILE * fd_asm, int es_variable);
-
 void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros);
-
 void escribirVariableLocal(FILE* fpasm, int posicion_variable_local);
-
 void operandoEnPilaAArgumento(FILE * fd_asm, int es_variable);
-
 void llamarFuncion(FILE * fd_asm, char * nombre_funcion, int num_argumentos);
-
 void limpiarPila(FILE * fd_asm, int num_argumentos);
 
 /* FUNCIONES DE OO */
