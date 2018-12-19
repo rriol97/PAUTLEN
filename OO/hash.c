@@ -5,7 +5,11 @@
 
 
 void insert_symbol(Hash **hash, char* name, void* value) {
-    Hash *s;
+    Hash *s, *point;
+
+    HASH_FIND_STR( *hash, name, point );
+    if(point != NULL)
+        return;
 
     s = malloc(sizeof(Hash));
     if(s == NULL) {

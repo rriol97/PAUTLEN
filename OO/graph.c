@@ -57,7 +57,7 @@ int addAntecessors(Graph* graph, int src, int dest) {
     tail = head;
     
     /*recorrer lista de padres de src*/
-    for(aux = graph->parent_list[src]; aux != NULL; aux = aux->next) {
+    for(aux = graph->antecessors[src]; aux != NULL; aux = aux->next) {
         /*si la clase no esta en la lista*/
         if(indexes_in[aux->dest] == 0) {
             /*añade la clase a la nueva lista*/
