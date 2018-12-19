@@ -716,7 +716,7 @@ BB_BB	CLASE	ES CLASE CON 0 ATR CLASE, 0 ATR INSTANCIA, 0 MET. SOBR. 0 MET. NO SO
 
 buscar id_no_cualificado BB v1: Encontrado en mA2
 cerrar_ambito_tsc BB.
-buscar declarar_id_local_metodo BB BB_mA3@3@1: No encontrado: se puede declarar
+buscar declarar_miembro_instancia BB BB_mA3@3@1: No encontrado: se puede declarar
 abrir_ambito_tsc BB BB_mA3@3@1 5 1 1 2
 
 =================== mA3@3@1 =================

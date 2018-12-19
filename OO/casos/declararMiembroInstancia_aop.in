@@ -74,7 +74,7 @@ buscar    declarar_id_local_metodo    BB    mA2_v1
 insertar_tsc    BB    mA2_v1    1    3    1    3    2
 buscar    id_no_cualificado    v1    BB
 cerrar_ambito_tsc    BB
-buscar    declarar_id_local_metodo    BB    BB_mA3@3@1
+buscar    declarar_miembro_instancia    BB    BB_mA3@3@1
 abrir_ambito_tsc    BB    BB_mA3@3@1    5    1    1    2
 buscar    declarar_id_local_metodo    BB    mA3@3@1_p1
 insertar_tsc    BB    mA3@3@1_p1    2    3    1    3    2

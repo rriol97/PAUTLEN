@@ -32,7 +32,7 @@ class AA {
 	// todos existen y están accesibles ==> DEVUELVE OK
         printf miaa.inspriv + miaa.insprot+ miaa.inspub;
     
-	//CASO 47.1 Acceso a atributo que no existe ==> DEVUELVE OK
+	//CASO 47.1 Acceso a atributo que no existe ==> DEVUELVE ERR
 	printf miaa.inspubnoexiste;
 
 	//CASO 35. Acceso a atributos de clase desde clases, existen y accesibles ==> DEVUELVE OK.
