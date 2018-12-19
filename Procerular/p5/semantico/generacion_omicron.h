@@ -1,6 +1,5 @@
 #ifndef GENERACION_H
 #define GENERACION_H
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -136,5 +135,13 @@ void operandoEnPilaAArgumento(FILE * fd_asm, int es_variable);
 void llamarFuncion(FILE * fd_asm, char * nombre_funcion, int num_argumentos);
 
 void limpiarPila(FILE * fd_asm, int num_argumentos);
+
+/* FUNCIONES DE OO */
+char * claseATabla(char * nombre_fuente_clase);
+void instance_of(FILE * fpasm, char * nombre_fuente_clase, int numero_atributos_instancia);
+void discardPila(FILE * fpasm);
+void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fpasm, char * nombre_metodo);
+void accederAtributoInstanciaDePila(FILE * fpasm, char * nombre_atributo);
+void asignarDestinoEnPila(FILE* fpasm, int es_referencia);
 
 #endif

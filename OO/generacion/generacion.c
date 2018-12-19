@@ -4,7 +4,7 @@ Author: Francisco de Vicente y Ricardo Riol
 Desc: En este fichero se implementan las funciones que permiten la genración del
 	codigo NASM
  */
-#include "generacion.h"
+#include "generacion_omicron.h"
 
 #define LISTA_OP_EXTERNAS "scan_int, print_int, scan_float, print_float, scan_boolean, print_boolean, print_endofline, print_blank, print_string, malloc, free"
 #define PUNTERO_A_PILA "__esp"

@@ -48,5 +48,3 @@
 #define ERR -1
 #define OK 0
 
-#define TOK_ERROR -1
-

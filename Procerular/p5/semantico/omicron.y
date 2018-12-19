@@ -1,7 +1,7 @@
 %{
 #include <stdio.h>
 #include "omicron.h"
-#include "generacion.h"
+#include "generacion_omicron.h"
 #include "graph.h"
 #include "tabla.h"
 
@@ -12,10 +12,10 @@ extern FILE *yyin;
 extern FILE *fout;
 extern int flag_error;
 
-typedef strcut {
+typedef struct {
     char nombre[MAX_LEN];
     char *nombre_args[MAX_LEN];
-    int *tipo_args[MAX_LEN];
+    int tipo_args[MAX_LEN];
     int nargs;
     int tipo_retorno;
 } Fcn;
@@ -31,6 +31,7 @@ char msg[MAX_LEN];
 int i;
 int nlocalvar;
 int hay_return = 0;
+int flag_lista_exp = 0;
 
 Fcn fcn;
 %}
@@ -402,7 +403,7 @@ parametro_funcion: tipo TOK_IDENTIFICADOR
         strcpy(fcn.nombre_args[fcn.nargs], $2.lexema);
         $2.tipo = $1.tipo;
         fcn.tipo_args[fcn.nargs] = $2.tipo;
-        fcn.args++;
+        fcn.nargs++;
     }
     |
     clase_objeto TOK_IDENTIFICADOR
@@ -593,7 +594,7 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR
         if (buscarIdNoCualificado(NULL, tabla_main, $2.lexema, "main", &elem, nombre_ambito_encontrado) != OK) {
             sprintf(msg, "Elem no encontrado\n");
         } else {
-            if (elem->categoria == FUNCION || elem->categoria == VECTOR) {
+            if (elem->clase == FUNCION || elem->clase == VECTOR) {
                 sprintf(msg, "no se puede imprimir funciones ni vectores\n");
             }
 
@@ -786,7 +787,7 @@ exp: exp '+' exp
 
 activar_flag_lista_exp:
     {
-        activar_flag_lista_exp = 1;
+        flag_lista_exp = 1;
     }
 
 
