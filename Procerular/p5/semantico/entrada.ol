@@ -2,9 +2,9 @@ main {
     int z;
 
     function int doble(int arg) {
-        int x;
-        x = arg;
-        return 2+x;
+        int auxArg;
+        
+        return 2*arg;
     }
 
     scanf z;

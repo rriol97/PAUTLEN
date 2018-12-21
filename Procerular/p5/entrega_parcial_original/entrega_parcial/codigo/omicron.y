@@ -1,7 +1,7 @@
 %{
 #include <stdio.h>
 #include "omicron.h"
-#include "generacion_omicron.h"
+#include "generacion.h"
 #include "graph.h"
 #include "tabla.h"
 
@@ -12,33 +12,12 @@ extern FILE *yyin;
 extern FILE *fout;
 extern int flag_error;
 
-typedef struct {
-    char nombre[MAX_LEN];
-    char nombre_args[MAX_LEN][MAX_LEN];
-    char nombre_var[MAX_LEN][MAX_LEN];
-    int tipo_args[MAX_LEN];
-    int tipo_var[MAX_LEN];
-    int nargs;
-    int tipo_retorno;
-} Fcn;
-
 int tipo_id_actual;
 TablaAmbito * tabla_main;
 elementoTablaSimbolos * elem;
 char nombre_ambito_encontrado[MAX_NAME];
 int tipo_declaracion;
 int etiqueta = 1;
-char aux[MAX_LEN+100];
-char fname_aux[MAX_LEN];
-int nargs;
-char msg[MAX_LEN];
-int i;
-int nlocalvar;
-int hay_return = 0;
-int flag_lista_exp = 0;
-int en_funcion = 0;
-
-Fcn fcn;
 %}
 
 %union {
@@ -115,10 +94,8 @@ Fcn fcn;
 %type <atributos> elemento_vector
 %type <atributos> if_exp_sentencias
 %type <atributos> if_exp
-%type <atributos> tipo_retorno
-%type <atributos> bucle
-%type <atributos> bucle_inicio
-%type <atributos> sentencia_simple
+
+
 
 %left '+' '-' TOK_OR
 %left '*' '/' TOK_AND
@@ -143,6 +120,7 @@ programa: TOK_MAIN inicioTabla '{' declaraciones escribirHastaMain funciones sen
 
 inicioTabla: {
     /* Inic tabla simbolos */
+
     if ( abrirAmbitoClase(&tabla_main, "main", 1) == -1) { /* init tabla simbolos */
         printf("error inicializando en la tabla de simbolos");
     }
@@ -151,16 +129,25 @@ inicioTabla: {
 }
 
 escribirHastaMain: {
+
+
+        //Buscamos la variable en
+
+    //getVarsTS
+    //Declararlas
+
     escribir_segmento_codigo(fout);
     escribir_inicio_main(fout);
 }
 
 declaraciones: declaracion
     {
+        //fprintf(fout, ";R:\tdeclaraciones: declaracion\n");
     }
     |
     declaracion declaraciones
     {
+        //fprintf(fout, ";R:\tdeclaraciones: declaracion, declaraciones\n");
     }
 ;
 
@@ -169,94 +156,112 @@ declaracion: modificadores_acceso clase identificadores_declaracion ';'
         if ($2.tipo != $3.tipo) {
             printf("Declaracion de distintos tipos NOT GOOD\n");
         }
+        // Lo suyo sería hacer aqui las declaraciones
     }
     |
     modificadores_acceso declaracion_clase ';'
     {
+        //fprintf(fout, ";R:\tdeclaracion: modificadores_acceso declaracion_clase ';'\n");
     }
 ;
 
 modificadores_acceso: TOK_HIDDEN TOK_UNIQUE
     {
+        //fprintf(fout, ";R:\tmodificadores_acceso: TOK_HIDDEN TOK_UNIQUE\n");
     }
     |
     TOK_SECRET TOK_UNIQUE
     {
+        //fprintf(fout, ";R:\tmodificadores_acceso: TOK_SECRET TOK_UNIQUE\n");
     }
     |
     TOK_EXPOSED TOK_UNIQUE
     {
+        //fprintf(fout, ";R:\tmodificadores_acceso: TOK_EXPOSED TOK_UNIQUE\n");
     }
     |
     TOK_HIDDEN
     {
+        //fprintf(fout, ";R:\tmodificadores_acceso: TOK_HIDDEN\n");
     }
     |
     TOK_SECRET
     {
+        //fprintf(fout, ";R:\tmodificadores_acceso: TOK_SECRET\n");
     }
     |
     TOK_EXPOSED
     {
+        //fprintf(fout, ";R:\tmodificadores_acceso: TOK_EXPOSED\n");
     }
     |
     TOK_UNIQUE
     {
+        //fprintf(fout, ";R:\tmodificadores_acceso: TOK_UNIQUE\n");
     }
     |
     /*vacio*/
     {
+        //fprintf(fout, ";R:\tmodificadores_acceso:\n");
     }
 ;
 
 clase: clase_escalar
     {
+        //fprintf(fout, ";R:\tclase: clase_escalar\n");
         $$.tipo = $1.tipo;
     }
     |
     clase_vector
     {
+        //fprintf(fout, ";R:\tclase: clase_vector\n");
     }
     |
     clase_objeto
     {
+        //fprintf(fout, ";R:\tclase: clase_objeto\n");
     }
 ;
 
 declaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR inherits identificadores '{' declaraciones funciones '}'
     {
+        //fprintf(fout, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR inherits identificadores '{' declaraciones funciones '}'\n");
     }
     |
     modificadores_clase TOK_CLASS TOK_IDENTIFICADOR inherits identificadores '{' funciones '}'
     {
+        //fprintf(fout, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR inherits identificadores '{' declaraciones funciones '}'\n");
     }
     |
     modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones funciones '}'
     {
+        //fprintf(fout, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones funciones '}'\n");
     }
 ;
 
 modificadores_clase: /*vacio*/
     {
+        //fprintf(fout, ";R:\tmodificadores_clase:\n");
     }
 ;
 
 clase_escalar: tipo
     {
+       //fprintf(fout, ";R:\tclase_escalar: tipo\n");
        $$.tipo = $1.tipo;
     }
 ;
 
 tipo: TOK_INT
     {
-        
-        printf("llego bien (int)\n\n");
+        //fprintf(fout, ";R:\ttipo: TOK_INT\n");
         $$.tipo = ENTERO;
         tipo_declaracion = ENTERO;
     }
     |
     TOK_BOOLEAN
     {
+        //fprintf(fout, ";R:\ttipo: TOK_BOOLEAN\n");
         $$.tipo = BOOLEAN;
         tipo_declaracion = BOOLEAN;
     }
@@ -264,20 +269,24 @@ tipo: TOK_INT
 
 clase_objeto: '{' TOK_IDENTIFICADOR '}'
     {
+        //fprintf(fout, ";R:\tclase_objeto: '{' TOK_IDENTIFICADOR '}'\n");
     }
 ;
 
 clase_vector: TOK_ARRAY tipo '[' constante_entera ']'
     {
+        //fprintf(fout, ";R:\tclase_vector: TOK_ARRAY tipo '[' constante_entera ']'\n");
     }
 ;
 
 identificadores: TOK_IDENTIFICADOR
     {
+        //fprintf(fout, ";R:\tidentificadores: TOK_IDENTIFICADOR\n");
     }
     |
     TOK_IDENTIFICADOR ',' identificadores
     {
+        //fprintf(fout, ";R:\tidentificadores: TOK_IDENTIFICADOR ',' identificadores\n");
     }
 ;
 
@@ -285,13 +294,6 @@ identificadores_declaracion: identificador
     {
         /* Aqui solo se accede al declarar varibles */
         $$.tipo = $1.tipo;
-
-        if (en_funcion){
-            strcpy(fcn.nombre_var[nlocalvar], $1.lexema);
-            fcn.tipo_var[nlocalvar] = $1.tipo;
-            nlocalvar++;
-        }
-
 
     }
     |
@@ -302,302 +304,218 @@ identificadores_declaracion: identificador
 ;
 
 identificador: TOK_IDENTIFICADOR
-    {
-        $$.direcciones = 1;
-        $1.tipo = tipo_declaracion;
-        $$.tipo = $1.tipo;
+{
+  $$.direcciones = 1;
+  $1.tipo = tipo_declaracion;
 
-        if (en_funcion == 0) {
-            declarar_variable(fout, $1.lexema, $1.tipo, 1);
-        
-            insertarTablaSimbolosAmbitos(tabla_main, "main", $1.lexema, ESCALAR, $1.tipo, $1.direcciones, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
-            printf("Insertamos en tabla simbolos la variable: %s [%d]\n", $1.lexema, $1.tipo);
-            if (buscarIdNoCualificado(NULL, tabla_main, $1.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
-                printf("found!!!\n");
-            }
-        }
-    }
-;
+  printf("entro en una declaracion de variable (%s) [%d]\n", $1.lexema, $1.tipo);
+  $$.tipo = $1.tipo;
+  declarar_variable(fout, $1.lexema, $1.tipo, 1);
+  // TODO: insertar en tabla simbolos
+  insertarTablaSimbolosAmbitos(tabla_main, "main", $1.lexema, ESCALAR, $1.tipo, $1.direcciones, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+}
 
 funciones: funcion funciones
     {
+        //fprintf(fout, ";R:\tfunciones: funcion funciones\n");
     }
     |
     /*vacio*/
     {
-        comienzo_sentencias(fout);
+        //fprintf(fout, ";R:\tfunciones:\n");
     }
 ;
 
-funcion: fn_declaracion sentencias '}'
+funcion: TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'
     {
-        if (hay_return == 0) {
-            sprintf(msg, "No hay return en funcion");
-        }
-        hay_return = 0;
-        en_funcion = 0;
-
-        printf("--- Termina funcion ---\n");
+        //fprintf(fout, ";R:\tfuncion: TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'\n");
     }
 ;
-
-fn_declaracion: fn_complete_name '{' declaraciones_funcion
-    {
-        /**Ensamblador*/
-        declararFuncion(fout, fcn.nombre, nlocalvar);
-
-        /* Bucle para insertar los argumentos de la funcion */
-        for (i = 0; i < fcn.nargs; i++) {
-            strcpy(aux, fcn.nombre);
-            strcat(aux, "_");
-            strcat(aux, fcn.nombre_args[i]);
-            printf("introducimos el parametro %s en el ambito %s\n", aux, fcn.nombre);
-            insertarTablaSimbolosAmbitos(tabla_main, "main", aux, FUNCION, fcn.tipo_args[i], PARAMETRO, 1, fcn.nargs, 0, 1, i, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
-        
-        }
-
-        for (i = 0; i < nlocalvar; i++) {
-            strcpy(aux, fcn.nombre);
-            strcat(aux, "_");
-            strcat(aux, fcn.nombre_var[i]);
-            insertarTablaSimbolosAmbitos(tabla_main, "main", aux, FUNCION, fcn.tipo_var[i], VARIABLE, 1, 0, nlocalvar, i, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
-            
-        }
-    }
-;
-
-fn_complete_name: fn_name '(' parametros_funcion ')'
-    {
-        for (i = 0; i < fcn.nargs; i++) {
-            sprintf(aux, "@%d", fcn.tipo_args[i]);
-            strcat(fcn.nombre, aux);
-        }
-
-        printf("--> Nombre de la funcion: %s  <--\n", fcn.nombre);
-
-        if (buscarIdNoCualificado(NULL, tabla_main, fname_aux, "main", &elem, nombre_ambito_encontrado) == OK) {
-            sprintf(msg, "El nombre de esta funcion ya existe");
-            return -1;
-        }
-        insertarTablaSimbolosAmbitos(tabla_main, "main", fcn.nombre, FUNCION, fcn.tipo_retorno, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
-
-        if (AbrirAmbitoPrefijos(tabla_main, "main", fcn.nombre, FUNCION, 0, fcn.tipo_retorno, 0, 1) == -1) {
-            sprintf(msg, "Variable no encontrada\n");
-            return -1;
-        }
-        
-
-        nlocalvar = 0;
-    }
-;
-
-fn_name: TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR
-    {
-        en_funcion = 1;
-        strcpy(fcn.nombre, $4.lexema);
-        fcn.nargs = 0;
-        fcn.tipo_retorno = $3.tipo;
-    }
-;
-
-
 
 tipo_retorno: TOK_NONE
     {
+        //fprintf(fout, ";R:\ttipo_retorno: TOK_NONE\n");
     }
     |
     tipo
     {
-        $$.tipo = $1.tipo;
+        //fprintf(fout, ";R:\ttipo_retorno: tipo\n");
     }
     |
     clase_objeto
     {
+        //fprintf(fout, ";R:\ttipo_retorno: clase_objeto\n");
     }
 ;
 
 inherits: TOK_INHERITS
     {
+        //fprintf(fout, ";R:\tinherits: TOK_INHERITS\n");
     }
 ;
 
 parametros_funcion: parametro_funcion resto_parametros_funcion
     {
+        //fprintf(fout, ";R:\tparametros_funcion: parametro_funcion resto_parametros_funcion\n");
     }
     |
     /*vacio*/
     {
+        //fprintf(fout, ";R:\tparametros_funcion:\n");
     }
 ;
 
 resto_parametros_funcion: ';' parametro_funcion resto_parametros_funcion
     {
+        //fprintf(fout, ";R:\tresto_parametros_funcion: ';' parametro_funcion resto_parametros_funcion\n");
     }
     |
     /*vacio*/
     {
+        //fprintf(fout, ";R:\tresto_parametros_funcion:\n");
     }
 ;
 
 parametro_funcion: tipo TOK_IDENTIFICADOR
     {
-        printf("precesamos argumento: %s (%d)\n", $2.lexema, fcn.nargs);
-        strcpy(fcn.nombre_args[fcn.nargs], $2.lexema);
-        printf("hago el strcpy bien\n");
-        $2.tipo = $1.tipo;
-        fcn.tipo_args[fcn.nargs] = $2.tipo;
-        fcn.nargs++;
+        //fprintf(fout, ";R:\tparametro_funcion: tipo TOK_IDENTIFICADOR\n");
     }
     |
     clase_objeto TOK_IDENTIFICADOR
     {
+        //fprintf(fout, ";R:\tparametro_funcion: clase_objeto TOK_IDENTIFICADOR\n");
     }
 ;
 
 declaraciones_funcion: declaraciones
     {
+        //fprintf(fout, ";R:\tdeclaraciones_funcion: declaraciones\n");
     }
     |
     /*vacio*/
     {
+        //fprintf(fout, ";R:\tdeclaraciones_funcion:\n");
     }
 ;
 
 sentencias: sentencia
     {
+        //fprintf(fout, ";R:\tsentencias: sentencia\n");
     }
     |
     sentencia sentencias
     {
+        //fprintf(fout, ";R:\tsentencias: sentencia sentencias\n");
     }
 ;
 
 sentencia: sentencia_simple ';'
     {
+        //fprintf(fout, ";R:\tsentencia: sentencia_simple ';'\n");
     }
     |
     bloque
     {
+        //fprintf(fout, ";R:\tsentencia: bloque\n");
     }
 ;
 
 sentencia_simple: asignacion
     {
+        //fprintf(fout, ";R:\tsentencia_simple: asignacion\n");
     }
     |
     lectura
     {
+        //fprintf(fout, ";R:\tsentencia_simple: lectura\n");
     }
     |
     escritura
     {
+        //fprintf(fout, ";R:\tsentencia_simple: escritura\n");
     }
     |
     retorno_funcion
     {
+        //fprintf(fout, ";R:\tsentencia_simple: retorno_funcion\n");
     }
     |
     identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'
     {
+        //fprintf(fout, ";R:\tsentencia_simple: identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
     }
     |
     TOK_IDENTIFICADOR '(' lista_expresiones ')'
     {
-        flag_lista_exp = 0;
-
-        strcat(fname_aux, $1.lexema);
-        strcat(fname_aux, aux);
-
-
-
-        if (buscarIdNoCualificado(NULL, tabla_main, fname_aux, "main", &elem, nombre_ambito_encontrado) != OK) {
-            sprintf(msg, "la funcion no existe");
-            return -1;
-        }
-        if (elem->clase != FUNCION) {
-            sprintf(msg, "la funcion no existe");
-            return -1;
-        }
-
-        llamarFuncion(fout, fname_aux, nargs);
-
-        $$.tipo = elem->tipo;
-        $$.direcciones = 0;
+        //fprintf(fout, ";R:\tsentencia_simple: TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
     }
     |
     destruir_objeto
     {
+        //fprintf(fout, ";R:\tsentencia_simple: destruir_objeto\n");
     }
 ;
 
 destruir_objeto: TOK_DISCARD TOK_IDENTIFICADOR
     {
+        //fprintf(fout, ";R:\tdestruir_objeto: TOK_DISCARD TOK_IDENTIFICADOR\n");
     }
 ;
 
 bloque: condicional
     {
+        //fprintf(fout, ";R:\tbloque: condicional\n");
     }
     |
     bucle
     {
+        //fprintf(fout, ";R:\tbloque: bucle\n");
     }
 ;
 
 asignacion: TOK_IDENTIFICADOR '=' exp
     {
-
-        if (en_funcion) {
-            sprintf(aux, "%s_", fcn.nombre);
-            strcat(aux, $1.lexema);
-            if (buscarParaDeclararIdTablaSimbolosAmbitos(tabla_main, aux, &elem, "main", nombre_ambito_encontrado) == OK){
-                asignar_en_funcion(fout, $3.tipo, elem->posicion_variable_local+1);
-            }
-            else {
-                sprintf(msg, "Varible local no encontrada\n");
-                return -1;
-            }
+        //Buscamos en la tabla de simbolos el tipo de $1
+        if (buscarIdNoCualificado(NULL, tabla_main, $1.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
+            $1.tipo = elem->tipo;
         }
         else {
-            //Buscamos en la tabla de simbolos el tipo de $1
-            if (buscarIdNoCualificado(NULL, tabla_main, $1.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
-                $1.tipo = elem->tipo;
-            }
-            else {
-                sprintf(msg, "Variable no encontrada\n");
-                printf("fgeiufgeiufgeiufg");
-            }
-
-            if ($1.tipo != $3.tipo) {
-            sprintf(msg, "Variables distintas\n");
-            }
-
-            if ($3.direcciones == 0) {
-                sprintf(aux, "%d", $3.valor_entero);
-
-            }
-            asignar(fout, $1.lexema, $3.direcciones);
+            printf("Error: Variable no encontrada\n");
         }
 
+        if ($1.tipo != $3.tipo) {
+          printf("Error: Variables distintas\n");
+        }
+
+        char aux[50];
+        if ($3.direcciones == 0) {
+            sprintf(aux, "%d", $3.valor_entero);
+
+        }
+        //escribir_operando(fout, aux, $3.direcciones);
+        asignar(fout, $1.lexema, $3.direcciones);
     }
     |
     elemento_vector '=' exp
     {
         if ($1.tipo != $3.tipo) {
-            sprintf(msg, "tipos incompatibles");
+            printf("Error: tipos incompatibles");
         }
     }
     |
     elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'
     {
+        //fprintf(fout, ";R:\tasignacion: elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
     }
     |
     TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'
     {
+        //fprintf(fout, ";R:\tasignacion: TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
     }
     |
     identificador_clase '.' TOK_IDENTIFICADOR '=' exp
     {
+        //fprintf(fout, ";R:\tasignacion: identificador_clase '.' TOK_IDENTIFICADOR '=' exp\n");
     }
 ;
 
@@ -606,10 +524,10 @@ elemento_vector: TOK_IDENTIFICADOR '[' exp ']'
         if (buscarIdNoCualificado(NULL, tabla_main, $1.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
             $1.tipo = elem->tipo;
             if (elem->clase != VECTOR) {
-                sprintf(msg, "no es vector");
+                printf("Error: no es vector");
             }
             if ($3.tipo != ENTERO) {
-                sprintf(msg, "el indice debe ser de tipo entero");
+                printf("Error: el indice debe ser de tipo entero");
             }
 
             $$.tipo = elem->tipo;
@@ -617,14 +535,14 @@ elemento_vector: TOK_IDENTIFICADOR '[' exp ']'
             //Comprobacion indice, 0<i<64
         }
         else {
-            sprintf(msg, "Variable no encontrada\n");
+            printf("Error: Variable no encontrada\n");
         }
     }
 ;
 
 condicional: if_exp_sentencias TOK_ELSE '{' sentencias '}'
     {
-        ifthenelse_fin(fout, $1.etiqueta);
+        fin_if_else(fout, $1.etiqueta);
     }
 ;
 
@@ -632,48 +550,35 @@ if_exp_sentencias: if_exp sentencias '}'
     {
         $$.etiqueta = $1.etiqueta;
 
-        ifthenelse_fin_then(fout, $1.etiqueta);
+        medio_if_else(fout, $1.etiqueta);
     }   
 ;
 
 if_exp: TOK_IF '(' exp ')' '{'
     {
         if ($3.tipo != BOOLEAN) {
-            sprintf(msg, "condicion del if no booleano");
+            printf("Error: condicion del if no booleano");
         }
         $$.etiqueta = etiqueta;
         etiqueta++;
 
-        ifthenelse_inicio(fout, $3.direcciones, $$.etiqueta);
+        inicio_if_else(fout, $$.etiqueta, $3.direcciones);
     }
 ;
 
-bucle: bucle_inicio sentencias '}'
+bucle: TOK_WHILE '(' exp ')' '{' sentencias '}'
     {
-        while_fin(fout, $1.etiqueta);
-    }
-;
-
-bucle_inicio: TOK_WHILE '(' exp ')' '{'
-    {
-        if ($3.tipo != BOOLEAN) {
-            sprintf(msg, "condicion del if no booleano");
-        }
-        $$.etiqueta = etiqueta;
-        etiqueta++;
-
-        while_inicio(fout, $$.etiqueta);
-        while_exp_pila(fout, $3.direcciones, $$.etiqueta);
+        //fprintf(fout, ";R:\tbucle: TOK_WHILE '(' exp ')' '{' sentencias '}'\n");
     }
 ;
 
 lectura: TOK_SCANF TOK_IDENTIFICADOR
     {
         if (buscarIdNoCualificado(NULL, tabla_main, $2.lexema, "main", &elem, nombre_ambito_encontrado) != OK) {
-            sprintf(msg, "EHEHHEHEHEHEHEHElem no encontrado\n");
+            printf("Error: Elem no encontrado\n");
         } else {
-            if (elem->clase == FUNCION || elem->clase == VECTOR) {
-                sprintf(msg, "no se puede imprimir funciones ni vectores\n");
+            if (elem->categoria == FUNCION || elem->categoria == VECTOR) {
+                printf("Error: no se puede imprimir funciones ni vectores\n");
             }
 
             escribir_operando(fout, $2.lexema, $2.direcciones);
@@ -683,6 +588,7 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR
     |
     TOK_SCANF elemento_vector
     {
+        //fprintf(fout, ";R:\tlectura: TOK_SCANF elemento_vector\n");
     }
 ;
 
@@ -690,11 +596,11 @@ escritura: TOK_PRINTF exp
     {
         if ($2.direcciones == 1) {
             if(buscarIdNoCualificado(NULL, tabla_main, $2.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
-                //escribir_operando(fout, $2.lexema, $2.direcciones);
+                escribir_operando(fout, $2.lexema, $2.direcciones);
                 escribir(fout, $2.direcciones, elem->tipo);
             }
             else {
-                sprintf(msg, "Elem no encontrado\n");
+                printf("Error: Elem no encontrado\n");
             }
         }
         else{
@@ -707,19 +613,19 @@ escritura: TOK_PRINTF exp
 
 retorno_funcion: TOK_RETURN exp
     {
-        retornarFuncion(fout, $2.direcciones);
-        hay_return = 1;
+        //fprintf(fout, ";R:\tretorno_funcion: TOK_RETURN exp\n");
     }
     |
     TOK_RETURN TOK_NONE
     {
+        //fprintf(fout, ";R:\tretorno_funcion: TOK_RETURN TOK_NONE\n");
     }
 ;
-
+  //8  +  x1
 exp: exp '+' exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La suma requiere que ambos operandos sean numeros");
+            printf("Error: La suma requiere que ambos operandos sean numeros");
         }
 
         printf("op1: %s tipo(%d) direc(%d)\n", $1.lexema, $1.tipo, $1.direcciones);
@@ -742,7 +648,7 @@ exp: exp '+' exp
     exp '-' exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La resta requiere que ambos operandos sean numeros");
+            printf("Error: La resta requiere que ambos operandos sean numeros");
         }
         $$.tipo = ENTERO;
         $$.direcciones = 0;
@@ -751,10 +657,10 @@ exp: exp '+' exp
     exp '/' exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La division requiere que ambos operandos sean numeros");
+            printf("Error: La division requiere que ambos operandos sean numeros");
         }
         if ($3.tipo == 0) {
-            sprintf(msg, "La division entre 0 no se permite");
+            printf("Error: La division entre 0 no se permite");
         }
         $$.tipo = ENTERO;
         $$.direcciones = 0;
@@ -763,11 +669,8 @@ exp: exp '+' exp
     exp '*' exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La multiplicacion requiere que ambos operandos sean numeros");
+            printf("Error: La multiplicacion requiere que ambos operandos sean numeros");
         }
-
-        multiplicar(fout, $1.direcciones, $3.direcciones);
-
         $$.tipo = ENTERO;
         $$.direcciones = 0;
     }
@@ -775,7 +678,7 @@ exp: exp '+' exp
     '-' %prec UNARIO exp
     {
         if ($2.tipo == BOOLEAN) {
-            sprintf(msg, "El cambio de signo requiere operandos que sean numeros");
+            printf("Error: El cambio de signo requiere operandos que sean numeros");
         }
         $$.tipo = ENTERO;
         $$.direcciones = 0;
@@ -784,7 +687,7 @@ exp: exp '+' exp
     exp TOK_AND exp
     {
         if ($1.tipo == ENTERO || $3.tipo == ENTERO) {
-            sprintf(msg, "La conjuncion requiere operandos que sean booleans");
+            printf("Error: La conjuncion requiere operandos que sean booleans");
         }
         $$.tipo = BOOLEAN;
         $$.direcciones = 0;
@@ -793,7 +696,7 @@ exp: exp '+' exp
     exp TOK_OR exp
     {
         if ($1.tipo == ENTERO || $3.tipo == ENTERO) {
-            sprintf(msg, "La disyuncion requiere operandos que sean booleans");
+            printf("Error: La disyuncion requiere operandos que sean booleans");
         }
         $$.tipo = BOOLEAN;
         $$.direcciones = 0;
@@ -802,7 +705,7 @@ exp: exp '+' exp
     '!' exp
     {
         if ($2.tipo == ENTERO) {
-            sprintf(msg, "La negacion requiere operandos que sean booleans");
+            printf("Error: La negacion requiere operandos que sean booleans");
         }
         $$.tipo = BOOLEAN;
         $$.direcciones = 0;
@@ -810,38 +713,18 @@ exp: exp '+' exp
     |
     TOK_IDENTIFICADOR
     {
-        if (en_funcion) {
-            sprintf(aux, "%s_", fcn.nombre);
-            strcat(aux, $1.lexema);
+      if (buscarIdNoCualificado(NULL, tabla_main, $1.lexema, "main", &elem, nombre_ambito_encontrado) == OK){
+          $1.tipo = elem->tipo;
+      }
+      else {
+          printf("Error:Variable no encontrada\n");
+      }
+      //diapo90 gen
+      escribir_operando(fout, $1.lexema, 1);
 
-            if( buscarParaDeclararIdTablaSimbolosAmbitos(tabla_main, aux, &elem, "main", nombre_ambito_encontrado) != OK) {
-                sprintf(msg, "identificador inexistente");
-            }
-            printf("[[[ Encontramos %s en el ambito %s ]]]\n", aux, nombre_ambito_encontrado);
-
-            if (elem->categoria == PARAMETRO) {
-                escribirParametro(fout, elem->posicion_parametro, elem->numero_parametros);
-            }
-            else if (elem->categoria == VARIABLE) {
-                escribirVariableLocal(fout, elem->numero_variables_locales);
-            }
-
-        } else {
-            if (buscarIdNoCualificado(NULL, tabla_main, $1.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
-                $1.tipo = elem->tipo;
-            }
-            else {
-                printf("Error:Variable no encontrada (%s)\n", $1.lexema);
-            }
-            escribir_operando(fout, $1.lexema, 1);
-            if (flag_lista_exp == 1) {
-                operandoEnPilaAArgumento(fout, 1);
-            }
-        }
-
-        //TODO comprobar que no sea de categoria funcion ni clase vector
-        $$.tipo = elem->tipo;
-        $$.direcciones = 1;
+      //TODO comprobar que no sea de categoria funcion ni clase vector
+      $$.tipo = elem->tipo;
+      $$.direcciones = 1;
     }
     |
     constante
@@ -868,100 +751,60 @@ exp: exp '+' exp
         $$.direcciones = $1.direcciones;
     }
     |
-    TOK_IDENTIFICADOR '(' activar_flag_lista_exp lista_expresiones ')'
+    TOK_IDENTIFICADOR '(' lista_expresiones ')'
     {
-        flag_lista_exp = 0;
-
-        strcat(fname_aux, $1.lexema);
-        strcat(fname_aux, aux);
-
-        printf("oooooooh: %s\n", fname_aux);
-
-        if (buscarIdNoCualificado(NULL, tabla_main, fname_aux, "main", &elem, nombre_ambito_encontrado) != OK) {
-            sprintf(msg, "la funcion no existe");
-            printf("que nooooo\n");
-            return -1;
-        }
-        if (elem->clase != FUNCION) {
-            sprintf(msg, "la funcion no existe");
-            return -1;
-        }
-
-        llamarFuncion(fout, fname_aux, nargs);
-
-        $$.tipo = elem->tipo;
-        $$.direcciones = 0;
+        //fprintf(fout, ";R:\texp: TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
     }
     |
     identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'
     {
+        //fprintf(fout, ";R:\texp: identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
     }
     |
     identificador_clase '.' TOK_IDENTIFICADOR
     {
+        //fprintf(fout, ";R:\texp: identificador_clase '.' TOK_IDENTIFICADOR\n");
     }
 ;
 
-activar_flag_lista_exp:
-    {
-        if (flag_lista_exp) {
-            sprintf(msg, "No puedes declrarar funciones dentro de otra");
-            return -1;
-
-        }
-        flag_lista_exp = 1;
-    }
 
 identificador_clase: TOK_IDENTIFICADOR
     {
+        //fprintf(fout, ";R:\tidentificador_clase: TOK_IDENTIFICADOR\n");
     }
     |
     TOK_ITSELF
     {
+        //fprintf(fout, ";R:\tidentificador_clase: TOK_ITSELF\n");
     }
 ;
 
-lista_expresiones: averkpasa exp resto_lista_expresiones
+lista_expresiones: exp resto_lista_expresiones
     {
-        
-        if ($2.tipo == ENTERO) {
-            strcat(aux, "@1");
-        } else {
-            strcat(aux, "@3");
-        }
+        //fprintf(fout, ";R:\tlista_expresiones: exp resto_lista_expresiones\n");
     }
     |
     /*vacio*/
     {
-        nargs = 0;
+        //fprintf(fout, ";R:\tlista_expresiones:\n");
     }
 ;
-
-averkpasa: 
-    {
-        nargs = 1;
-        aux[0] = '\0';
-    }
 
 resto_lista_expresiones: ',' exp resto_lista_expresiones
     {
-        nargs++;
-        if ($2.tipo == ENTERO) {
-            strcat(aux, "@1");
-        } else {
-            strcat(aux, "@3");
-        }
+        //fprintf(fout, ";R:\tresto_lista_expresiones: ',' exp resto_lista_expresiones\n");
     }
     |
     /*vacio*/
     {
+        //fprintf(fout, ";R:\tlista_expresiones:\n");
     }
 ;
 
 comparacion: exp TOK_IGUAL exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La division requiere que ambos operandos sean numeros");
+            printf("Error: La division requiere que ambos operandos sean numeros");
         }
         if ($1.direcciones == 1) {
             //escribir_operando(fout, $1.lexema, $1.direcciones);
@@ -980,7 +823,7 @@ comparacion: exp TOK_IGUAL exp
     exp TOK_DISTINTO exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La division requiere que ambos operandos sean numeros");
+            printf("Error: La division requiere que ambos operandos sean numeros");
         }
         $$.tipo = BOOLEAN;
         $$.direcciones = 0;
@@ -989,7 +832,7 @@ comparacion: exp TOK_IGUAL exp
     exp TOK_MENORIGUAL exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La division requiere que ambos operandos sean numeros");
+            printf("Error: La division requiere que ambos operandos sean numeros");
         }
         $$.tipo = BOOLEAN;
         $$.direcciones = 0;
@@ -998,7 +841,7 @@ comparacion: exp TOK_IGUAL exp
     exp TOK_MAYORIGUAL exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La division requiere que ambos operandos sean numeros");
+            printf("Error: La division requiere que ambos operandos sean numeros");
         }
         $$.tipo = BOOLEAN;
         $$.direcciones = 0;
@@ -1007,7 +850,7 @@ comparacion: exp TOK_IGUAL exp
     exp '<' exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La division requiere que ambos operandos sean numeros");
+            printf("Error: La division requiere que ambos operandos sean numeros");
         }
         $$.tipo = BOOLEAN;
         $$.direcciones = 0;
@@ -1016,7 +859,7 @@ comparacion: exp TOK_IGUAL exp
     exp '>' exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La division requiere que ambos operandos sean numeros");
+            printf("Error: La division requiere que ambos operandos sean numeros");
         }
         $$.tipo = BOOLEAN;
         $$.direcciones = 0;
@@ -1065,11 +908,7 @@ constante_entera: TOK_CONSTANTE_ENTERA
 int yyerror(char* s) {
     if (!flag_error)
     {
-        fprintf(stderr, "ERROR SINTÁCTICO:%d:%d\n", fila, columna);
-    }
-    if (!flag_error)
-    {
-        fprintf(stderr, "****Error semantico en lin %d: %s\n", fila, msg);
+        //fprintf(stderr, "ERROR SINTÁCTICO:%d:%d\n", fila, columna);
     }
     flag_error = 0;
     return -1;

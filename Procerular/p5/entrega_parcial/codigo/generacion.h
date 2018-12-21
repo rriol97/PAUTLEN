@@ -1,5 +1,6 @@
 #ifndef GENERACION_H
 #define GENERACION_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,9 +8,6 @@
 
 #define ENTERO 1
 #define BOOLEAN 3
-
-#define PREFIJO_TABLA_METODOS_SOBREESCRIBIBLES "_ms"
-#define MAX_ETIQUETAS     32768
 
 /* OBSERVACIÓN GENERAL A TODAS LAS FUNCIONES:
    Todas ellas escriben el código NASM a un FILE* proporcionado como primer argumento.
@@ -44,9 +42,6 @@ void escribir_inicio_main(FILE* fpasm);
 /*
    En este punto se debe escribir, al menos, la etiqueta main y la sentencia que guarda el puntero de pila en su variable (se recomienda usar __esp).
 */
-
-void comienzo_sentencias();
-
 void escribir_fin(FILE* fpasm);
 /*
    Al final del programa se escribe:
@@ -120,29 +115,8 @@ void leer(FILE* fpasm, char* nombre, int tipo);
 void escribir(FILE* fpasm, int es_variable, int tipo);
 
 /* FUNCIONES PARA EL CONTROL DE FLUJO */
-void ifthenelse_inicio(FILE* fpasm, int es_direccion, int etiqueta);
-void ifthenelse_fin_then(FILE* fpasm, int etiqueta);
-void ifthenelse_fin(FILE* fpasm, int etiqueta);
-
-void while_inicio(FILE * fpasm, int etiqueta);
-void while_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta);
-void while_fin( FILE * fpasm, int etiqueta);
-
-void declararFuncion(FILE * fd_asm, char * nombre_funcion, int num_var_loc);
-void retornarFuncion(FILE * fd_asm, int es_variable);
-void escribirParametro(FILE* fpasm, int pos_parametro, int num_total_parametros);
-void escribirVariableLocal(FILE* fpasm, int posicion_variable_local);
-void operandoEnPilaAArgumento(FILE * fd_asm, int es_variable);
-void llamarFuncion(FILE * fd_asm, char * nombre_funcion, int num_argumentos);
-void limpiarPila(FILE * fd_asm, int num_argumentos);
-
-/* FUNCIONES DE OO */
-char * claseATabla(char * nombre_fuente_clase);
-void instance_of(FILE * fpasm, char * nombre_fuente_clase, int numero_atributos_instancia);
-void discardPila(FILE * fpasm);
-void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fpasm, char * nombre_metodo);
-void accederAtributoInstanciaDePila(FILE * fpasm, char * nombre_atributo);
-void asignarDestinoEnPila(FILE* fpasm, int es_referencia);
-void asignar_en_funcion(FILE* fpasm, int es_variable, int pos);
+void inicio_if_else(FILE* fpasm, int etiqueta, int es_direccion);
+void medio_if_else(FILE* fpasm, int etiqueta);
+void fin_if_else(FILE* fpasm, int etiqueta);
 
 #endif

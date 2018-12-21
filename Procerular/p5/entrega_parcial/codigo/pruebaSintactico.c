@@ -33,7 +33,6 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    
     /* Apertura fichero salida */
     fout = fopen(argv[2], "w");
     if (!fout)
@@ -42,8 +41,6 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    printf("[Leyendo desde %s para volcar el asm en %s]...\n", argv[1], argv[2]);
-    
     /* Llamada a la funcion que realiza el analisis */
     if (yyparse() != 0)
     {
@@ -51,7 +48,6 @@ int main(int argc, char *argv[])
         fclose(fout);
         return EXIT_FAILURE;
     }
-
 
     /* Cierre de ficheros */
     fclose(yyin);

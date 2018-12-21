@@ -1,3 +1,6 @@
+#ifndef ALFA_H
+#define ALFA_H
+
 #define MAX_LONG_ID 50
 #define MAX_TAMANIO_VECTOR 64
 #define MAX_FILAS_VECTOR 64
@@ -9,17 +12,16 @@
 #define PARAMETRO 2
 #define FUNCION 3
 #define CLASE 4
-
 /* PARA OMICRON */
 #define METODO_SOBREESCRIBIBLE 5
 #define METODO_NO_SOBREESCRIBIBLE 6
 #define ATRIBUTO_CLASE 7
 #define ATRIBUTO_INSTANCIA 8
 
-#define NINGUNO 0 /* ES COMUN PARA ACCESO Y TIPO DE MIEMBRO */
+#define NINGUNO 0 /* ES COMUN PARA ACESO Y TIPO DE MIEMBRO */
 
-#define ACCESO_HERENCIA 1        /* SECRET */
 #define ACCESO_CLASE 2   /* HIDDEN */
+#define ACCESO_HERENCIA 1        /* SECRET */
 #define ACCESO_TODOS 3        /* EXPOSED O NADA */
 
 #define MIEMBRO_UNICO 1  /* PARA ATRIBUTOS DE CLASE Y MÉTODOS NO SOBREESCRIBIBLES */
@@ -47,3 +49,7 @@
 
 #define ERR -1
 #define OK 0
+
+//#define TOK_ERROR -1
+
+#endif

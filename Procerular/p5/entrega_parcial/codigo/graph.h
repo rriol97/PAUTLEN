@@ -137,6 +137,4 @@ NodoLista* graphGetAntecessorList(Graph* graph, int src);
  */
 int test();
 
-void printGraph(Graph* graph);
-
 #endif

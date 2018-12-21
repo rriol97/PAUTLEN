@@ -66,7 +66,7 @@
 
 #include <stdio.h>
 #include "omicron.h"
-#include "generacion_omicron.h"
+#include "generacion.h"
 #include "graph.h"
 #include "tabla.h"
 
@@ -77,35 +77,14 @@ extern FILE *yyin;
 extern FILE *fout;
 extern int flag_error;
 
-typedef struct {
-    char nombre[MAX_LEN];
-    char nombre_args[MAX_LEN][MAX_LEN];
-    char nombre_var[MAX_LEN][MAX_LEN];
-    int tipo_args[MAX_LEN];
-    int tipo_var[MAX_LEN];
-    int nargs;
-    int tipo_retorno;
-} Fcn;
-
 int tipo_id_actual;
 TablaAmbito * tabla_main;
 elementoTablaSimbolos * elem;
 char nombre_ambito_encontrado[MAX_NAME];
 int tipo_declaracion;
 int etiqueta = 1;
-char aux[MAX_LEN+100];
-char fname_aux[MAX_LEN];
-int nargs;
-char msg[MAX_LEN];
-int i;
-int nlocalvar;
-int hay_return = 0;
-int flag_lista_exp = 0;
-int en_funcion = 0;
 
-Fcn fcn;
-
-#line 109 "y.tab.c" /* yacc.c:339  */
+#line 88 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -257,11 +236,11 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 44 "omicron.y" /* yacc.c:355  */
+#line 23 "omicron.y" /* yacc.c:355  */
 
     tipo_atributos atributos;
 
-#line 265 "y.tab.c" /* yacc.c:355  */
+#line 244 "y.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -278,7 +257,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 282 "y.tab.c" /* yacc.c:358  */
+#line 261 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -520,16 +499,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  4
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   280
+#define YYLAST   276
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  74
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  53
+#define YYNNTS  47
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  117
+#define YYNRULES  111
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  227
+#define YYNSTATES  221
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
@@ -581,18 +560,18 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   131,   131,   137,   144,   153,   158,   162,   167,   174,
-     179,   183,   187,   191,   195,   199,   203,   208,   212,   217,
-     221,   226,   230,   234,   240,   244,   250,   258,   265,   270,
-     275,   279,   284,   298,   304,   322,   327,   332,   344,   369,
-     394,   405,   409,   414,   419,   424,   429,   433,   438,   442,
-     452,   457,   462,   466,   470,   475,   479,   484,   488,   492,
-     496,   500,   504,   528,   533,   538,   542,   547,   584,   591,
-     595,   599,   604,   625,   631,   639,   651,   657,   670,   684,
-     689,   708,   714,   719,   742,   751,   763,   775,   784,   793,
-     802,   811,   847,   853,   859,   865,   871,   896,   900,   906,
-     915,   919,   924,   935,   941,   946,   957,   961,   980,   989,
-     998,  1007,  1016,  1026,  1032,  1039,  1046,  1054
+       0,   108,   108,   114,   121,   131,   143,   148,   154,   162,
+     168,   173,   178,   183,   188,   193,   198,   204,   209,   215,
+     220,   226,   231,   236,   243,   248,   255,   262,   270,   276,
+     282,   287,   293,   300,   306,   318,   324,   329,   335,   340,
+     345,   351,   357,   363,   368,   374,   379,   384,   390,   396,
+     401,   406,   412,   417,   423,   428,   433,   438,   443,   448,
+     453,   459,   465,   470,   476,   499,   506,   511,   516,   522,
+     543,   549,   557,   569,   575,   589,   595,   614,   619,   625,
+     648,   657,   669,   678,   687,   696,   705,   714,   730,   736,
+     742,   748,   754,   759,   764,   771,   776,   782,   788,   793,
+     799,   804,   823,   832,   841,   850,   859,   869,   875,   882,
+     889,   897
 };
 #endif
 
@@ -619,14 +598,13 @@ static const char *const yytname[] =
   "declaracion_clase", "modificadores_clase", "clase_escalar", "tipo",
   "clase_objeto", "clase_vector", "identificadores",
   "identificadores_declaracion", "identificador", "funciones", "funcion",
-  "fn_declaracion", "fn_complete_name", "fn_name", "tipo_retorno",
-  "inherits", "parametros_funcion", "resto_parametros_funcion",
-  "parametro_funcion", "declaraciones_funcion", "sentencias", "sentencia",
-  "sentencia_simple", "destruir_objeto", "bloque", "asignacion",
-  "elemento_vector", "condicional", "if_exp_sentencias", "if_exp", "bucle",
-  "bucle_inicio", "lectura", "escritura", "retorno_funcion", "exp",
-  "activar_flag_lista_exp", "identificador_clase", "lista_expresiones",
-  "averkpasa", "resto_lista_expresiones", "comparacion", "constante",
+  "tipo_retorno", "inherits", "parametros_funcion",
+  "resto_parametros_funcion", "parametro_funcion", "declaraciones_funcion",
+  "sentencias", "sentencia", "sentencia_simple", "destruir_objeto",
+  "bloque", "asignacion", "elemento_vector", "condicional",
+  "if_exp_sentencias", "if_exp", "bucle", "lectura", "escritura",
+  "retorno_funcion", "exp", "identificador_clase", "lista_expresiones",
+  "resto_lista_expresiones", "comparacion", "constante",
   "constante_logica", "constante_entera", YY_NULLPTR
 };
 #endif
@@ -647,12 +625,12 @@ static const yytype_uint16 yytoknum[] =
 };
 # endif
 
-#define YYPACT_NINF -56
+#define YYPACT_NINF -102
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-56)))
+  (!!((Yystate) == (-102)))
 
-#define YYTABLE_NINF -104
+#define YYTABLE_NINF -96
 
 #define yytable_value_is_error(Yytable_value) \
   0
@@ -661,29 +639,29 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-      13,   -56,    15,   -55,   -56,   158,    18,    24,    26,   -56,
-      22,   -56,   158,   -12,   -56,   -56,   -56,   103,   252,    22,
-     252,   -17,     2,    22,   -56,   -56,   -56,     3,    36,    43,
-     -13,    66,   -56,   -56,   -56,   -56,    -4,    46,   -56,    69,
-      10,    21,    68,   120,   -27,    35,   252,    38,   -56,   -56,
-     -56,    28,   -56,    89,   252,   -56,   252,   -56,   -56,   -56,
-      44,   -56,    57,   158,    -8,   252,    56,    71,   -56,    74,
-      77,   -56,   107,   -56,   -56,   -56,   113,   -56,   -56,    17,
-     -56,   -56,   -56,   120,   120,   120,   -56,   210,    79,   -56,
-     -56,   -56,   120,   120,    82,   -56,   210,   120,    73,    72,
-     -56,   -56,   -56,    75,    90,    88,    97,   133,   -56,   -56,
-     -56,   136,   142,    94,   111,   126,   141,   -56,   -56,    43,
-      -3,   -56,   -56,   -56,   -56,   153,   127,   120,   120,   120,
-     120,   120,   120,   167,   135,   172,   199,   128,   120,   173,
-     210,   174,   210,   252,   -56,   -56,   -38,   -56,   -56,   -56,
-      -8,   -56,   -56,   134,   -56,   -56,   103,   175,    73,   120,
-     120,   120,   120,   -56,   120,   120,   -56,   -23,   -56,   -23,
-     -23,   -56,   -56,   139,   146,   154,   -56,   -56,   180,   147,
-     149,   155,    73,   120,   111,   -56,    22,   152,   159,   165,
-     210,   210,   210,   210,   210,   210,    73,   -56,   -56,   120,
-     -56,    73,    73,   -56,   166,   210,   -56,   160,   175,     5,
-     -56,   171,   180,   176,   177,   -56,   -56,   -56,    22,   161,
-     -56,   -56,   -56,   -56,   164,   -56,   -56
+      13,  -102,    48,    -2,  -102,   139,    47,    50,    51,  -102,
+      53,  -102,   139,    15,  -102,  -102,  -102,    88,   248,    53,
+      53,  -102,  -102,  -102,    30,    40,    45,    12,    74,  -102,
+    -102,  -102,  -102,    10,    59,  -102,    17,    29,    49,    70,
+     105,   -22,    52,   248,    58,  -102,  -102,  -102,    55,  -102,
+     103,   248,  -102,  -102,  -102,  -102,    60,  -102,   248,    64,
+      68,  -102,    73,    80,  -102,   107,  -102,  -102,  -102,   120,
+    -102,  -102,   -41,  -102,  -102,  -102,   105,   105,   105,  -102,
+     198,    79,  -102,  -102,  -102,   105,   105,    86,  -102,   198,
+     105,   105,    71,  -102,  -102,  -102,    77,    94,    95,   129,
+     100,   135,  -102,  -102,    45,    -1,   101,   105,  -102,  -102,
+     153,   102,   105,   105,   105,   105,   105,   105,   144,   134,
+     161,   194,   180,   108,   146,   198,   148,   198,   248,  -102,
+     -24,  -102,   113,  -102,  -102,    88,   152,    -3,   119,   105,
+     105,   105,   105,  -102,   105,   105,  -102,   -20,  -102,   -20,
+     -20,  -102,  -102,   128,   138,   140,  -102,   105,  -102,  -102,
+     136,   137,   143,   105,   105,  -102,    53,   141,   145,   187,
+     188,   154,   157,  -102,   198,   198,   198,   198,   198,   198,
+     105,  -102,   248,   180,   105,   105,  -102,   155,   198,   166,
+     152,    -5,  -102,  -102,   171,    -3,  -102,   165,   172,  -102,
+     173,   174,  -102,  -102,  -102,    53,   177,   139,   157,  -102,
+    -102,  -102,  -102,   178,  -102,  -102,   248,  -102,  -102,   181,
+    -102
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -693,49 +671,47 @@ static const yytype_uint8 yydefact[] =
 {
        0,     4,     0,     0,     1,     5,    13,    14,    15,    16,
       36,     5,     6,    24,    10,    11,    12,    17,     0,    36,
-       0,     0,     0,    36,     7,    26,    27,     0,     0,     0,
-       0,     0,    18,    25,    20,    19,     0,     0,   101,     0,
-       0,     0,     0,     0,   100,     0,    53,     0,    63,    56,
-      57,     0,    65,     0,     0,    66,     0,    58,    59,    60,
-       0,    35,     0,    52,    46,     0,     0,     0,    34,     0,
-      32,     9,     0,    41,    42,    43,     0,    64,    82,    91,
-     117,   116,   115,     0,     0,     0,    95,    81,     0,    92,
-     113,   114,     0,     0,    78,    79,    80,     0,   104,     0,
-       3,    54,    55,     0,     0,     0,     0,     0,    37,    51,
-      38,     0,     0,     0,    48,     0,     0,    28,     8,     0,
-       0,    40,    99,    87,    90,     0,     0,     0,     0,     0,
+      36,     7,    26,    27,     0,     0,     0,     0,     0,    18,
+      25,    20,    19,     0,     0,    96,     0,     0,     0,     0,
+       0,    95,     0,    50,     0,    60,    53,    54,     0,    62,
+       0,     0,    63,    55,    56,    57,     0,    35,     0,     0,
+       0,    34,     0,    32,     9,     0,    38,    39,    40,     0,
+      61,    78,    87,   111,   110,   109,     0,     0,     0,    91,
+      77,     0,    88,   107,   108,     0,     0,    74,    75,    76,
+       0,    98,     0,     3,    51,    52,     0,     0,     0,     0,
+       0,     0,    28,     8,     0,     0,     0,    98,    83,    86,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-      67,     0,    68,     0,    74,    76,     0,    49,    50,    39,
-       0,    45,     2,     0,    33,    44,    17,     0,   104,     0,
-       0,     0,     0,    93,     0,     0,    94,    89,    88,    83,
-      84,    86,    85,    98,     0,     0,    72,    62,   106,     0,
-       0,     0,   104,     0,    48,    29,    36,    30,     0,     0,
-     107,   108,   109,   110,   111,   112,   104,    75,    77,     0,
-     102,   104,   104,    73,     0,    71,    47,     0,     0,    17,
-      96,     0,   106,     0,     0,    61,    23,    31,    36,     0,
-      97,   105,    70,    69,     0,    22,    21
+       0,     0,   100,     0,     0,    64,     0,    65,     0,    71,
+       0,     2,     0,    33,    41,    17,     0,    43,     0,     0,
+       0,     0,     0,    89,     0,     0,    90,    85,    84,    79,
+      80,    82,    81,    94,     0,     0,    69,     0,    97,    59,
+       0,     0,     0,    98,     0,    29,    36,    30,     0,     0,
+       0,     0,    45,    92,   101,   102,   103,   104,   105,   106,
+      98,    72,     0,   100,    98,    98,    70,     0,    68,     0,
+       0,    17,    46,    47,     0,     0,    42,     0,     0,    99,
+       0,     0,    58,    23,    31,    36,     0,    49,    45,    93,
+      73,    67,    66,     0,    22,    48,     0,    44,    21,     0,
+      37
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-     -56,   -56,   -56,   231,   -11,   -56,   232,   -56,   -56,   -56,
-     -56,     1,   -10,   -56,    40,   131,   -56,   -19,   -56,   -56,
-     -56,   -56,   -56,   -56,   -56,    67,   102,   -56,    23,   -56,
-     -56,   -56,   -56,   -56,     7,   -56,   -56,   -56,   -56,   -56,
-     -56,   -56,   -56,   -37,   -56,    11,   -43,   -56,    41,   -56,
-     -56,   -56,   138
+    -102,  -102,  -102,   234,   -10,  -102,   229,  -102,  -102,  -102,
+    -102,    76,     9,  -102,    72,   159,  -102,   -16,  -102,  -102,
+    -102,  -102,    41,    66,  -102,   -38,  -102,  -102,  -102,  -102,
+    -102,   -18,  -102,  -102,  -102,  -102,  -102,  -102,  -102,   -21,
+     -17,  -101,    65,  -102,  -102,  -102,   163
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int16 yydefgoto[] =
 {
-      -1,     2,     3,    10,    11,    12,    13,    29,    30,    31,
-      32,   111,   112,    35,   188,    69,    70,    18,    19,    20,
-      21,    22,    76,   157,   113,   151,   114,   110,    45,    46,
-      47,    48,    49,    50,    86,    52,    53,    54,    55,    56,
-      57,    58,    59,    87,   158,    88,   137,   138,   200,   126,
-      89,    90,    91
+      -1,     2,     3,    10,    11,    12,    13,    26,    27,    28,
+      29,   169,   170,    32,   168,    62,    63,    18,    19,    69,
+     136,   171,   196,   172,   216,    42,    43,    44,    45,    46,
+      47,    79,    49,    50,    51,    52,    53,    54,    55,   122,
+      81,   123,   158,   111,    82,    83,    84
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -743,68 +719,66 @@ static const yytype_int16 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
 {
-      61,    24,    73,    34,    65,   155,    96,     5,    25,    26,
-      27,   128,    25,    26,    33,     4,    25,    26,     6,     7,
-       8,     9,    17,    25,    26,    51,    75,    51,    66,    60,
-     182,    60,     1,   183,    14,   131,   132,    74,    97,    17,
-      15,    98,    16,    62,    99,    63,   123,   124,   125,    95,
-      28,    71,   109,    51,    28,   134,   135,    60,    28,   156,
-     136,    51,   140,    51,    67,    60,   142,    60,   -36,   101,
-      64,    68,    51,    72,    77,    78,    60,   105,    92,   106,
-      38,   139,    97,    38,   141,   122,    38,  -100,   115,    93,
-     167,   168,   169,   170,   171,   172,    94,    79,   100,   103,
-      79,   178,   102,    79,    80,    81,    82,    80,    81,    82,
-      80,    81,    82,   104,   107,   189,     6,     7,     8,     9,
-     108,   116,   190,   191,   192,   193,    83,   194,   195,    83,
-      84,    38,    83,    84,   117,   120,    84,    85,   118,   204,
-      85,   121,  -103,    85,   119,   186,   205,    97,    79,   133,
-      51,   144,   143,   211,    60,    80,    81,    82,   213,   214,
-     145,   146,   212,   149,   147,   -17,   181,   207,   127,   128,
-     148,     6,     7,     8,     9,   150,    80,    83,   -17,   -17,
-     -17,    84,   159,   160,   161,   162,   127,   128,    85,   152,
-     219,   129,   130,   131,   132,   173,   166,   177,   218,   224,
-     185,   179,   180,   187,   174,   127,   128,   196,   197,   129,
-     130,   131,   132,   127,   128,   201,   198,   202,   203,   208,
-     -17,   209,   163,   216,   225,   164,   165,   226,   129,   130,
-     131,   132,   127,   128,   210,   215,   129,   130,   131,   132,
-     220,   175,    23,   127,   128,   222,   223,   199,   217,    36,
-     154,   206,   184,   221,   153,   129,   130,   131,   132,     0,
-       0,     0,    37,    38,     0,   176,   129,   130,   131,   132,
-      39,     0,     0,     0,     0,    40,     0,    41,    42,    43,
-      44
+      48,    56,    21,    57,    58,    94,   138,   134,     6,     7,
+       8,     9,    17,    98,   113,    80,    66,    22,    23,    89,
+     100,    88,    31,    71,    90,    48,    56,   107,    35,   -95,
+      22,    23,     1,    48,    56,    22,    23,    24,   116,   117,
+      48,    56,    68,    90,   163,    72,    91,   164,     4,    92,
+      22,    23,    73,    74,    75,   108,   109,   110,   -36,    25,
+       5,   135,   187,    14,   119,   120,    15,    16,    60,   121,
+      17,   125,    25,    61,    76,   127,    64,    25,    77,   197,
+     124,    65,    35,   200,   201,    78,   126,    70,    35,    30,
+     162,   147,   148,   149,   150,   151,   152,    85,    87,    72,
+      59,     6,     7,     8,     9,    72,    73,    74,    75,    67,
+      48,    56,    73,    74,    75,    93,    35,    86,   174,   175,
+     176,   177,    95,   178,   179,   166,    96,    97,    76,   101,
+      99,   102,    77,    72,    76,   105,   183,   103,    77,    78,
+      73,    74,    75,   188,   198,    78,   -17,   104,   106,   118,
+     189,    90,     6,     7,     8,     9,   128,   130,   129,   -17,
+     -17,   -17,    76,   131,    48,    56,    77,   112,   113,   137,
+      73,   146,   153,    78,   160,   206,   161,   159,   219,   165,
+     167,   205,   139,   140,   141,   142,   112,   113,   173,   213,
+     114,   115,   116,   117,   112,   113,   180,   215,    48,    56,
+     181,   -17,   182,   154,   184,   185,   186,   191,   190,   114,
+     115,   116,   117,   112,   113,   192,   193,   114,   115,   116,
+     117,   195,   143,   194,   202,   144,   145,   112,   113,   203,
+     155,   112,   113,   207,   209,   210,   114,   115,   116,   117,
+     214,   218,   211,   212,   220,    20,    33,   157,   199,   217,
+     114,   115,   116,   117,   114,   115,   116,   117,    34,    35,
+     156,   208,   204,   133,   132,     0,    36,     0,     0,     0,
+       0,    37,     0,    38,    39,    40,    41
 };
 
 static const yytype_int16 yycheck[] =
 {
-      19,    12,     6,    13,    23,     8,    43,    62,    20,    21,
-      22,    34,    20,    21,    13,     0,    20,    21,    13,    14,
-      15,    16,    17,    20,    21,    18,    36,    20,    27,    18,
-      68,    20,    19,    71,    16,    58,    59,    36,    65,    17,
-      16,    68,    16,    20,    71,    62,    83,    84,    85,    42,
-      62,    64,    63,    46,    62,    92,    93,    46,    62,    62,
-      97,    54,    99,    56,    28,    54,   103,    56,    63,    46,
-      68,    28,    65,     7,    28,     6,    65,    54,    68,    56,
-      11,     9,    65,    11,     9,    68,    11,    70,    65,    68,
-     127,   128,   129,   130,   131,   132,    28,    28,    63,    71,
-      28,   138,    64,    28,    35,    36,    37,    35,    36,    37,
-      35,    36,    37,    24,    70,   158,    13,    14,    15,    16,
-      63,    65,   159,   160,   161,   162,    57,   164,   165,    57,
-      61,    11,    57,    61,    63,    28,    61,    68,    64,   182,
-      68,    28,    69,    68,    67,   156,   183,    65,    28,    70,
-     143,    63,    62,   196,   143,    35,    36,    37,   201,   202,
-      63,    28,   199,    69,    28,     7,   143,   186,    33,    34,
-      28,    13,    14,    15,    16,    64,    35,    57,    20,    21,
-      22,    61,    29,    30,    31,    32,    33,    34,    68,    63,
-     209,    56,    57,    58,    59,    28,    69,    69,   209,   218,
-      66,    28,    28,    28,    69,    33,    34,    68,    62,    56,
-      57,    58,    59,    33,    34,    68,    62,    68,    63,    67,
-      62,    62,    69,    63,    63,    72,    73,    63,    56,    57,
-      58,    59,    33,    34,    69,    69,    56,    57,    58,    59,
-      69,    69,    11,    33,    34,    69,    69,    67,   208,    17,
-     119,   184,   150,   212,   116,    56,    57,    58,    59,    -1,
-      -1,    -1,    10,    11,    -1,    66,    56,    57,    58,    59,
-      18,    -1,    -1,    -1,    -1,    23,    -1,    25,    26,    27,
-      28
+      18,    18,    12,    19,    20,    43,   107,     8,    13,    14,
+      15,    16,    17,    51,    34,    36,     6,    20,    21,    40,
+      58,    39,    13,     6,    65,    43,    43,    68,    11,    70,
+      20,    21,    19,    51,    51,    20,    21,    22,    58,    59,
+      58,    58,    33,    65,    68,    28,    68,    71,     0,    71,
+      20,    21,    35,    36,    37,    76,    77,    78,    63,    62,
+      62,    62,   163,    16,    85,    86,    16,    16,    28,    90,
+      17,    92,    62,    28,    57,    96,    64,    62,    61,   180,
+       9,     7,    11,   184,   185,    68,     9,    28,    11,    13,
+     128,   112,   113,   114,   115,   116,   117,    68,    28,    28,
+      24,    13,    14,    15,    16,    28,    35,    36,    37,    33,
+     128,   128,    35,    36,    37,    63,    11,    68,   139,   140,
+     141,   142,    64,   144,   145,   135,    71,    24,    57,    65,
+      70,    63,    61,    28,    57,    28,   157,    64,    61,    68,
+      35,    36,    37,   164,   182,    68,     7,    67,    28,    70,
+     166,    65,    13,    14,    15,    16,    62,    28,    63,    20,
+      21,    22,    57,    63,   182,   182,    61,    33,    34,    68,
+      35,    69,    28,    68,    28,   191,    28,    69,   216,    66,
+      28,   191,    29,    30,    31,    32,    33,    34,    69,   205,
+      56,    57,    58,    59,    33,    34,    68,   207,   216,   216,
+      62,    62,    62,    69,    68,    68,    63,    62,    67,    56,
+      57,    58,    59,    33,    34,    28,    28,    56,    57,    58,
+      59,    64,    69,    69,    69,    72,    73,    33,    34,    63,
+      69,    33,    34,    62,    69,    63,    56,    57,    58,    59,
+      63,    63,    69,    69,    63,    11,    17,    67,   183,   208,
+      56,    57,    58,    59,    56,    57,    58,    59,    10,    11,
+      66,   195,   190,   104,   101,    -1,    18,    -1,    -1,    -1,
+      -1,    23,    -1,    25,    26,    27,    28
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -813,27 +787,27 @@ static const yytype_uint8 yystos[] =
 {
        0,    19,    75,    76,     0,    62,    13,    14,    15,    16,
       77,    78,    79,    80,    16,    16,    16,    17,    91,    92,
-      93,    94,    95,    77,    78,    20,    21,    22,    62,    81,
-      82,    83,    84,    85,    86,    87,    80,    10,    11,    18,
-      23,    25,    26,    27,    28,   102,   103,   104,   105,   106,
-     107,   108,   109,   110,   111,   112,   113,   114,   115,   116,
-     119,    91,   102,    62,    68,    91,    85,    28,    28,    89,
-      90,    64,     7,     6,    85,    86,    96,    28,     6,    28,
-      35,    36,    37,    57,    61,    68,   108,   117,   119,   124,
-     125,   126,    68,    68,    28,   108,   117,    65,    68,    71,
-      63,   102,    64,    71,    24,   102,   102,    70,    63,    78,
-     101,    85,    86,    98,   100,   102,    65,    63,    64,    67,
-      28,    28,    68,   117,   117,   117,   123,    33,    34,    56,
-      57,    58,    59,    70,   117,   117,   117,   120,   121,     9,
-     117,     9,   117,    62,    63,    63,    28,    28,    28,    69,
-      64,    99,    63,   126,    89,     8,    62,    97,   118,    29,
-      30,    31,    32,    69,    72,    73,    69,   117,   117,   117,
-     117,   117,   117,    28,    69,    69,    66,    69,   117,    28,
-      28,   102,    68,    71,   100,    66,    78,    28,    88,   120,
-     117,   117,   117,   117,   117,   117,    68,    62,    62,    67,
-     122,    68,    68,    63,   120,   117,    99,    91,    67,    62,
-      69,   120,   117,   120,   120,    69,    63,    88,    78,    91,
-      69,   122,    69,    69,    91,    63,    63
+      77,    78,    20,    21,    22,    62,    81,    82,    83,    84,
+      85,    86,    87,    80,    10,    11,    18,    23,    25,    26,
+      27,    28,    99,   100,   101,   102,   103,   104,   105,   106,
+     107,   108,   109,   110,   111,   112,   114,    91,    91,    85,
+      28,    28,    89,    90,    64,     7,     6,    85,    86,    93,
+      28,     6,    28,    35,    36,    37,    57,    61,    68,   105,
+     113,   114,   118,   119,   120,    68,    68,    28,   105,   113,
+      65,    68,    71,    63,    99,    64,    71,    24,    99,    70,
+      99,    65,    63,    64,    67,    28,    28,    68,   113,   113,
+     113,   117,    33,    34,    56,    57,    58,    59,    70,   113,
+     113,   113,   113,   115,     9,   113,     9,   113,    62,    63,
+      28,    63,   120,    89,     8,    62,    94,    68,   115,    29,
+      30,    31,    32,    69,    72,    73,    69,   113,   113,   113,
+     113,   113,   113,    28,    69,    69,    66,    67,   116,    69,
+      28,    28,    99,    68,    71,    66,    78,    28,    88,    85,
+      86,    95,    97,    69,   113,   113,   113,   113,   113,   113,
+      68,    62,    62,   113,    68,    68,    63,   115,   113,    91,
+      67,    62,    28,    28,    69,    64,    96,   115,    99,   116,
+     115,   115,    69,    63,    88,    78,    91,    62,    97,    69,
+      63,    69,    69,    91,    63,    78,    98,    96,    63,    99,
+      63
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
@@ -842,15 +816,15 @@ static const yytype_uint8 yyr1[] =
        0,    74,    75,    75,    76,    77,    78,    78,    79,    79,
       80,    80,    80,    80,    80,    80,    80,    80,    81,    81,
       81,    82,    82,    82,    83,    84,    85,    85,    86,    87,
-      88,    88,    89,    89,    90,    91,    91,    92,    93,    94,
-      95,    96,    96,    96,    97,    98,    98,    99,    99,   100,
-     100,   101,   101,   102,   102,   103,   103,   104,   104,   104,
-     104,   104,   104,   104,   105,   106,   106,   107,   107,   107,
-     107,   107,   108,   109,   110,   111,   112,   113,   114,   114,
-     115,   116,   116,   117,   117,   117,   117,   117,   117,   117,
-     117,   117,   117,   117,   117,   117,   117,   117,   117,   118,
-     119,   119,   120,   120,   121,   122,   122,   123,   123,   123,
-     123,   123,   123,   124,   124,   125,   125,   126
+      88,    88,    89,    89,    90,    91,    91,    92,    93,    93,
+      93,    94,    95,    95,    96,    96,    97,    97,    98,    98,
+      99,    99,   100,   100,   101,   101,   101,   101,   101,   101,
+     101,   102,   103,   103,   104,   104,   104,   104,   104,   105,
+     106,   107,   108,   109,   110,   110,   111,   112,   112,   113,
+     113,   113,   113,   113,   113,   113,   113,   113,   113,   113,
+     113,   113,   113,   113,   113,   114,   114,   115,   115,   116,
+     116,   117,   117,   117,   117,   117,   117,   118,   118,   119,
+     119,   120
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -859,15 +833,15 @@ static const yytype_uint8 yyr2[] =
        0,     2,     8,     7,     0,     0,     1,     2,     4,     3,
        2,     2,     2,     1,     1,     1,     1,     0,     1,     1,
        1,     9,     8,     7,     0,     1,     1,     1,     3,     5,
-       1,     3,     1,     3,     1,     2,     0,     3,     3,     4,
-       4,     1,     1,     1,     1,     2,     0,     3,     0,     2,
-       2,     1,     0,     1,     2,     2,     1,     1,     1,     1,
-       1,     6,     4,     1,     2,     1,     1,     3,     3,     7,
-       7,     5,     4,     5,     3,     5,     3,     5,     2,     2,
-       2,     2,     2,     3,     3,     3,     3,     2,     3,     3,
-       2,     1,     1,     3,     3,     1,     5,     6,     3,     0,
-       1,     1,     3,     0,     0,     3,     0,     3,     3,     3,
-       3,     3,     3,     1,     1,     1,     1,     1
+       1,     3,     1,     3,     1,     2,     0,    11,     1,     1,
+       1,     1,     2,     0,     3,     0,     2,     2,     1,     0,
+       1,     2,     2,     1,     1,     1,     1,     1,     6,     4,
+       1,     2,     1,     1,     3,     3,     7,     7,     5,     4,
+       5,     3,     5,     7,     2,     2,     2,     2,     2,     3,
+       3,     3,     3,     2,     3,     3,     2,     1,     1,     3,
+       3,     1,     4,     6,     3,     1,     1,     2,     0,     3,
+       0,     3,     3,     3,     3,     3,     3,     1,     1,     1,
+       1,     1
 };
 
 
@@ -1544,667 +1518,605 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 132 "omicron.y" /* yacc.c:1646  */
+#line 109 "omicron.y" /* yacc.c:1646  */
     {
         escribir_fin(fout);
         tablaFree(tabla_main);
     }
-#line 1553 "y.tab.c" /* yacc.c:1646  */
+#line 1527 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 138 "omicron.y" /* yacc.c:1646  */
+#line 115 "omicron.y" /* yacc.c:1646  */
     {
         escribir_fin(fout);
         tablaFree(tabla_main);
     }
-#line 1562 "y.tab.c" /* yacc.c:1646  */
+#line 1536 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 144 "omicron.y" /* yacc.c:1646  */
+#line 121 "omicron.y" /* yacc.c:1646  */
     {
     /* Inic tabla simbolos */
+
     if ( abrirAmbitoClase(&tabla_main, "main", 1) == -1) { /* init tabla simbolos */
         printf("error inicializando en la tabla de simbolos");
     }
     escribir_subseccion_data(fout);
     escribir_cabecera_bss(fout);
 }
-#line 1575 "y.tab.c" /* yacc.c:1646  */
+#line 1550 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 153 "omicron.y" /* yacc.c:1646  */
+#line 131 "omicron.y" /* yacc.c:1646  */
     {
+
+
+        //Buscamos la variable en
+
+    //getVarsTS
+    //Declararlas
+
     escribir_segmento_codigo(fout);
     escribir_inicio_main(fout);
 }
-#line 1584 "y.tab.c" /* yacc.c:1646  */
+#line 1566 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 159 "omicron.y" /* yacc.c:1646  */
+#line 144 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tdeclaraciones: declaracion\n");
     }
-#line 1591 "y.tab.c" /* yacc.c:1646  */
+#line 1574 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 163 "omicron.y" /* yacc.c:1646  */
+#line 149 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tdeclaraciones: declaracion, declaraciones\n");
     }
-#line 1598 "y.tab.c" /* yacc.c:1646  */
+#line 1582 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 168 "omicron.y" /* yacc.c:1646  */
+#line 155 "omicron.y" /* yacc.c:1646  */
     {
         if ((yyvsp[-2].atributos).tipo != (yyvsp[-1].atributos).tipo) {
             printf("Declaracion de distintos tipos NOT GOOD\n");
         }
+        // Lo suyo sería hacer aqui las declaraciones
     }
-#line 1608 "y.tab.c" /* yacc.c:1646  */
+#line 1593 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 175 "omicron.y" /* yacc.c:1646  */
+#line 163 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tdeclaracion: modificadores_acceso declaracion_clase ';'\n");
     }
-#line 1615 "y.tab.c" /* yacc.c:1646  */
+#line 1601 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 180 "omicron.y" /* yacc.c:1646  */
+#line 169 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tmodificadores_acceso: TOK_HIDDEN TOK_UNIQUE\n");
     }
-#line 1622 "y.tab.c" /* yacc.c:1646  */
+#line 1609 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 184 "omicron.y" /* yacc.c:1646  */
+#line 174 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tmodificadores_acceso: TOK_SECRET TOK_UNIQUE\n");
     }
-#line 1629 "y.tab.c" /* yacc.c:1646  */
+#line 1617 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 188 "omicron.y" /* yacc.c:1646  */
+#line 179 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tmodificadores_acceso: TOK_EXPOSED TOK_UNIQUE\n");
     }
-#line 1636 "y.tab.c" /* yacc.c:1646  */
+#line 1625 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 192 "omicron.y" /* yacc.c:1646  */
+#line 184 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tmodificadores_acceso: TOK_HIDDEN\n");
     }
-#line 1643 "y.tab.c" /* yacc.c:1646  */
+#line 1633 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 196 "omicron.y" /* yacc.c:1646  */
+#line 189 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tmodificadores_acceso: TOK_SECRET\n");
     }
-#line 1650 "y.tab.c" /* yacc.c:1646  */
+#line 1641 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 200 "omicron.y" /* yacc.c:1646  */
+#line 194 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tmodificadores_acceso: TOK_EXPOSED\n");
+    }
+#line 1649 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 16:
+#line 199 "omicron.y" /* yacc.c:1646  */
+    {
+        //fprintf(fout, ";R:\tmodificadores_acceso: TOK_UNIQUE\n");
     }
 #line 1657 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 16:
+  case 17:
 #line 204 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tmodificadores_acceso:\n");
     }
-#line 1664 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 17:
-#line 208 "omicron.y" /* yacc.c:1646  */
-    {
-    }
-#line 1671 "y.tab.c" /* yacc.c:1646  */
+#line 1665 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 213 "omicron.y" /* yacc.c:1646  */
+#line 210 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tclase: clase_escalar\n");
         (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
     }
-#line 1679 "y.tab.c" /* yacc.c:1646  */
+#line 1674 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 218 "omicron.y" /* yacc.c:1646  */
+#line 216 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tclase: clase_vector\n");
     }
-#line 1686 "y.tab.c" /* yacc.c:1646  */
+#line 1682 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 222 "omicron.y" /* yacc.c:1646  */
+#line 221 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tclase: clase_objeto\n");
     }
-#line 1693 "y.tab.c" /* yacc.c:1646  */
+#line 1690 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
 #line 227 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR inherits identificadores '{' declaraciones funciones '}'\n");
     }
-#line 1700 "y.tab.c" /* yacc.c:1646  */
+#line 1698 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 231 "omicron.y" /* yacc.c:1646  */
+#line 232 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR inherits identificadores '{' declaraciones funciones '}'\n");
     }
-#line 1707 "y.tab.c" /* yacc.c:1646  */
+#line 1706 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 235 "omicron.y" /* yacc.c:1646  */
+#line 237 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tdeclaracion_clase: modificadores_clase TOK_CLASS TOK_IDENTIFICADOR '{' declaraciones funciones '}'\n");
     }
 #line 1714 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 240 "omicron.y" /* yacc.c:1646  */
+#line 243 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tmodificadores_clase:\n");
     }
-#line 1721 "y.tab.c" /* yacc.c:1646  */
+#line 1722 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 245 "omicron.y" /* yacc.c:1646  */
+#line 249 "omicron.y" /* yacc.c:1646  */
     {
+       //fprintf(fout, ";R:\tclase_escalar: tipo\n");
        (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
     }
-#line 1729 "y.tab.c" /* yacc.c:1646  */
+#line 1731 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 251 "omicron.y" /* yacc.c:1646  */
+#line 256 "omicron.y" /* yacc.c:1646  */
     {
-        
-        printf("llego bien (int)\n\n");
+        //fprintf(fout, ";R:\ttipo: TOK_INT\n");
         (yyval.atributos).tipo = ENTERO;
         tipo_declaracion = ENTERO;
     }
-#line 1740 "y.tab.c" /* yacc.c:1646  */
+#line 1741 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 259 "omicron.y" /* yacc.c:1646  */
+#line 263 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\ttipo: TOK_BOOLEAN\n");
         (yyval.atributos).tipo = BOOLEAN;
         tipo_declaracion = BOOLEAN;
     }
-#line 1749 "y.tab.c" /* yacc.c:1646  */
+#line 1751 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 266 "omicron.y" /* yacc.c:1646  */
+#line 271 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tclase_objeto: '{' TOK_IDENTIFICADOR '}'\n");
     }
-#line 1756 "y.tab.c" /* yacc.c:1646  */
+#line 1759 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 271 "omicron.y" /* yacc.c:1646  */
+#line 277 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tclase_vector: TOK_ARRAY tipo '[' constante_entera ']'\n");
     }
-#line 1763 "y.tab.c" /* yacc.c:1646  */
+#line 1767 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 276 "omicron.y" /* yacc.c:1646  */
+#line 283 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tidentificadores: TOK_IDENTIFICADOR\n");
     }
-#line 1770 "y.tab.c" /* yacc.c:1646  */
+#line 1775 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 280 "omicron.y" /* yacc.c:1646  */
+#line 288 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tidentificadores: TOK_IDENTIFICADOR ',' identificadores\n");
     }
-#line 1777 "y.tab.c" /* yacc.c:1646  */
+#line 1783 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 285 "omicron.y" /* yacc.c:1646  */
+#line 294 "omicron.y" /* yacc.c:1646  */
     {
         /* Aqui solo se accede al declarar varibles */
         (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
 
-        if (en_funcion){
-            strcpy(fcn.nombre_var[nlocalvar], (yyvsp[0].atributos).lexema);
-            fcn.tipo_var[nlocalvar] = (yyvsp[0].atributos).tipo;
-            nlocalvar++;
-        }
-
-
     }
-#line 1794 "y.tab.c" /* yacc.c:1646  */
+#line 1793 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 299 "omicron.y" /* yacc.c:1646  */
+#line 301 "omicron.y" /* yacc.c:1646  */
     {
       (yyval.atributos).tipo = (yyvsp[-2].atributos).tipo;
     }
-#line 1802 "y.tab.c" /* yacc.c:1646  */
+#line 1801 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 305 "omicron.y" /* yacc.c:1646  */
+#line 307 "omicron.y" /* yacc.c:1646  */
     {
-        (yyval.atributos).direcciones = 1;
-        (yyvsp[0].atributos).tipo = tipo_declaracion;
-        (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
+  (yyval.atributos).direcciones = 1;
+  (yyvsp[0].atributos).tipo = tipo_declaracion;
 
-        if (en_funcion == 0) {
-            declarar_variable(fout, (yyvsp[0].atributos).lexema, (yyvsp[0].atributos).tipo, 1);
-        
-            insertarTablaSimbolosAmbitos(tabla_main, "main", (yyvsp[0].atributos).lexema, ESCALAR, (yyvsp[0].atributos).tipo, (yyvsp[0].atributos).direcciones, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
-            printf("Insertamos en tabla simbolos la variable: %s [%d]\n", (yyvsp[0].atributos).lexema, (yyvsp[0].atributos).tipo);
-            if (buscarIdNoCualificado(NULL, tabla_main, (yyvsp[0].atributos).lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
-                printf("found!!!\n");
-            }
-        }
-    }
-#line 1822 "y.tab.c" /* yacc.c:1646  */
+  printf("entro en una declaracion de variable (%s) [%d]\n", (yyvsp[0].atributos).lexema, (yyvsp[0].atributos).tipo);
+  (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
+  declarar_variable(fout, (yyvsp[0].atributos).lexema, (yyvsp[0].atributos).tipo, 1);
+  // TODO: insertar en tabla simbolos
+  insertarTablaSimbolosAmbitos(tabla_main, "main", (yyvsp[0].atributos).lexema, ESCALAR, (yyvsp[0].atributos).tipo, (yyvsp[0].atributos).direcciones, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+}
+#line 1816 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 323 "omicron.y" /* yacc.c:1646  */
+#line 319 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tfunciones: funcion funciones\n");
     }
-#line 1829 "y.tab.c" /* yacc.c:1646  */
+#line 1824 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 327 "omicron.y" /* yacc.c:1646  */
+#line 324 "omicron.y" /* yacc.c:1646  */
     {
-        comienzo_sentencias(fout);
+        //fprintf(fout, ";R:\tfunciones:\n");
     }
-#line 1837 "y.tab.c" /* yacc.c:1646  */
+#line 1832 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 333 "omicron.y" /* yacc.c:1646  */
+#line 330 "omicron.y" /* yacc.c:1646  */
     {
-        if (hay_return == 0) {
-            sprintf(msg, "No hay return en funcion");
-        }
-        hay_return = 0;
-        en_funcion = 0;
-
-        printf("--- Termina funcion ---\n");
+        //fprintf(fout, ";R:\tfuncion: TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR '(' parametros_funcion ')' '{' declaraciones_funcion sentencias '}'\n");
     }
-#line 1851 "y.tab.c" /* yacc.c:1646  */
+#line 1840 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 345 "omicron.y" /* yacc.c:1646  */
+#line 336 "omicron.y" /* yacc.c:1646  */
     {
-        /**Ensamblador*/
-        declararFuncion(fout, fcn.nombre, nlocalvar);
-
-        /* Bucle para insertar los argumentos de la funcion */
-        for (i = 0; i < fcn.nargs; i++) {
-            strcpy(aux, fcn.nombre);
-            strcat(aux, "_");
-            strcat(aux, fcn.nombre_args[i]);
-            printf("introducimos el parametro %s en el ambito %s\n", aux, fcn.nombre);
-            insertarTablaSimbolosAmbitos(tabla_main, "main", aux, FUNCION, fcn.tipo_args[i], PARAMETRO, 1, fcn.nargs, 0, 1, i, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
-        
-        }
-
-        for (i = 0; i < nlocalvar; i++) {
-            strcpy(aux, fcn.nombre);
-            strcat(aux, "_");
-            strcat(aux, fcn.nombre_var[i]);
-            insertarTablaSimbolosAmbitos(tabla_main, "main", aux, FUNCION, fcn.tipo_var[i], VARIABLE, 1, 0, nlocalvar, i, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
-            
-        }
+        //fprintf(fout, ";R:\ttipo_retorno: TOK_NONE\n");
     }
-#line 1878 "y.tab.c" /* yacc.c:1646  */
+#line 1848 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 370 "omicron.y" /* yacc.c:1646  */
+#line 341 "omicron.y" /* yacc.c:1646  */
     {
-        for (i = 0; i < fcn.nargs; i++) {
-            sprintf(aux, "@%d", fcn.tipo_args[i]);
-            strcat(fcn.nombre, aux);
-        }
-
-        printf("--> Nombre de la funcion: %s  <--\n", fcn.nombre);
-
-        if (buscarIdNoCualificado(NULL, tabla_main, fname_aux, "main", &elem, nombre_ambito_encontrado) == OK) {
-            sprintf(msg, "El nombre de esta funcion ya existe");
-            return -1;
-        }
-        insertarTablaSimbolosAmbitos(tabla_main, "main", fcn.nombre, FUNCION, fcn.tipo_retorno, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
-
-        if (AbrirAmbitoPrefijos(tabla_main, "main", fcn.nombre, FUNCION, 0, fcn.tipo_retorno, 0, 1) == -1) {
-            sprintf(msg, "Variable no encontrada\n");
-            return -1;
-        }
-        
-
-        nlocalvar = 0;
+        //fprintf(fout, ";R:\ttipo_retorno: tipo\n");
     }
-#line 1905 "y.tab.c" /* yacc.c:1646  */
+#line 1856 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 395 "omicron.y" /* yacc.c:1646  */
+#line 346 "omicron.y" /* yacc.c:1646  */
     {
-        en_funcion = 1;
-        strcpy(fcn.nombre, (yyvsp[0].atributos).lexema);
-        fcn.nargs = 0;
-        fcn.tipo_retorno = (yyvsp[-1].atributos).tipo;
+        //fprintf(fout, ";R:\ttipo_retorno: clase_objeto\n");
     }
-#line 1916 "y.tab.c" /* yacc.c:1646  */
+#line 1864 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 406 "omicron.y" /* yacc.c:1646  */
+#line 352 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tinherits: TOK_INHERITS\n");
     }
-#line 1923 "y.tab.c" /* yacc.c:1646  */
+#line 1872 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 410 "omicron.y" /* yacc.c:1646  */
+#line 358 "omicron.y" /* yacc.c:1646  */
     {
-        (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
+        //fprintf(fout, ";R:\tparametros_funcion: parametro_funcion resto_parametros_funcion\n");
     }
-#line 1931 "y.tab.c" /* yacc.c:1646  */
+#line 1880 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 415 "omicron.y" /* yacc.c:1646  */
+#line 363 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tparametros_funcion:\n");
     }
-#line 1938 "y.tab.c" /* yacc.c:1646  */
+#line 1888 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 420 "omicron.y" /* yacc.c:1646  */
+#line 369 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tresto_parametros_funcion: ';' parametro_funcion resto_parametros_funcion\n");
     }
-#line 1945 "y.tab.c" /* yacc.c:1646  */
+#line 1896 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 425 "omicron.y" /* yacc.c:1646  */
+#line 374 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tresto_parametros_funcion:\n");
+    }
+#line 1904 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 46:
+#line 380 "omicron.y" /* yacc.c:1646  */
+    {
+        //fprintf(fout, ";R:\tparametro_funcion: tipo TOK_IDENTIFICADOR\n");
+    }
+#line 1912 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 47:
+#line 385 "omicron.y" /* yacc.c:1646  */
+    {
+        //fprintf(fout, ";R:\tparametro_funcion: clase_objeto TOK_IDENTIFICADOR\n");
+    }
+#line 1920 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 48:
+#line 391 "omicron.y" /* yacc.c:1646  */
+    {
+        //fprintf(fout, ";R:\tdeclaraciones_funcion: declaraciones\n");
+    }
+#line 1928 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 49:
+#line 396 "omicron.y" /* yacc.c:1646  */
+    {
+        //fprintf(fout, ";R:\tdeclaraciones_funcion:\n");
+    }
+#line 1936 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 50:
+#line 402 "omicron.y" /* yacc.c:1646  */
+    {
+        //fprintf(fout, ";R:\tsentencias: sentencia\n");
+    }
+#line 1944 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 51:
+#line 407 "omicron.y" /* yacc.c:1646  */
+    {
+        //fprintf(fout, ";R:\tsentencias: sentencia sentencias\n");
     }
 #line 1952 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 46:
+  case 52:
+#line 413 "omicron.y" /* yacc.c:1646  */
+    {
+        //fprintf(fout, ";R:\tsentencia: sentencia_simple ';'\n");
+    }
+#line 1960 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 53:
+#line 418 "omicron.y" /* yacc.c:1646  */
+    {
+        //fprintf(fout, ";R:\tsentencia: bloque\n");
+    }
+#line 1968 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 54:
+#line 424 "omicron.y" /* yacc.c:1646  */
+    {
+        //fprintf(fout, ";R:\tsentencia_simple: asignacion\n");
+    }
+#line 1976 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 55:
 #line 429 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tsentencia_simple: lectura\n");
     }
-#line 1959 "y.tab.c" /* yacc.c:1646  */
+#line 1984 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 47:
+  case 56:
 #line 434 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tsentencia_simple: escritura\n");
     }
-#line 1966 "y.tab.c" /* yacc.c:1646  */
+#line 1992 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 48:
-#line 438 "omicron.y" /* yacc.c:1646  */
+  case 57:
+#line 439 "omicron.y" /* yacc.c:1646  */
     {
-    }
-#line 1973 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 49:
-#line 443 "omicron.y" /* yacc.c:1646  */
-    {
-        printf("precesamos argumento: %s (%d)\n", (yyvsp[0].atributos).lexema, fcn.nargs);
-        strcpy(fcn.nombre_args[fcn.nargs], (yyvsp[0].atributos).lexema);
-        printf("hago el strcpy bien\n");
-        (yyvsp[0].atributos).tipo = (yyvsp[-1].atributos).tipo;
-        fcn.tipo_args[fcn.nargs] = (yyvsp[0].atributos).tipo;
-        fcn.nargs++;
-    }
-#line 1986 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 50:
-#line 453 "omicron.y" /* yacc.c:1646  */
-    {
-    }
-#line 1993 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 51:
-#line 458 "omicron.y" /* yacc.c:1646  */
-    {
+        //fprintf(fout, ";R:\tsentencia_simple: retorno_funcion\n");
     }
 #line 2000 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 52:
-#line 462 "omicron.y" /* yacc.c:1646  */
-    {
-    }
-#line 2007 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 53:
-#line 467 "omicron.y" /* yacc.c:1646  */
-    {
-    }
-#line 2014 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 54:
-#line 471 "omicron.y" /* yacc.c:1646  */
-    {
-    }
-#line 2021 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 55:
-#line 476 "omicron.y" /* yacc.c:1646  */
-    {
-    }
-#line 2028 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 56:
-#line 480 "omicron.y" /* yacc.c:1646  */
-    {
-    }
-#line 2035 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 57:
-#line 485 "omicron.y" /* yacc.c:1646  */
-    {
-    }
-#line 2042 "y.tab.c" /* yacc.c:1646  */
-    break;
-
   case 58:
-#line 489 "omicron.y" /* yacc.c:1646  */
+#line 444 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tsentencia_simple: identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
     }
-#line 2049 "y.tab.c" /* yacc.c:1646  */
+#line 2008 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 493 "omicron.y" /* yacc.c:1646  */
+#line 449 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tsentencia_simple: TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
     }
-#line 2056 "y.tab.c" /* yacc.c:1646  */
+#line 2016 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 497 "omicron.y" /* yacc.c:1646  */
+#line 454 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tsentencia_simple: destruir_objeto\n");
     }
-#line 2063 "y.tab.c" /* yacc.c:1646  */
+#line 2024 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 501 "omicron.y" /* yacc.c:1646  */
+#line 460 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tdestruir_objeto: TOK_DISCARD TOK_IDENTIFICADOR\n");
     }
-#line 2070 "y.tab.c" /* yacc.c:1646  */
+#line 2032 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 505 "omicron.y" /* yacc.c:1646  */
+#line 466 "omicron.y" /* yacc.c:1646  */
     {
-        flag_lista_exp = 0;
-
-        strcat(fname_aux, (yyvsp[-3].atributos).lexema);
-        strcat(fname_aux, aux);
-
-
-
-        if (buscarIdNoCualificado(NULL, tabla_main, fname_aux, "main", &elem, nombre_ambito_encontrado) != OK) {
-            sprintf(msg, "la funcion no existe");
-            return -1;
-        }
-        if (elem->clase != FUNCION) {
-            sprintf(msg, "la funcion no existe");
-            return -1;
-        }
-
-        llamarFuncion(fout, fname_aux, nargs);
-
-        (yyval.atributos).tipo = elem->tipo;
-        (yyval.atributos).direcciones = 0;
+        //fprintf(fout, ";R:\tbloque: condicional\n");
     }
-#line 2097 "y.tab.c" /* yacc.c:1646  */
+#line 2040 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 529 "omicron.y" /* yacc.c:1646  */
+#line 471 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tbloque: bucle\n");
     }
-#line 2104 "y.tab.c" /* yacc.c:1646  */
+#line 2048 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 534 "omicron.y" /* yacc.c:1646  */
+#line 477 "omicron.y" /* yacc.c:1646  */
     {
+        //Buscamos en la tabla de simbolos el tipo de $1
+        if (buscarIdNoCualificado(NULL, tabla_main, (yyvsp[-2].atributos).lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
+            (yyvsp[-2].atributos).tipo = elem->tipo;
+        }
+        else {
+            printf("Error: Variable no encontrada\n");
+        }
+
+        if ((yyvsp[-2].atributos).tipo != (yyvsp[0].atributos).tipo) {
+          printf("Error: Variables distintas\n");
+        }
+
+        char aux[50];
+        if ((yyvsp[0].atributos).direcciones == 0) {
+            sprintf(aux, "%d", (yyvsp[0].atributos).valor_entero);
+
+        }
+        //escribir_operando(fout, aux, $3.direcciones);
+        asignar(fout, (yyvsp[-2].atributos).lexema, (yyvsp[0].atributos).direcciones);
     }
-#line 2111 "y.tab.c" /* yacc.c:1646  */
+#line 2074 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 539 "omicron.y" /* yacc.c:1646  */
+#line 500 "omicron.y" /* yacc.c:1646  */
     {
+        if ((yyvsp[-2].atributos).tipo != (yyvsp[0].atributos).tipo) {
+            printf("Error: tipos incompatibles");
+        }
     }
-#line 2118 "y.tab.c" /* yacc.c:1646  */
+#line 2084 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 543 "omicron.y" /* yacc.c:1646  */
+#line 507 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tasignacion: elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
     }
-#line 2125 "y.tab.c" /* yacc.c:1646  */
+#line 2092 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 548 "omicron.y" /* yacc.c:1646  */
+#line 512 "omicron.y" /* yacc.c:1646  */
     {
-
-        if (en_funcion) {
-            sprintf(aux, "%s_", fcn.nombre);
-            strcat(aux, (yyvsp[-2].atributos).lexema);
-            if (buscarParaDeclararIdTablaSimbolosAmbitos(tabla_main, aux, &elem, "main", nombre_ambito_encontrado) == OK){
-                asignar_en_funcion(fout, (yyvsp[0].atributos).tipo, elem->posicion_variable_local+1);
-            }
-            else {
-                sprintf(msg, "Varible local no encontrada\n");
-                return -1;
-            }
-        }
-        else {
-            //Buscamos en la tabla de simbolos el tipo de $1
-            if (buscarIdNoCualificado(NULL, tabla_main, (yyvsp[-2].atributos).lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
-                (yyvsp[-2].atributos).tipo = elem->tipo;
-            }
-            else {
-                sprintf(msg, "Variable no encontrada\n");
-                printf("fgeiufgeiufgeiufg");
-            }
-
-            if ((yyvsp[-2].atributos).tipo != (yyvsp[0].atributos).tipo) {
-            sprintf(msg, "Variables distintas\n");
-            }
-
-            if ((yyvsp[0].atributos).direcciones == 0) {
-                sprintf(aux, "%d", (yyvsp[0].atributos).valor_entero);
-
-            }
-            asignar(fout, (yyvsp[-2].atributos).lexema, (yyvsp[0].atributos).direcciones);
-        }
-
+        //fprintf(fout, ";R:\tasignacion: TOK_IDENTIFICADOR '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
     }
-#line 2165 "y.tab.c" /* yacc.c:1646  */
+#line 2100 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 585 "omicron.y" /* yacc.c:1646  */
+#line 517 "omicron.y" /* yacc.c:1646  */
     {
-        if ((yyvsp[-2].atributos).tipo != (yyvsp[0].atributos).tipo) {
-            sprintf(msg, "tipos incompatibles");
-        }
+        //fprintf(fout, ";R:\tasignacion: identificador_clase '.' TOK_IDENTIFICADOR '=' exp\n");
     }
-#line 2175 "y.tab.c" /* yacc.c:1646  */
+#line 2108 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 592 "omicron.y" /* yacc.c:1646  */
-    {
-    }
-#line 2182 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 70:
-#line 596 "omicron.y" /* yacc.c:1646  */
-    {
-    }
-#line 2189 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 71:
-#line 600 "omicron.y" /* yacc.c:1646  */
-    {
-    }
-#line 2196 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 72:
-#line 605 "omicron.y" /* yacc.c:1646  */
+#line 523 "omicron.y" /* yacc.c:1646  */
     {
         if (buscarIdNoCualificado(NULL, tabla_main, (yyvsp[-3].atributos).lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
             (yyvsp[-3].atributos).tipo = elem->tipo;
             if (elem->clase != VECTOR) {
-                sprintf(msg, "no es vector");
+                printf("Error: no es vector");
             }
             if ((yyvsp[-1].atributos).tipo != ENTERO) {
-                sprintf(msg, "el indice debe ser de tipo entero");
+                printf("Error: el indice debe ser de tipo entero");
             }
 
             (yyval.atributos).tipo = elem->tipo;
@@ -2212,101 +2124,87 @@ yyreduce:
             //Comprobacion indice, 0<i<64
         }
         else {
-            sprintf(msg, "Variable no encontrada\n");
+            printf("Error: Variable no encontrada\n");
         }
     }
-#line 2219 "y.tab.c" /* yacc.c:1646  */
+#line 2131 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 73:
-#line 626 "omicron.y" /* yacc.c:1646  */
+  case 70:
+#line 544 "omicron.y" /* yacc.c:1646  */
     {
-        ifthenelse_fin(fout, (yyvsp[-4].atributos).etiqueta);
+        fin_if_else(fout, (yyvsp[-4].atributos).etiqueta);
     }
-#line 2227 "y.tab.c" /* yacc.c:1646  */
+#line 2139 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 74:
-#line 632 "omicron.y" /* yacc.c:1646  */
+  case 71:
+#line 550 "omicron.y" /* yacc.c:1646  */
     {
         (yyval.atributos).etiqueta = (yyvsp[-2].atributos).etiqueta;
 
-        ifthenelse_fin_then(fout, (yyvsp[-2].atributos).etiqueta);
+        medio_if_else(fout, (yyvsp[-2].atributos).etiqueta);
     }
-#line 2237 "y.tab.c" /* yacc.c:1646  */
+#line 2149 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 75:
-#line 640 "omicron.y" /* yacc.c:1646  */
+  case 72:
+#line 558 "omicron.y" /* yacc.c:1646  */
     {
         if ((yyvsp[-2].atributos).tipo != BOOLEAN) {
-            sprintf(msg, "condicion del if no booleano");
+            printf("Error: condicion del if no booleano");
         }
         (yyval.atributos).etiqueta = etiqueta;
         etiqueta++;
 
-        ifthenelse_inicio(fout, (yyvsp[-2].atributos).direcciones, (yyval.atributos).etiqueta);
+        inicio_if_else(fout, (yyval.atributos).etiqueta, (yyvsp[-2].atributos).direcciones);
     }
-#line 2251 "y.tab.c" /* yacc.c:1646  */
+#line 2163 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 76:
-#line 652 "omicron.y" /* yacc.c:1646  */
+  case 73:
+#line 570 "omicron.y" /* yacc.c:1646  */
     {
-        while_fin(fout, (yyvsp[-2].atributos).etiqueta);
+        //fprintf(fout, ";R:\tbucle: TOK_WHILE '(' exp ')' '{' sentencias '}'\n");
     }
-#line 2259 "y.tab.c" /* yacc.c:1646  */
+#line 2171 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 77:
-#line 658 "omicron.y" /* yacc.c:1646  */
-    {
-        if ((yyvsp[-2].atributos).tipo != BOOLEAN) {
-            sprintf(msg, "condicion del if no booleano");
-        }
-        (yyval.atributos).etiqueta = etiqueta;
-        etiqueta++;
-
-        while_inicio(fout, (yyval.atributos).etiqueta);
-        while_exp_pila(fout, (yyvsp[-2].atributos).direcciones, (yyval.atributos).etiqueta);
-    }
-#line 2274 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 78:
-#line 671 "omicron.y" /* yacc.c:1646  */
+  case 74:
+#line 576 "omicron.y" /* yacc.c:1646  */
     {
         if (buscarIdNoCualificado(NULL, tabla_main, (yyvsp[0].atributos).lexema, "main", &elem, nombre_ambito_encontrado) != OK) {
-            sprintf(msg, "EHEHHEHEHEHEHEHElem no encontrado\n");
+            printf("Error: Elem no encontrado\n");
         } else {
             if (elem->clase == FUNCION || elem->clase == VECTOR) {
-                sprintf(msg, "no se puede imprimir funciones ni vectores\n");
+                printf("Error: no se puede imprimir funciones ni vectores\n");
             }
 
             escribir_operando(fout, (yyvsp[0].atributos).lexema, (yyvsp[0].atributos).direcciones);
             leer(fout, (yyvsp[0].atributos).lexema, elem->tipo);
         }
     }
-#line 2291 "y.tab.c" /* yacc.c:1646  */
+#line 2188 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 79:
-#line 685 "omicron.y" /* yacc.c:1646  */
+  case 75:
+#line 590 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tlectura: TOK_SCANF elemento_vector\n");
     }
-#line 2298 "y.tab.c" /* yacc.c:1646  */
+#line 2196 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 80:
-#line 690 "omicron.y" /* yacc.c:1646  */
+  case 76:
+#line 596 "omicron.y" /* yacc.c:1646  */
     {
         if ((yyvsp[0].atributos).direcciones == 1) {
             if(buscarIdNoCualificado(NULL, tabla_main, (yyvsp[0].atributos).lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
-                //escribir_operando(fout, $2.lexema, $2.direcciones);
+                escribir_operando(fout, (yyvsp[0].atributos).lexema, (yyvsp[0].atributos).direcciones);
                 escribir(fout, (yyvsp[0].atributos).direcciones, elem->tipo);
             }
             else {
-                sprintf(msg, "Elem no encontrado\n");
+                printf("Error: Elem no encontrado\n");
             }
         }
         else{
@@ -2315,30 +2213,30 @@ yyreduce:
 
 
     }
-#line 2319 "y.tab.c" /* yacc.c:1646  */
+#line 2217 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 81:
-#line 709 "omicron.y" /* yacc.c:1646  */
+  case 77:
+#line 615 "omicron.y" /* yacc.c:1646  */
     {
-        retornarFuncion(fout, (yyvsp[0].atributos).direcciones);
-        hay_return = 1;
+        //fprintf(fout, ";R:\tretorno_funcion: TOK_RETURN exp\n");
     }
-#line 2328 "y.tab.c" /* yacc.c:1646  */
+#line 2225 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 82:
-#line 715 "omicron.y" /* yacc.c:1646  */
+  case 78:
+#line 620 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tretorno_funcion: TOK_RETURN TOK_NONE\n");
     }
-#line 2335 "y.tab.c" /* yacc.c:1646  */
+#line 2233 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 83:
-#line 720 "omicron.y" /* yacc.c:1646  */
+  case 79:
+#line 626 "omicron.y" /* yacc.c:1646  */
     {
         if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
-            sprintf(msg, "La suma requiere que ambos operandos sean numeros");
+            printf("Error: La suma requiere que ambos operandos sean numeros");
         }
 
         printf("op1: %s tipo(%d) direc(%d)\n", (yyvsp[-2].atributos).lexema, (yyvsp[-2].atributos).tipo, (yyvsp[-2].atributos).direcciones);
@@ -2357,298 +2255,228 @@ yyreduce:
         (yyval.atributos).direcciones = 0;
 
     }
-#line 2361 "y.tab.c" /* yacc.c:1646  */
+#line 2259 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 80:
+#line 649 "omicron.y" /* yacc.c:1646  */
+    {
+        if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
+            printf("Error: La resta requiere que ambos operandos sean numeros");
+        }
+        (yyval.atributos).tipo = ENTERO;
+        (yyval.atributos).direcciones = 0;
+    }
+#line 2271 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 81:
+#line 658 "omicron.y" /* yacc.c:1646  */
+    {
+        if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
+            printf("Error: La division requiere que ambos operandos sean numeros");
+        }
+        if ((yyvsp[0].atributos).tipo == 0) {
+            printf("Error: La division entre 0 no se permite");
+        }
+        (yyval.atributos).tipo = ENTERO;
+        (yyval.atributos).direcciones = 0;
+    }
+#line 2286 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 82:
+#line 670 "omicron.y" /* yacc.c:1646  */
+    {
+        if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
+            printf("Error: La multiplicacion requiere que ambos operandos sean numeros");
+        }
+        (yyval.atributos).tipo = ENTERO;
+        (yyval.atributos).direcciones = 0;
+    }
+#line 2298 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 83:
+#line 679 "omicron.y" /* yacc.c:1646  */
+    {
+        if ((yyvsp[0].atributos).tipo == BOOLEAN) {
+            printf("Error: El cambio de signo requiere operandos que sean numeros");
+        }
+        (yyval.atributos).tipo = ENTERO;
+        (yyval.atributos).direcciones = 0;
+    }
+#line 2310 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 84:
-#line 743 "omicron.y" /* yacc.c:1646  */
+#line 688 "omicron.y" /* yacc.c:1646  */
     {
-        if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
-            sprintf(msg, "La resta requiere que ambos operandos sean numeros");
+        if ((yyvsp[-2].atributos).tipo == ENTERO || (yyvsp[0].atributos).tipo == ENTERO) {
+            printf("Error: La conjuncion requiere operandos que sean booleans");
         }
-        (yyval.atributos).tipo = ENTERO;
+        (yyval.atributos).tipo = BOOLEAN;
         (yyval.atributos).direcciones = 0;
     }
-#line 2373 "y.tab.c" /* yacc.c:1646  */
+#line 2322 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 752 "omicron.y" /* yacc.c:1646  */
+#line 697 "omicron.y" /* yacc.c:1646  */
     {
-        if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
-            sprintf(msg, "La division requiere que ambos operandos sean numeros");
+        if ((yyvsp[-2].atributos).tipo == ENTERO || (yyvsp[0].atributos).tipo == ENTERO) {
+            printf("Error: La disyuncion requiere operandos que sean booleans");
         }
-        if ((yyvsp[0].atributos).tipo == 0) {
-            sprintf(msg, "La division entre 0 no se permite");
-        }
-        (yyval.atributos).tipo = ENTERO;
+        (yyval.atributos).tipo = BOOLEAN;
         (yyval.atributos).direcciones = 0;
     }
-#line 2388 "y.tab.c" /* yacc.c:1646  */
+#line 2334 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 86:
-#line 764 "omicron.y" /* yacc.c:1646  */
+#line 706 "omicron.y" /* yacc.c:1646  */
     {
-        if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
-            sprintf(msg, "La multiplicacion requiere que ambos operandos sean numeros");
+        if ((yyvsp[0].atributos).tipo == ENTERO) {
+            printf("Error: La negacion requiere operandos que sean booleans");
         }
-
-        multiplicar(fout, (yyvsp[-2].atributos).direcciones, (yyvsp[0].atributos).direcciones);
-
-        (yyval.atributos).tipo = ENTERO;
+        (yyval.atributos).tipo = BOOLEAN;
         (yyval.atributos).direcciones = 0;
     }
-#line 2403 "y.tab.c" /* yacc.c:1646  */
+#line 2346 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 87:
-#line 776 "omicron.y" /* yacc.c:1646  */
+#line 715 "omicron.y" /* yacc.c:1646  */
     {
-        if ((yyvsp[0].atributos).tipo == BOOLEAN) {
-            sprintf(msg, "El cambio de signo requiere operandos que sean numeros");
-        }
-        (yyval.atributos).tipo = ENTERO;
-        (yyval.atributos).direcciones = 0;
+      if (buscarIdNoCualificado(NULL, tabla_main, (yyvsp[0].atributos).lexema, "main", &elem, nombre_ambito_encontrado) == OK){
+          (yyvsp[0].atributos).tipo = elem->tipo;
+      }
+      else {
+          printf("Error:Variable no encontrada\n");
+      }
+      //diapo90 gen
+      escribir_operando(fout, (yyvsp[0].atributos).lexema, 1);
+
+      //TODO comprobar que no sea de categoria funcion ni clase vector
+      (yyval.atributos).tipo = elem->tipo;
+      (yyval.atributos).direcciones = 1;
     }
-#line 2415 "y.tab.c" /* yacc.c:1646  */
+#line 2365 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 88:
-#line 785 "omicron.y" /* yacc.c:1646  */
+#line 731 "omicron.y" /* yacc.c:1646  */
     {
-        if ((yyvsp[-2].atributos).tipo == ENTERO || (yyvsp[0].atributos).tipo == ENTERO) {
-            sprintf(msg, "La conjuncion requiere operandos que sean booleans");
-        }
-        (yyval.atributos).tipo = BOOLEAN;
-        (yyval.atributos).direcciones = 0;
+        (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
+        (yyval.atributos).direcciones = (yyvsp[0].atributos).direcciones;
     }
-#line 2427 "y.tab.c" /* yacc.c:1646  */
+#line 2374 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 89:
-#line 794 "omicron.y" /* yacc.c:1646  */
+#line 737 "omicron.y" /* yacc.c:1646  */
     {
-        if ((yyvsp[-2].atributos).tipo == ENTERO || (yyvsp[0].atributos).tipo == ENTERO) {
-            sprintf(msg, "La disyuncion requiere operandos que sean booleans");
-        }
-        (yyval.atributos).tipo = BOOLEAN;
-        (yyval.atributos).direcciones = 0;
+        (yyval.atributos).tipo = (yyvsp[-1].atributos).tipo;
+        (yyval.atributos).direcciones = (yyvsp[-1].atributos).direcciones;
     }
-#line 2439 "y.tab.c" /* yacc.c:1646  */
+#line 2383 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 90:
-#line 803 "omicron.y" /* yacc.c:1646  */
+#line 743 "omicron.y" /* yacc.c:1646  */
     {
-        if ((yyvsp[0].atributos).tipo == ENTERO) {
-            sprintf(msg, "La negacion requiere operandos que sean booleans");
-        }
-        (yyval.atributos).tipo = BOOLEAN;
-        (yyval.atributos).direcciones = 0;
+        (yyval.atributos).tipo = (yyvsp[-1].atributos).tipo;
+        (yyval.atributos).direcciones = (yyvsp[-1].atributos).direcciones;
     }
-#line 2451 "y.tab.c" /* yacc.c:1646  */
+#line 2392 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 91:
-#line 812 "omicron.y" /* yacc.c:1646  */
+#line 749 "omicron.y" /* yacc.c:1646  */
     {
-        if (en_funcion) {
-            sprintf(aux, "%s_", fcn.nombre);
-            strcat(aux, (yyvsp[0].atributos).lexema);
-
-            if( buscarParaDeclararIdTablaSimbolosAmbitos(tabla_main, aux, &elem, "main", nombre_ambito_encontrado) != OK) {
-                sprintf(msg, "identificador inexistente");
-            }
-            printf("[[[ Encontramos %s en el ambito %s ]]]\n", aux, nombre_ambito_encontrado);
-
-            if (elem->categoria == PARAMETRO) {
-                escribirParametro(fout, elem->posicion_parametro, elem->numero_parametros);
-            }
-            else if (elem->categoria == VARIABLE) {
-                escribirVariableLocal(fout, elem->numero_variables_locales);
-            }
-
-        } else {
-            if (buscarIdNoCualificado(NULL, tabla_main, (yyvsp[0].atributos).lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
-                (yyvsp[0].atributos).tipo = elem->tipo;
-            }
-            else {
-                printf("Error:Variable no encontrada (%s)\n", (yyvsp[0].atributos).lexema);
-            }
-            escribir_operando(fout, (yyvsp[0].atributos).lexema, 1);
-            if (flag_lista_exp == 1) {
-                operandoEnPilaAArgumento(fout, 1);
-            }
-        }
-
-        //TODO comprobar que no sea de categoria funcion ni clase vector
-        (yyval.atributos).tipo = elem->tipo;
-        (yyval.atributos).direcciones = 1;
+        (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
+        (yyval.atributos).direcciones = (yyvsp[0].atributos).direcciones;
     }
-#line 2490 "y.tab.c" /* yacc.c:1646  */
+#line 2401 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 92:
-#line 848 "omicron.y" /* yacc.c:1646  */
+#line 755 "omicron.y" /* yacc.c:1646  */
     {
-        (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
-        (yyval.atributos).direcciones = (yyvsp[0].atributos).direcciones;
+        //fprintf(fout, ";R:\texp: TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
     }
-#line 2499 "y.tab.c" /* yacc.c:1646  */
+#line 2409 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 93:
-#line 854 "omicron.y" /* yacc.c:1646  */
+#line 760 "omicron.y" /* yacc.c:1646  */
     {
-        (yyval.atributos).tipo = (yyvsp[-1].atributos).tipo;
-        (yyval.atributos).direcciones = (yyvsp[-1].atributos).direcciones;
+        //fprintf(fout, ";R:\texp: identificador_clase '.' TOK_IDENTIFICADOR '(' lista_expresiones ')'\n");
     }
-#line 2508 "y.tab.c" /* yacc.c:1646  */
+#line 2417 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 94:
-#line 860 "omicron.y" /* yacc.c:1646  */
+#line 765 "omicron.y" /* yacc.c:1646  */
     {
-        (yyval.atributos).tipo = (yyvsp[-1].atributos).tipo;
-        (yyval.atributos).direcciones = (yyvsp[-1].atributos).direcciones;
+        //fprintf(fout, ";R:\texp: identificador_clase '.' TOK_IDENTIFICADOR\n");
     }
-#line 2517 "y.tab.c" /* yacc.c:1646  */
+#line 2425 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 95:
-#line 866 "omicron.y" /* yacc.c:1646  */
+#line 772 "omicron.y" /* yacc.c:1646  */
     {
-        (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
-        (yyval.atributos).direcciones = (yyvsp[0].atributos).direcciones;
+        //fprintf(fout, ";R:\tidentificador_clase: TOK_IDENTIFICADOR\n");
     }
-#line 2526 "y.tab.c" /* yacc.c:1646  */
+#line 2433 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 96:
-#line 872 "omicron.y" /* yacc.c:1646  */
+#line 777 "omicron.y" /* yacc.c:1646  */
     {
-        flag_lista_exp = 0;
-
-        strcat(fname_aux, (yyvsp[-4].atributos).lexema);
-        strcat(fname_aux, aux);
-
-        printf("oooooooh: %s\n", fname_aux);
-
-        if (buscarIdNoCualificado(NULL, tabla_main, fname_aux, "main", &elem, nombre_ambito_encontrado) != OK) {
-            sprintf(msg, "la funcion no existe");
-            printf("que nooooo\n");
-            return -1;
-        }
-        if (elem->clase != FUNCION) {
-            sprintf(msg, "la funcion no existe");
-            return -1;
-        }
-
-        llamarFuncion(fout, fname_aux, nargs);
-
-        (yyval.atributos).tipo = elem->tipo;
-        (yyval.atributos).direcciones = 0;
+        //fprintf(fout, ";R:\tidentificador_clase: TOK_ITSELF\n");
     }
-#line 2554 "y.tab.c" /* yacc.c:1646  */
+#line 2441 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 97:
-#line 897 "omicron.y" /* yacc.c:1646  */
+#line 783 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tlista_expresiones: exp resto_lista_expresiones\n");
     }
-#line 2561 "y.tab.c" /* yacc.c:1646  */
+#line 2449 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 98:
-#line 901 "omicron.y" /* yacc.c:1646  */
+#line 788 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tlista_expresiones:\n");
     }
-#line 2568 "y.tab.c" /* yacc.c:1646  */
+#line 2457 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 99:
-#line 906 "omicron.y" /* yacc.c:1646  */
+#line 794 "omicron.y" /* yacc.c:1646  */
     {
-        if (flag_lista_exp) {
-            sprintf(msg, "No puedes declrarar funciones dentro de otra");
-            return -1;
-
-        }
-        flag_lista_exp = 1;
+        //fprintf(fout, ";R:\tresto_lista_expresiones: ',' exp resto_lista_expresiones\n");
     }
-#line 2581 "y.tab.c" /* yacc.c:1646  */
+#line 2465 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 100:
-#line 916 "omicron.y" /* yacc.c:1646  */
+#line 799 "omicron.y" /* yacc.c:1646  */
     {
+        //fprintf(fout, ";R:\tlista_expresiones:\n");
     }
-#line 2588 "y.tab.c" /* yacc.c:1646  */
+#line 2473 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 101:
-#line 920 "omicron.y" /* yacc.c:1646  */
-    {
-    }
-#line 2595 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 102:
-#line 925 "omicron.y" /* yacc.c:1646  */
-    {
-        
-        if ((yyvsp[-1].atributos).tipo == ENTERO) {
-            strcat(aux, "@1");
-        } else {
-            strcat(aux, "@3");
-        }
-    }
-#line 2608 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 103:
-#line 935 "omicron.y" /* yacc.c:1646  */
-    {
-        nargs = 0;
-    }
-#line 2616 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 104:
-#line 941 "omicron.y" /* yacc.c:1646  */
-    {
-        nargs = 1;
-        aux[0] = '\0';
-    }
-#line 2625 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 105:
-#line 947 "omicron.y" /* yacc.c:1646  */
-    {
-        nargs++;
-        if ((yyvsp[-1].atributos).tipo == ENTERO) {
-            strcat(aux, "@1");
-        } else {
-            strcat(aux, "@3");
-        }
-    }
-#line 2638 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 106:
-#line 957 "omicron.y" /* yacc.c:1646  */
-    {
-    }
-#line 2645 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 107:
-#line 962 "omicron.y" /* yacc.c:1646  */
+#line 805 "omicron.y" /* yacc.c:1646  */
     {
         if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
-            sprintf(msg, "La division requiere que ambos operandos sean numeros");
+            printf("Error: La division requiere que ambos operandos sean numeros");
         }
         if ((yyvsp[-2].atributos).direcciones == 1) {
             //escribir_operando(fout, $1.lexema, $1.direcciones);
@@ -2659,124 +2487,124 @@ yyreduce:
 
         igual(fout, (yyvsp[-2].atributos).direcciones, (yyvsp[0].atributos).direcciones, etiqueta);
         etiqueta++;
-        
+
         (yyval.atributos).tipo = BOOLEAN;
         (yyval.atributos).direcciones = 0;
     }
-#line 2667 "y.tab.c" /* yacc.c:1646  */
+#line 2495 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 102:
+#line 824 "omicron.y" /* yacc.c:1646  */
+    {
+        if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
+            printf("Error: La division requiere que ambos operandos sean numeros");
+        }
+        (yyval.atributos).tipo = BOOLEAN;
+        (yyval.atributos).direcciones = 0;
+    }
+#line 2507 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 103:
+#line 833 "omicron.y" /* yacc.c:1646  */
+    {
+        if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
+            printf("Error: La division requiere que ambos operandos sean numeros");
+        }
+        (yyval.atributos).tipo = BOOLEAN;
+        (yyval.atributos).direcciones = 0;
+    }
+#line 2519 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 104:
+#line 842 "omicron.y" /* yacc.c:1646  */
+    {
+        if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
+            printf("Error: La division requiere que ambos operandos sean numeros");
+        }
+        (yyval.atributos).tipo = BOOLEAN;
+        (yyval.atributos).direcciones = 0;
+    }
+#line 2531 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 105:
+#line 851 "omicron.y" /* yacc.c:1646  */
+    {
+        if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
+            printf("Error: La division requiere que ambos operandos sean numeros");
+        }
+        (yyval.atributos).tipo = BOOLEAN;
+        (yyval.atributos).direcciones = 0;
+    }
+#line 2543 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 106:
+#line 860 "omicron.y" /* yacc.c:1646  */
+    {
+        if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
+            printf("Error: La division requiere que ambos operandos sean numeros");
+        }
+        (yyval.atributos).tipo = BOOLEAN;
+        (yyval.atributos).direcciones = 0;
+    }
+#line 2555 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 107:
+#line 870 "omicron.y" /* yacc.c:1646  */
+    {
+        (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
+        (yyval.atributos).direcciones = (yyvsp[0].atributos).direcciones;
+    }
+#line 2564 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 108:
-#line 981 "omicron.y" /* yacc.c:1646  */
+#line 876 "omicron.y" /* yacc.c:1646  */
     {
-        if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
-            sprintf(msg, "La division requiere que ambos operandos sean numeros");
-        }
-        (yyval.atributos).tipo = BOOLEAN;
-        (yyval.atributos).direcciones = 0;
+        (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
+        (yyval.atributos).direcciones = (yyvsp[0].atributos).direcciones;
     }
-#line 2679 "y.tab.c" /* yacc.c:1646  */
+#line 2573 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 109:
-#line 990 "omicron.y" /* yacc.c:1646  */
-    {
-        if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
-            sprintf(msg, "La division requiere que ambos operandos sean numeros");
-        }
-        (yyval.atributos).tipo = BOOLEAN;
-        (yyval.atributos).direcciones = 0;
-    }
-#line 2691 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 110:
-#line 999 "omicron.y" /* yacc.c:1646  */
-    {
-        if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
-            sprintf(msg, "La division requiere que ambos operandos sean numeros");
-        }
-        (yyval.atributos).tipo = BOOLEAN;
-        (yyval.atributos).direcciones = 0;
-    }
-#line 2703 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 111:
-#line 1008 "omicron.y" /* yacc.c:1646  */
-    {
-        if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
-            sprintf(msg, "La division requiere que ambos operandos sean numeros");
-        }
-        (yyval.atributos).tipo = BOOLEAN;
-        (yyval.atributos).direcciones = 0;
-    }
-#line 2715 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 112:
-#line 1017 "omicron.y" /* yacc.c:1646  */
-    {
-        if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
-            sprintf(msg, "La division requiere que ambos operandos sean numeros");
-        }
-        (yyval.atributos).tipo = BOOLEAN;
-        (yyval.atributos).direcciones = 0;
-    }
-#line 2727 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 113:
-#line 1027 "omicron.y" /* yacc.c:1646  */
-    {
-        (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
-        (yyval.atributos).direcciones = (yyvsp[0].atributos).direcciones;
-    }
-#line 2736 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 114:
-#line 1033 "omicron.y" /* yacc.c:1646  */
-    {
-        (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
-        (yyval.atributos).direcciones = (yyvsp[0].atributos).direcciones;
-    }
-#line 2745 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 115:
-#line 1040 "omicron.y" /* yacc.c:1646  */
+#line 883 "omicron.y" /* yacc.c:1646  */
     {
         (yyval.atributos).tipo = BOOLEAN;
         (yyval.atributos).direcciones = 0;
         escribir_operando(fout, "1", 0);
     }
-#line 2755 "y.tab.c" /* yacc.c:1646  */
+#line 2583 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 116:
-#line 1047 "omicron.y" /* yacc.c:1646  */
+  case 110:
+#line 890 "omicron.y" /* yacc.c:1646  */
     {
         (yyval.atributos).tipo = BOOLEAN;
         (yyval.atributos).direcciones = 0;
         escribir_operando(fout, "0", 0);
     }
-#line 2765 "y.tab.c" /* yacc.c:1646  */
+#line 2593 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 117:
-#line 1055 "omicron.y" /* yacc.c:1646  */
+  case 111:
+#line 898 "omicron.y" /* yacc.c:1646  */
     {
         (yyval.atributos).tipo = ENTERO;
         (yyval.atributos).direcciones = 0;
         sprintf((yyvsp[0].atributos).lexema, "%d", (yyvsp[0].atributos).valor_entero);
         escribir_operando(fout, (yyvsp[0].atributos).lexema, 0);
     }
-#line 2776 "y.tab.c" /* yacc.c:1646  */
+#line 2604 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 2780 "y.tab.c" /* yacc.c:1646  */
+#line 2608 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3004,17 +2832,13 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 1063 "omicron.y" /* yacc.c:1906  */
+#line 906 "omicron.y" /* yacc.c:1906  */
 
 
 int yyerror(char* s) {
     if (!flag_error)
     {
-        fprintf(stderr, "ERROR SINTÁCTICO:%d:%d\n", fila, columna);
-    }
-    if (!flag_error)
-    {
-        fprintf(stderr, "****Error semantico en lin %d: %s\n", fila, msg);
+        //fprintf(stderr, "ERROR SINTÁCTICO:%d:%d\n", fila, columna);
     }
     flag_error = 0;
     return -1;

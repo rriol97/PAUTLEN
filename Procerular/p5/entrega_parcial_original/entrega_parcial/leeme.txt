@@ -1,0 +1,35 @@
+Autores: Francisco de Vicente Lana, Ricardo Riol González
+
+Siguiendo el guión para el trabajo de esta semana, hemos llegado a completarlo;
+es decir hemos cumplido hasta el punto 16 incluidio. Para ejecutar nuestro código
+disponemos tanto de un makefile como de un ejecutable que hace todo el proceso.
+Sopniendo que el código omicron a ejecutar se encuentra en test.ol, al hacer
+./ejecutar se crea (test.asm), copmila (test.o) y ejecuta (test) el asm
+correspondiente. Es necesario incluir olib.o en el directorio de código.
+
+En cuanto a las preguntas realtadas a lo largo del enunciado:
+'cmp' es la operación del esamblador encargada de realizar comparaciones y el
+resultado de dicha comparación se almacena en un flag del sistema por lo que la
+línea siguiente debe ser un salto condicional. Para el código ensamblador
+empleamos la librería implementada en la primera prácrica, para la cual tuvimos
+presente los diagramas de bifurcación de flujo pertinentes.
+Para el caso de los if-then-else hay que hacer una cuidadosa división de la regla
+ya que se deben llevar a cabo una serie de acciones concretas en distintos puntos.
+Por ejemplo al leer la condición (comprobar tipo, propagar atributos...), al
+procesar las sentencias correspondientes al then y después la parte del else.
+Es necesario que estos nuevos símbolos tengan atributos para poner propagar la
+etiqueta correctamente; lo cual hace falta ya que el contadore global para las
+etiquetas puede verse modificado durante la regla. Por ejemplo:
+
+    if ( 1 ) {
+          //sentencia con uso de etiquetas
+          while ( y1 ) {
+            //...
+          }
+    }
+    else {
+
+    }
+
+De nuevo para este caso hacemos uso de la librería de generación de código para
+el cuál ya hicimos el análisis del flujo.

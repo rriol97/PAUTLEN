@@ -49,21 +49,15 @@ int addAntecessors(Graph* graph, int src, int dest) {
     for(aux = graph->antecessors[dest]; aux != NULL; aux = aux->next) {
         indexes_in[aux->dest] = 1;
     }
-
-    /*si src ya esta en la lista de padres no es necesario hacer nada*/
-    if(indexes_in[src] != 0)
-        return 0;
-    
     /*crea una lista para almacenar los nuevos padres de mas reciente a mas antiguo*/
     /*empezando por src*/
     head = newNode(src);
     if (head == NULL)
         return -1;
-    indexes_in[src] = 1;
     tail = head;
     
     /*recorrer lista de padres de src*/
-    for(aux = graph->antecessors[src]; aux != NULL; aux = aux->next) {
+    for(aux = graph->parent_list[src]; aux != NULL; aux = aux->next) {
         /*si la clase no esta en la lista*/
         if(indexes_in[aux->dest] == 0) {
             /*añade la clase a la nueva lista*/
@@ -74,7 +68,6 @@ int addAntecessors(Graph* graph, int src, int dest) {
             }
             tail->next = new_node;
             tail = new_node;
-            indexes_in[aux->dest] = 1;
         }
     }     
     /*añade la lista a la lista de padres de dest*/
