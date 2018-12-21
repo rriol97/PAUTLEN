@@ -676,11 +676,17 @@ elemento_vector: TOK_IDENTIFICADOR '[' exp ']'
     }
 ;
 
-condicional: if_exp_sentencias TOK_ELSE '{' sentencias '}'
+condicional: if_exp sentencias '}'
+    {
+        ifthen_fin(fout, $1.etiqueta);
+    }
+    |
+    if_exp_sentencias TOK_ELSE '{' sentencias '}'
     {
         ifthenelse_fin(fout, $1.etiqueta);
     }
 ;
+
 
 if_exp_sentencias: if_exp sentencias '}'
     {
@@ -698,9 +704,8 @@ if_exp: TOK_IF '(' exp ')' '{'
             yyerror(msg);
         }
         $$.etiqueta = etiqueta;
-        etiqueta++;
-
         ifthenelse_inicio(fout, $3.direcciones, $$.etiqueta);
+        etiqueta++;
     }
 ;
 

@@ -109,7 +109,8 @@ void escribir_inicio_main(FILE *fpasm)
 	return;
 }
 
-void comienzo_sentencias(FILE* fpasm) {
+void comienzo_sentencias(FILE *fpasm)
+{
 	fprintf(fpasm, "init:\n");
 }
 
@@ -131,7 +132,7 @@ void escribir_fin(FILE *fpasm)
 		printf("Error de fichero (escribir_fin)\n");
 	}
 	else
-	{	
+	{
 		fprintf(fpasm, "jmp fin\n");
 		fprintf(fpasm, "mensaje_tam_vector:\n");
 		fprintf(fpasm, "\tpush dword msg_tam_vector\n");
@@ -587,6 +588,7 @@ void mayor(FILE *fpasm, int es_variable1, int es_variable2, int etiqueta)
 	if (!fpasm)
 	{
 		printf("Error de fichero (negacion)\n");
+		return;
 	}
 
 	else
@@ -620,6 +622,7 @@ void leer(FILE *fpasm, char *nombre, int tipo)
 	if (!fpasm)
 	{
 		printf("Error de fichero (lectura)\n");
+		return;
 	}
 
 	else
@@ -640,6 +643,7 @@ void leer(FILE *fpasm, char *nombre, int tipo)
 		else
 		{
 			printf("Error en la lectura. Tipo no reconocido\n");
+			return;
 		}
 
 		fprintf(fpasm, "\tadd esp, 4\n");
@@ -655,6 +659,7 @@ void escribir(FILE *fpasm, int es_variable, int tipo)
 	if (!fpasm)
 	{
 		printf("Error de fichero (lectura)\n");
+		return;
 	}
 
 	else
@@ -682,6 +687,7 @@ void escribir(FILE *fpasm, int es_variable, int tipo)
 		else
 		{
 			printf("Error en la escritura. Tipo no reconocido\n");
+			return;
 		}
 
 		fprintf(fpasm, "\tadd esp, 4\n\tcall print_endofline\n");
@@ -696,6 +702,7 @@ void ifthenelse_inicio(FILE *fpasm, int es_direccion, int etiqueta)
 	if (!fpasm)
 	{
 		printf("Error de fichero (lectura)\n");
+		return;
 	}
 
 	fprintf(fpasm, "\tpop eax\n");
@@ -714,6 +721,7 @@ void ifthenelse_fin_then(FILE *fpasm, int etiqueta)
 	if (!fpasm)
 	{
 		printf("Error de fichero (lectura)\n");
+		return;
 	}
 
 	fprintf(fpasm, "\tjmp near fin_ifelse_%d\n", etiqueta);
@@ -727,9 +735,40 @@ void ifthenelse_fin(FILE *fpasm, int etiqueta)
 	if (!fpasm)
 	{
 		printf("Error de fichero (lectura)\n");
+		return;
 	}
 
 	fprintf(fpasm, "fin_ifelse_%d:\n", etiqueta);
+
+	return;
+}
+
+void ifthen_fin(FILE *fpasm, int etiqueta)
+{
+	if (!fpasm)
+	{
+		printf("Error de fichero (lectura)\n");
+		return;
+	}
+
+	fprintf(fpasm, "fin_if_%d:\n", etiqueta);
+	return;
+}
+void ifthen_inicio(FILE *fpasm, int exp_es_variable, int etiqueta)
+{
+	if (!fpasm)
+	{
+		printf("Error de fichero (lectura)\n");
+		return;
+	}
+
+	fprintf(fpasm, "\tpop eax\n");
+	if (exp_es_variable)
+	{
+		fprintf(fpasm, "\tmov eax, [eax]\n");
+	}
+	fprintf(fpasm, "\tcmp eax, 0\n");
+	fprintf(fpasm, "\tje near fin_if_%d\n", etiqueta);
 
 	return;
 }
@@ -739,6 +778,7 @@ void inicio_if(FILE *fpasm, int etiqueta, int es_direccion)
 	if (!fpasm)
 	{
 		printf("Error de fichero (lectura)\n");
+		return;
 	}
 
 	fprintf(fpasm, "\tpop eax\n");
@@ -798,7 +838,7 @@ void declararFuncion(FILE *fpasm, char *nombre_funcion, int num_var_loc)
 		return;
 	}
 
-	fprintf(fpasm, "_%s:\n\tpush ebp\n\tmov ebp, esp\n\tsub esp, %d\n", nombre_funcion, 4*num_var_loc);
+	fprintf(fpasm, "_%s:\n\tpush ebp\n\tmov ebp, esp\n\tsub esp, %d\n", nombre_funcion, 4 * num_var_loc);
 }
 
 void retornarFuncion(FILE *fpasm, int es_variable)
@@ -809,7 +849,8 @@ void retornarFuncion(FILE *fpasm, int es_variable)
 	}
 
 	fprintf(fpasm, "\tpop eax\n");
-	if (es_variable) {
+	if (es_variable)
+	{
 		fprintf(fpasm, "\tmov eax, [eax]\n");
 	}
 	fprintf(fpasm, "\tmov esp, ebp\n\tpop ebp\n\tret\n");
@@ -823,7 +864,7 @@ void escribirParametro(FILE *fpasm, int pos_parametro, int num_total_parametros)
 		return;
 	}
 
-	fprintf(fpasm, "\tlea eax, [ebp + %d]\n\tpush dword eax\n", 4 + 4*(num_total_parametros - pos_parametro));
+	fprintf(fpasm, "\tlea eax, [ebp + %d]\n\tpush dword eax\n", 4 + 4 * (num_total_parametros - pos_parametro));
 	fprintf(fpasm, "\t; escribir operando -----\n\n");
 }
 
@@ -834,7 +875,7 @@ void escribirVariableLocal(FILE *fpasm, int posicion_variable_local)
 		return;
 	}
 
-	fprintf(fpasm, "\tlea eax, [ebp - %d]\n\tpush dword eax\n", 4*posicion_variable_local);
+	fprintf(fpasm, "\tlea eax, [ebp - %d]\n\tpush dword eax\n", 4 * posicion_variable_local);
 	fprintf(fpasm, "\t; escribir variable -----\n\n");
 }
 
@@ -845,7 +886,8 @@ void operandoEnPilaAArgumento(FILE *fpasm, int es_variable)
 		return;
 	}
 
-	if (es_variable) {
+	if (es_variable)
+	{
 		fprintf(fpasm, "\tpop eax\n\tmov eax, [eax]\n\tpush eax\n");
 	}
 	fprintf(fpasm, "\t; operando en pila a argumento -----\n\n");
@@ -870,131 +912,143 @@ void limpiarPila(FILE *fpasm, int num_argumentos)
 		return;
 	}
 
-	fprintf(fpasm, "\tadd esp, %d\n", 4*num_argumentos);
+	fprintf(fpasm, "\tadd esp, %d\n", 4 * num_argumentos);
 }
 
 /* --------------------------------- OO ---------------------------------- */
 
-char * claseATabla(char * nombre_fuente_clase) {
-    char* nombre_tabla;
-    if(nombre_fuente_clase == NULL)
-        return NULL;
-    nombre_tabla = malloc(sizeof(char) * (strlen(nombre_fuente_clase) + strlen(PREFIJO_TABLA_METODOS_SOBREESCRIBIBLES) + 1));
-    nombre_tabla = strcpy(nombre_tabla, PREFIJO_TABLA_METODOS_SOBREESCRIBIBLES);
-    nombre_tabla = strcat(nombre_tabla, nombre_fuente_clase);
-    return nombre_tabla;
+char *claseATabla(char *nombre_fuente_clase)
+{
+	char *nombre_tabla;
+	if (nombre_fuente_clase == NULL)
+		return NULL;
+	nombre_tabla = malloc(sizeof(char) * (strlen(nombre_fuente_clase) + strlen(PREFIJO_TABLA_METODOS_SOBREESCRIBIBLES) + 1));
+	nombre_tabla = strcpy(nombre_tabla, PREFIJO_TABLA_METODOS_SOBREESCRIBIBLES);
+	nombre_tabla = strcat(nombre_tabla, nombre_fuente_clase);
+	return nombre_tabla;
 }
 
-void instance_of (FILE * fpasm, char * nombre_fuente_clase,
-                  int numero_atributos_instancia) {
-    char* nombre_tabla;
-    if(fpasm == NULL)
-        return;
-    nombre_tabla = claseATabla(nombre_fuente_clase);
-    if(nombre_tabla == NULL)
-        return;
-    /*Reservo memoria para la instancia*/
-    fprintf(fpasm, "\tpush dword %d\n", (numero_atributos_instancia + 1)*4);
-    fprintf(fpasm, "\tcall malloc\n");
-    fprintf(fpasm, "\tadd esp, 4\n");
-    /*meto la tabla de ms en el lugar correspondiente*/
-    fprintf(fpasm, "\tmov dword [eax], %s\n", nombre_tabla);
-    /*se deja el resultado en la cima de la pila*/
-    fprintf(fpasm, "\tpush eax\n");
+void instance_of(FILE *fpasm, char *nombre_fuente_clase,
+				 int numero_atributos_instancia)
+{
+	char *nombre_tabla;
+	if (fpasm == NULL)
+		return;
+	nombre_tabla = claseATabla(nombre_fuente_clase);
+	if (nombre_tabla == NULL)
+		return;
+	/*Reservo memoria para la instancia*/
+	fprintf(fpasm, "\tpush dword %d\n", (numero_atributos_instancia + 1) * 4);
+	fprintf(fpasm, "\tcall malloc\n");
+	fprintf(fpasm, "\tadd esp, 4\n");
+	/*meto la tabla de ms en el lugar correspondiente*/
+	fprintf(fpasm, "\tmov dword [eax], %s\n", nombre_tabla);
+	/*se deja el resultado en la cima de la pila*/
+	fprintf(fpasm, "\tpush eax\n");
 
-    free(nombre_tabla);
+	free(nombre_tabla);
 }
 
-void discardPila (FILE * fpasm) {
-    if(fpasm == NULL)
-        return;
-    /*la direccion esta en la cima de la pila, sacamos la instancia a liberar*/
-    fprintf(fpasm, "\tpop dword ebx\n");
-    /*metemos la instancia como parametro*/
-    fprintf(fpasm, "\tpush dword [ebx]\n");
-    /*llamamos a free*/
-    fprintf(fpasm, "\tcall free\n");
-    fprintf(fpasm, "\tadd esp, 4\n");
+void discardPila(FILE *fpasm)
+{
+	if (fpasm == NULL)
+		return;
+	/*la direccion esta en la cima de la pila, sacamos la instancia a liberar*/
+	fprintf(fpasm, "\tpop dword ebx\n");
+	/*metemos la instancia como parametro*/
+	fprintf(fpasm, "\tpush dword [ebx]\n");
+	/*llamamos a free*/
+	fprintf(fpasm, "\tcall free\n");
+	fprintf(fpasm, "\tadd esp, 4\n");
 }
 
-void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE * fpasm, char * nombre_metodo) {
-    if(fpasm == NULL || nombre_metodo == NULL)
-        return;
-    
-    /*saco la instancia de la pila*/
-    fprintf(fpasm, "\tpop dword ebx\n");
-    fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
-    /*obtengo la direccion de la tabla de metodos*/
-    fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
-    /*obtengo el offset del metodo*/
-    fprintf(fpasm, "\tmov dword ecx, [_offset_%s]\n", nombre_metodo);
-    /*obtengo la direccion del metodo*/
-    fprintf(fpasm, "\tlea ecx, [ebx+ecx]\n");
-    /*obtengo el metodo*/
-    fprintf(fpasm, "\tmov ecx, [ecx]\n");
-    /*suponemos que la gestion de parametros se ha hecho previamente
+void llamarMetodoSobreescribibleCualificadoInstanciaPila(FILE *fpasm, char *nombre_metodo)
+{
+	if (fpasm == NULL || nombre_metodo == NULL)
+		return;
+
+	/*saco la instancia de la pila*/
+	fprintf(fpasm, "\tpop dword ebx\n");
+	fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
+	/*obtengo la direccion de la tabla de metodos*/
+	fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
+	/*obtengo el offset del metodo*/
+	fprintf(fpasm, "\tmov dword ecx, [_offset_%s]\n", nombre_metodo);
+	/*obtengo la direccion del metodo*/
+	fprintf(fpasm, "\tlea ecx, [ebx+ecx]\n");
+	/*obtengo el metodo*/
+	fprintf(fpasm, "\tmov ecx, [ecx]\n");
+	/*suponemos que la gestion de parametros se ha hecho previamente
     de forma que los parametros estan en la pila por debajo de la instancia*/
-    fprintf(fpasm, "\tcall ecx\n");
+	fprintf(fpasm, "\tcall ecx\n");
 }
 
-void accederAtributoInstanciaDePila(FILE * fpasm, char * nombre_atributo) {
-    if(fpasm == NULL || nombre_atributo == NULL)
-        return;
+void accederAtributoInstanciaDePila(FILE *fpasm, char *nombre_atributo)
+{
+	if (fpasm == NULL || nombre_atributo == NULL)
+		return;
 
-    /*extraigo la instancia de la pila*/
-    fprintf(fpasm, "\tpop dword ebx\n");
-    fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
-    /*obtengo el offset del atributo*/
-    fprintf(fpasm, "\tmov dword ecx, [_offset_%s]\n", nombre_atributo);
-    /*obtengo la direccion del atributo*/
-    fprintf(fpasm, "\tlea ecx, [ebx+ecx]\n");
-    /*introduzco la direccion del atributo en pila*/
-    fprintf(fpasm, "\tpush dword ecx\n");
+	/*extraigo la instancia de la pila*/
+	fprintf(fpasm, "\tpop dword ebx\n");
+	fprintf(fpasm, "\tmov dword ebx, [ebx]\n");
+	/*obtengo el offset del atributo*/
+	fprintf(fpasm, "\tmov dword ecx, [_offset_%s]\n", nombre_atributo);
+	/*obtengo la direccion del atributo*/
+	fprintf(fpasm, "\tlea ecx, [ebx+ecx]\n");
+	/*introduzco la direccion del atributo en pila*/
+	fprintf(fpasm, "\tpush dword ecx\n");
 }
 
-void asignarDestinoEnPila(FILE* fpasm, int es_variable) {
-    if(fpasm == NULL)
-        return;
+void asignarDestinoEnPila(FILE *fpasm, int es_variable)
+{
+	if (fpasm == NULL)
+		return;
 
-    /*obtengo la direccion donde dejar el valor*/
-    fprintf(fpasm, "\tpop dword eax\n");
-    /*obtengo el valor*/
-    fprintf(fpasm, "\tpop dword edx\n");
-    if (es_variable) {
-        /*si es variable obtengo el valor que contiene*/
-        fprintf(fpasm, "\tmov eax, [eax]\n");
-    }
-    /*asigno el valor en la direccion*/
-    fprintf(fpasm, "\tmov [edx], eax\n");
+	/*obtengo la direccion donde dejar el valor*/
+	fprintf(fpasm, "\tpop dword eax\n");
+	/*obtengo el valor*/
+	fprintf(fpasm, "\tpop dword edx\n");
+	if (es_variable)
+	{
+		/*si es variable obtengo el valor que contiene*/
+		fprintf(fpasm, "\tmov eax, [eax]\n");
+	}
+	/*asigno el valor en la direccion*/
+	fprintf(fpasm, "\tmov [edx], eax\n");
 }
 
-void asignar_en_funcion(FILE* fpasm, int es_variable, int pos) {
-    if(fpasm == NULL)
-        return;
+void asignar_en_funcion(FILE *fpasm, int es_variable, int pos)
+{
+	if (fpasm == NULL)
+		return;
 
-    /*obtengo el valor*/
-    fprintf(fpasm, "\tpop dword eax\n");
-    if (es_variable) {
-        /*si es variable obtengo el valor que contiene*/
-        fprintf(fpasm, "\tmov eax, [eax]\n");
-    }
-    /*asigno el valor en la direccion*/
-    fprintf(fpasm, "\tmov [ebp-%d], eax\n", 4*pos);
+	/*obtengo el valor*/
+	fprintf(fpasm, "\tpop dword eax\n");
+	if (es_variable)
+	{
+		/*si es variable obtengo el valor que contiene*/
+		fprintf(fpasm, "\tmov eax, [eax]\n");
+	}
+	/*asigno el valor en la direccion*/
+	fprintf(fpasm, "\tmov [ebp-%d], eax\n", 4 * pos);
 
 	fprintf(fpasm, "\t; fin asignacion en funcion -----\n\n");
 }
 
-void escribir_elemento_vector(FILE * fpasm, char * nombre_vector, int tam_max, int exp_es_direccion) {
-	
-	if (!fpasm || !nombre_vector || tam_max < 1 || tam_max > 64) {
+void escribir_elemento_vector(FILE *fpasm, char *nombre_vector, int tam_max, int exp_es_direccion)
+{
+
+	if (!fpasm || !nombre_vector || tam_max < 1 || tam_max > 64)
+	{
 		return;
 	}
-	
+
 	fprintf(fpasm, "\tpop dword eax\n");
-	if (exp_es_direccion) {
+	if (exp_es_direccion)
+	{
 		fprintf(fpasm, "\tmov eax, [eax]\n");
 	}
-	
+
 	fprintf(fpasm, "\tcmp eax, 0\n");
 	fprintf(fpasm, "\tjl near mensaje_tam_vector\n");
 	fprintf(fpasm, "\tcmp eax, %d\n", tam_max - 1);

@@ -121,9 +121,11 @@ void escribir(FILE* fpasm, int es_variable, int tipo);
 
 /* FUNCIONES PARA EL CONTROL DE FLUJO */
 void ifthenelse_inicio(FILE* fpasm, int es_direccion, int etiqueta);
+
 void ifthenelse_fin_then(FILE* fpasm, int etiqueta);
 void ifthenelse_fin(FILE* fpasm, int etiqueta);
-
+void ifthen_fin(FILE * fpasm, int etiqueta);
+void ifthen_inicio(FILE * fpasm, int exp_es_variable, int etiqueta);
 void while_inicio(FILE * fpasm, int etiqueta);
 void while_exp_pila (FILE * fpasm, int exp_es_variable, int etiqueta);
 void while_fin( FILE * fpasm, int etiqueta);

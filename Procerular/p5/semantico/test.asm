@@ -3,65 +3,62 @@ segment .data
 	msg_tam_vector	db "****Error de ejecucion: Indice fuera de rango.", 0
 segment .bss
 	__esp resd 1
-	_i resd 1
+	_x1 resd 1
+	_x2 resd 1
+	_y1 resd 1
 segment .text
 	global main
 extern scan_int, print_int, scan_float, print_float, scan_boolean, print_boolean, print_endofline, print_blank, print_string, malloc, free
 main:
 	mov dword [__esp], __esp
 	jmp init
-_sinIva@1:
-	push ebp
-	mov ebp, esp
-	sub esp, 8
-	lea eax, [ebp + 8]
-	push dword eax
-	; escribir operando -----
+init:
+	push dword _x1
+	;fin escritura operando -----
+	call scan_int
+	add esp, 4
+	;fin lectura -----
 
-	push dword 5
+	push dword _x2
+	;fin escritura operando -----
+	call scan_int
+	add esp, 4
+	;fin lectura -----
+
+	push dword _y1
+	;fin escritura operando -----
+	call scan_boolean
+	add esp, 4
+	;fin lectura -----
+
+	push dword _x1
+	;fin escritura operando -----
+	push dword _x2
 	;fin escritura operando -----
 	pop ecx
 	pop eax
 	mov eax, [eax]
-	imul ecx
-	push eax
-	pop dword eax
-	mov [ebp-4], eax
-	; fin asignacion en funcion -----
-
+	mov ecx, [ecx]
+	cmp eax, ecx
+	je near igual_1
+	push dword 0
+	jmp near final_1
+igual_1:
 	push dword 1
-	;fin escritura operando -----
-	pop dword eax
-	mov [ebp-8], eax
-	; fin asignacion en funcion -----
-
-	lea eax, [ebp - 8]
-	push dword eax
-	; escribir variable -----
-
-	lea eax, [ebp - 4]
-	push dword eax
-	; escribir variable -----
+final_1:
+	;fin igualacion -----
 
 	pop eax
-	pop edx
-	mov edx, [edx]
+	cmp eax, 0
+	je near fin_if_2
+	push dword _y1
+	;fin escritura operando -----
+	pop eax
 	mov eax, [eax]
-	add edx, eax
-	push edx
-	;fin suma -----
-
-	pop eax
-	mov esp, ebp
-	pop ebp
-	ret
-	; Fin Funcion  ^^^^^^
-init:
-	push dword 1000
+	cmp eax, 0
+	je near fin_if_3
+	push dword 110
 	;fin escritura operando -----
-	call _sinIva@1
-	add esp, 4
-	push dword eax
 	pop eax
 	push dword eax
 	call print_int
@@ -69,6 +66,48 @@ init:
 	call print_endofline
 	;fin escritura -----
 
+	jmp near fin_ifelse_3
+fin_if_3:
+	push dword 111
+	;fin escritura operando -----
+	pop eax
+	push dword eax
+	call print_int
+	add esp, 4
+	call print_endofline
+	;fin escritura -----
+
+fin_ifelse_3:
+	jmp near fin_ifelse_2
+fin_if_2:
+	push dword _y1
+	;fin escritura operando -----
+	pop eax
+	mov eax, [eax]
+	cmp eax, 0
+	je near fin_if_4
+	push dword 10
+	;fin escritura operando -----
+	pop eax
+	push dword eax
+	call print_int
+	add esp, 4
+	call print_endofline
+	;fin escritura -----
+
+	jmp near fin_ifelse_4
+fin_if_4:
+	push dword 11
+	;fin escritura operando -----
+	pop eax
+	push dword eax
+	call print_int
+	add esp, 4
+	call print_endofline
+	;fin escritura -----
+
+fin_ifelse_4:
+fin_ifelse_2:
 jmp fin
 mensaje_tam_vector:
 	push dword msg_tam_vector
