@@ -1,14 +1,13 @@
 main {
-    boolean z, y;
+    boolean y;
 
-    function int doble(boolean arg; boolean b2) {
+    function int doble(boolean arg) {
         boolean x, l;
-        l = b2; 
+        scanf l; 
         x = arg && l;
         return x;
     }
 
-    scanf z;
     scanf y;
-    printf doble(z, y);
+    printf doble(y);
 }

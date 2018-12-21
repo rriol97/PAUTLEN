@@ -675,15 +675,29 @@ bucle_inicio: TOK_WHILE '(' exp ')' '{'
 
 lectura: TOK_SCANF TOK_IDENTIFICADOR
     {
-        if (buscarIdNoCualificado(NULL, tabla_main, $2.lexema, "main", &elem, nombre_ambito_encontrado) != OK) {
-            sprintf(msg, "EHEHHEHEHEHEHEHElem no encontrado\n");
-        } else {
-            if (elem->clase == FUNCION || elem->clase == VECTOR) {
-                sprintf(msg, "no se puede imprimir funciones ni vectores\n");
+        if (en_funcion) {
+            sprintf(aux, "%s_", fcn.nombre);
+            strcat(aux, $1.lexema);
+            if (buscarParaDeclararIdTablaSimbolosAmbitos(tabla_main, aux, &elem, "main", nombre_ambito_encontrado) != OK) {
+                sprintf(msg, "Varible local no encontrada\n");
+                return -1;
             }
-
-            escribir_operando(fout, $2.lexema, $2.direcciones);
+            escribirVariableLocal(fout, elem->posicion_variable_local+1);
             leer(fout, $2.lexema, elem->tipo);
+        }
+        else {
+            if (buscarIdNoCualificado(NULL, tabla_main, $2.lexema, "main", &elem, nombre_ambito_encontrado) != OK) {
+                sprintf(msg, "no encontrado\n");
+                return -1;
+            } else {
+                if (elem->clase == FUNCION || elem->clase == VECTOR) {
+                    sprintf(msg, "no se puede imprimir funciones ni vectores\n");
+                    return -1;
+                }
+
+                escribir_operando(fout, $2.lexema, $2.direcciones);
+                leer(fout, $2.lexema, elem->tipo);
+            }
         }
     }
     |

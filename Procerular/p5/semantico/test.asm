@@ -2,7 +2,6 @@ segment .data
 	msg_error_division_por_0	db "Division por 0", 0
 segment .bss
 	__esp resd 1
-	_z resd 1
 	_y resd 1
 segment .text
 	global main
@@ -10,20 +9,19 @@ extern scan_int, print_int, scan_float, print_float, scan_boolean, print_boolean
 main:
 	mov dword [__esp], __esp
 	jmp init
-_doble@3@3:
+_doble@3:
 	push ebp
 	mov ebp, esp
 	sub esp, 8
-	lea eax, [ebp + 8]
+	lea eax, [ebp - 4]
 	push dword eax
-	; escribir operando -----
+	; escribir variable -----
 
-	pop dword eax
-	mov eax, [eax]
-	mov [ebp-4], eax
-	; fin asignacion en funcion -----
+	call scan_boolean
+	add esp, 4
+	;fin lectura -----
 
-	lea eax, [ebp + 12]
+	lea eax, [ebp + 8]
 	push dword eax
 	; escribir operando -----
 
@@ -54,24 +52,11 @@ _doble@3@3:
 	ret
 	; Fin Funcion  ^^^^^^
 init:
-	push dword _z
-	;fin escritura operando -----
-	call scan_boolean
-	add esp, 4
-	;fin lectura -----
-
 	push dword _y
 	;fin escritura operando -----
 	call scan_boolean
 	add esp, 4
 	;fin lectura -----
-
-	push dword _z
-	;fin escritura operando -----
-	pop eax
-	mov eax, [eax]
-	push eax
-	; operando en pila a argumento -----
 
 	push dword _y
 	;fin escritura operando -----
@@ -80,8 +65,8 @@ init:
 	push eax
 	; operando en pila a argumento -----
 
-	call _doble@3@3
-	add esp, 8
+	call _doble@3
+	add esp, 4
 	push dword eax
 	pop eax
 	push dword eax
