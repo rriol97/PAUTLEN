@@ -148,9 +148,7 @@ programa: TOK_MAIN inicioTabla '{' declaraciones escribirHastaMain funciones sen
 
 inicioTabla: {
     /* Inic tabla simbolos */
-    if ( abrirAmbitoClase(&tabla_main, "main", 1) == -1) { /* init tabla simbolos */
-        printf("ERROR: No inicializada tabla de simbolos\n");
-    }
+    abrirAmbitoClase(&tabla_main, "main", 1);
     escribir_subseccion_data(fout);
     escribir_cabecera_bss(fout);
 }
@@ -171,9 +169,6 @@ declaraciones: declaracion
 
 declaracion: modificadores_acceso clase identificadores_declaracion ';'
     {
-        if ($2.tipo != $3.tipo) {
-            printf("Declaracion de distintos tipos NOT GOOD\n");
-        }
     }
     |
     modificadores_acceso declaracion_clase ';'
@@ -379,7 +374,6 @@ fn_declaracion: fn_complete_name '{' declaraciones_funcion
             strcpy(aux, fcn.nombre);
             strcat(aux, "_");
             strcat(aux, fcn.nombre_args[i]);
-            printf("introducimos el parametro %s en el ambito %s\n", aux, fcn.nombre);
 
             if (buscarParaDeclararIdTablaSimbolosAmbitos(tabla_main, aux, &elem, "main", nombre_ambito_encontrado) == OK) {
                 error_semantico = 1;
@@ -440,8 +434,6 @@ fn_name: TOK_FUNCTION modificadores_acceso tipo_retorno TOK_IDENTIFICADOR
     }
 ;
 
-
-
 tipo_retorno: TOK_NONE
     {
     }
@@ -481,9 +473,7 @@ resto_parametros_funcion: ';' parametro_funcion resto_parametros_funcion
 
 parametro_funcion: tipo TOK_IDENTIFICADOR
     {
-        printf("precesamos argumento: %s (%d)\n", $2.lexema, fcn.nargs);
         strcpy(fcn.nombre_args[fcn.nargs], $2.lexema);
-        printf("hago el strcpy bien\n");
         $2.tipo = $1.tipo;
         fcn.tipo_args[fcn.nargs] = $2.tipo;
         fcn.nargs++;
@@ -746,8 +736,9 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR
             sprintf(aux, "%s_", fcn.nombre);
             strcat(aux, $1.lexema);
             if (buscarParaDeclararIdTablaSimbolosAmbitos(tabla_main, aux, &elem, "main", nombre_ambito_encontrado) != OK) {
-                sprintf(msg, "Varible local no encontrada\n");
-                return -1;
+            error_semantico = 1;
+            sprintf(msg, "Acceso a variable no declarada (%s).\n", $2.lexema);
+            yyerror(msg);
             }
             escribirVariableLocal(fout, elem->posicion_variable_local+1);
             leer(fout, $2.lexema, elem->tipo);
@@ -758,8 +749,9 @@ lectura: TOK_SCANF TOK_IDENTIFICADOR
                 return -1;
             } else {
                 if (elem->clase == FUNCION || elem->clase == VECTOR) {
-                    sprintf(msg, "no se puede imprimir funciones ni vectores\n");
-                    return -1;
+                    error_semantico = 1;
+                    sprintf(msg, "Acceso a variable no declarada (%s).\n", $2.lexema);
+                    yyerror(msg);
                 }
 
                 escribir_operando(fout, $2.lexema, $2.direcciones);
@@ -781,7 +773,9 @@ escritura: TOK_PRINTF exp
                 escribir(fout, $2.direcciones, elem->tipo);
             }
             else {
-                sprintf(msg, "Elem no encontrado\n");
+                error_semantico = 1;
+                sprintf(msg, "Acceso a variable no declarada.\n");
+                yyerror(msg);
             }
         }
         else{
@@ -797,6 +791,12 @@ retorno_funcion: TOK_RETURN exp
         if (en_funcion == 0) {
             error_semantico = 1;
             sprintf(msg, "Sentencia de retorno fuera del cuerpo de una función.\n");
+            yyerror(msg);
+        }
+
+        if (fcn.tipo_retorno != $2.tipo) {
+            error_semantico = 1;
+            sprintf(msg, "Retorno invalido.\n");
             yyerror(msg);
         }
         retornarFuncion(fout, $2.direcciones);
@@ -933,7 +933,6 @@ exp: exp '+' exp
                 sprintf(msg, "Acceso a variable no declarada <%s>\n", $1.lexema);
                 yyerror(msg);
             }
-            printf("[[[ Encontramos %s en el ambito %s ]]]\n", aux, nombre_ambito_encontrado);
 
             if (elem->categoria == PARAMETRO) {
                 escribirParametro(fout, elem->posicion_parametro, elem->numero_parametros);
@@ -945,9 +944,6 @@ exp: exp '+' exp
         } else {
             if (buscarIdNoCualificado(NULL, tabla_main, $1.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
                 $1.tipo = elem->tipo;
-            }
-            else {
-                printf("Error:Variable no encontrada (%s)\n", $1.lexema);
             }
             escribir_operando(fout, $1.lexema, 1);
             if (flag_lista_exp == 1) {

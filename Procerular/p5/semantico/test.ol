@@ -1,17 +1,15 @@
 main {
     int i;
-    array int [8] x;
+    
+    function int sinIva(int precio) {
+        int iva;
+        boolean b;
 
-    i = 0;
-    while ((i < 8)) {
-        x[i] = i * (i-1);
-        i = i + 1;
+        iva = precio * 5;
+        b = 1;
+        return (b + iva);
     }
 
-    i = 0;
-    while ((x[i] < 40)) {
-        printf x[i];
-        i = i + 1;
-    }
+    printf sinIva(1000);
 
 }

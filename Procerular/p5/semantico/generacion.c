@@ -44,7 +44,7 @@ void escribir_subseccion_data(FILE *fpasm)
 	}
 	else
 	{
-		fprintf(fpasm, "segment .data\n\tmsg_div_0\tdb \"Division por 0\", 0\n\tmsg_tam_vector\tdb \"Index out of range\", 0\n");
+		fprintf(fpasm, "segment .data\n\tmsg_div_0\tdb \"****Error de ejecucion: Division por cero.\", 0\n\tmsg_tam_vector\tdb \"****Error de ejecucion: Indice fuera de rango.\", 0\n");
 	}
 	return;
 }
