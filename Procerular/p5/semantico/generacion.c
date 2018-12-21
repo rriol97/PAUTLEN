@@ -357,6 +357,8 @@ void y(FILE *fpasm, int es_variable_1, int es_variable_2)
 		}
 
 		fprintf(fpasm, "\tand eax, ecx\n\tpush eax\n");
+
+		fprintf(fpasm, "\t; fin AND -----\n\n");
 	}
 
 	return;
@@ -798,7 +800,7 @@ void retornarFuncion(FILE *fpasm, int es_variable)
 		fprintf(fpasm, "\tmov eax, [eax]\n");
 	}
 	fprintf(fpasm, "\tmov esp, ebp\n\tpop ebp\n\tret\n");
-	fprintf(fpasm, "\t; Fin Funcion\n");
+	fprintf(fpasm, "\t; Fin Funcion  ^^^^^^\n");
 }
 
 void escribirParametro(FILE *fpasm, int pos_parametro, int num_total_parametros)
@@ -809,6 +811,7 @@ void escribirParametro(FILE *fpasm, int pos_parametro, int num_total_parametros)
 	}
 
 	fprintf(fpasm, "\tlea eax, [ebp + %d]\n\tpush dword eax\n", 4 + 4*(num_total_parametros - pos_parametro));
+	fprintf(fpasm, "\t; escribir operando -----\n\n");
 }
 
 void escribirVariableLocal(FILE *fpasm, int posicion_variable_local)
@@ -819,6 +822,7 @@ void escribirVariableLocal(FILE *fpasm, int posicion_variable_local)
 	}
 
 	fprintf(fpasm, "\tlea eax, [ebp - %d]\n\tpush dword eax\n", 4*posicion_variable_local);
+	fprintf(fpasm, "\t; escribir variable -----\n\n");
 }
 
 void operandoEnPilaAArgumento(FILE *fpasm, int es_variable)
@@ -831,6 +835,7 @@ void operandoEnPilaAArgumento(FILE *fpasm, int es_variable)
 	if (es_variable) {
 		fprintf(fpasm, "\tpop eax\n\tmov eax, [eax]\n\tpush eax\n");
 	}
+	fprintf(fpasm, "\t; operando en pila a argumento -----\n\n");
 }
 
 void llamarFuncion(FILE *fpasm, char *nombre_funcion, int num_argumentos)
@@ -962,4 +967,6 @@ void asignar_en_funcion(FILE* fpasm, int es_variable, int pos) {
     }
     /*asigno el valor en la direccion*/
     fprintf(fpasm, "\tmov [ebp-%d], eax\n", 4*pos);
+
+	fprintf(fpasm, "\t; fin asignacion en funcion -----\n\n");
 }

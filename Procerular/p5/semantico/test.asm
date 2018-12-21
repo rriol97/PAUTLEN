@@ -3,41 +3,66 @@ segment .data
 segment .bss
 	__esp resd 1
 	_z resd 1
+	_y resd 1
 segment .text
 	global main
 extern scan_int, print_int, scan_float, print_float, scan_boolean, print_boolean, print_endofline, print_blank, print_string, malloc, free
 main:
 	mov dword [__esp], __esp
 	jmp init
-_doble@1:
+_doble@3@3:
 	push ebp
 	mov ebp, esp
-	sub esp, 4
+	sub esp, 8
 	lea eax, [ebp + 8]
 	push dword eax
+	; escribir operando -----
+
 	pop dword eax
 	mov eax, [eax]
 	mov [ebp-4], eax
-	push dword 2
-	;fin escritura operando -----
+	; fin asignacion en funcion -----
+
+	lea eax, [ebp + 12]
+	push dword eax
+	; escribir operando -----
+
 	lea eax, [ebp - 4]
 	push dword eax
+	; escribir variable -----
+
+	pop ecx
 	pop eax
-	pop edx
 	mov eax, [eax]
-	add edx, eax
-	push edx
-	;fin suma -----
+	mov ecx, [ecx]
+	and eax, ecx
+	push eax
+	; fin AND -----
+
+	pop dword eax
+	mov [ebp-8], eax
+	; fin asignacion en funcion -----
+
+	lea eax, [ebp - 8]
+	push dword eax
+	; escribir variable -----
 
 	pop eax
+	mov eax, [eax]
 	mov esp, ebp
 	pop ebp
 	ret
-	; Fin Funcion
+	; Fin Funcion  ^^^^^^
 init:
 	push dword _z
 	;fin escritura operando -----
-	call scan_int
+	call scan_boolean
+	add esp, 4
+	;fin lectura -----
+
+	push dword _y
+	;fin escritura operando -----
+	call scan_boolean
 	add esp, 4
 	;fin lectura -----
 
@@ -46,8 +71,17 @@ init:
 	pop eax
 	mov eax, [eax]
 	push eax
-	call _doble@1
-	add esp, 4
+	; operando en pila a argumento -----
+
+	push dword _y
+	;fin escritura operando -----
+	pop eax
+	mov eax, [eax]
+	push eax
+	; operando en pila a argumento -----
+
+	call _doble@3@3
+	add esp, 8
 	push dword eax
 	pop eax
 	push dword eax

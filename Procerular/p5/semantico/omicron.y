@@ -297,7 +297,13 @@ identificadores_declaracion: identificador
     |
     identificador ',' identificadores_declaracion
     {
-      $$.tipo = $1.tipo;
+        $$.tipo = $1.tipo;
+
+        if (en_funcion){
+            strcpy(fcn.nombre_var[nlocalvar], $1.lexema);
+            fcn.tipo_var[nlocalvar] = $1.tipo;
+            nlocalvar++;
+        }
     }
 ;
 
@@ -550,8 +556,8 @@ asignacion: TOK_IDENTIFICADOR '=' exp
         if (en_funcion) {
             sprintf(aux, "%s_", fcn.nombre);
             strcat(aux, $1.lexema);
-            if (buscarParaDeclararIdTablaSimbolosAmbitos(tabla_main, aux, &elem, "main", nombre_ambito_encontrado) == OK){
-                asignar_en_funcion(fout, $3.tipo, elem->posicion_variable_local+1);
+            if (buscarParaDeclararIdTablaSimbolosAmbitos(tabla_main, aux, &elem, "main", nombre_ambito_encontrado) == OK) {
+                asignar_en_funcion(fout, $3.direcciones, elem->posicion_variable_local+1);
             }
             else {
                 sprintf(msg, "Varible local no encontrada\n");
@@ -722,21 +728,10 @@ exp: exp '+' exp
             sprintf(msg, "La suma requiere que ambos operandos sean numeros");
         }
 
-        printf("op1: %s tipo(%d) direc(%d)\n", $1.lexema, $1.tipo, $1.direcciones);
-        printf("op2: %s tipo(%d) direc(%d)\n", $3.lexema, $3.tipo, $3.direcciones);
-
-        if ($1.direcciones) {
-            //escribir_operando(fout, $1.lexema, $1.direcciones);
-        }
-        if ($3.direcciones) {
-            //escribir_operando(fout, $3.lexema, $3.direcciones);
-        }
-
         sumar(fout, $1.direcciones, $3.direcciones);
 
         $$.tipo = ENTERO;
         $$.direcciones = 0;
-
     }
     |
     exp '-' exp
@@ -744,6 +739,9 @@ exp: exp '+' exp
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
             sprintf(msg, "La resta requiere que ambos operandos sean numeros");
         }
+
+        restar(fout, $1.direcciones, $3.direcciones);
+
         $$.tipo = ENTERO;
         $$.direcciones = 0;
     }
@@ -753,9 +751,9 @@ exp: exp '+' exp
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
             sprintf(msg, "La division requiere que ambos operandos sean numeros");
         }
-        if ($3.tipo == 0) {
-            sprintf(msg, "La division entre 0 no se permite");
-        }
+        
+        dividir(fout, $1.direcciones, $3.direcciones);
+
         $$.tipo = ENTERO;
         $$.direcciones = 0;
     }
@@ -777,15 +775,23 @@ exp: exp '+' exp
         if ($2.tipo == BOOLEAN) {
             sprintf(msg, "El cambio de signo requiere operandos que sean numeros");
         }
+
+        cambiar_signo(fout, $2.direcciones);
+
         $$.tipo = ENTERO;
         $$.direcciones = 0;
     }
     |
     exp TOK_AND exp
     {
+
         if ($1.tipo == ENTERO || $3.tipo == ENTERO) {
             sprintf(msg, "La conjuncion requiere operandos que sean booleans");
+            return -1;
         }
+
+        y(fout, $1.direcciones, $3.direcciones);
+
         $$.tipo = BOOLEAN;
         $$.direcciones = 0;
     }
@@ -794,7 +800,11 @@ exp: exp '+' exp
     {
         if ($1.tipo == ENTERO || $3.tipo == ENTERO) {
             sprintf(msg, "La disyuncion requiere operandos que sean booleans");
+            return -1;
         }
+
+        o(fout, $1.direcciones, $3.direcciones);
+
         $$.tipo = BOOLEAN;
         $$.direcciones = 0;
     }
@@ -803,7 +813,12 @@ exp: exp '+' exp
     {
         if ($2.tipo == ENTERO) {
             sprintf(msg, "La negacion requiere operandos que sean booleans");
+            return -1;
         }
+
+        no(fout, $2.direcciones, etiqueta);
+        etiqueta++;
+
         $$.tipo = BOOLEAN;
         $$.direcciones = 0;
     }
@@ -814,7 +829,7 @@ exp: exp '+' exp
             sprintf(aux, "%s_", fcn.nombre);
             strcat(aux, $1.lexema);
 
-            if( buscarParaDeclararIdTablaSimbolosAmbitos(tabla_main, aux, &elem, "main", nombre_ambito_encontrado) != OK) {
+            if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_main, aux, &elem, "main", nombre_ambito_encontrado) != OK) {
                 sprintf(msg, "identificador inexistente");
             }
             printf("[[[ Encontramos %s en el ambito %s ]]]\n", aux, nombre_ambito_encontrado);
@@ -823,7 +838,7 @@ exp: exp '+' exp
                 escribirParametro(fout, elem->posicion_parametro, elem->numero_parametros);
             }
             else if (elem->categoria == VARIABLE) {
-                escribirVariableLocal(fout, elem->numero_variables_locales);
+                escribirVariableLocal(fout, elem->posicion_variable_local+1);
             }
 
         } else {
@@ -839,6 +854,7 @@ exp: exp '+' exp
             }
         }
 
+        printf("soy un boolean con complejo de caac (%s)\n", $1.lexema);
         //TODO comprobar que no sea de categoria funcion ni clase vector
         $$.tipo = elem->tipo;
         $$.direcciones = 1;
@@ -846,6 +862,7 @@ exp: exp '+' exp
     |
     constante
     {
+        printf("soy contanteeee\n");
         $$.tipo = $1.tipo;
         $$.direcciones = $1.direcciones;
     }
@@ -961,13 +978,8 @@ resto_lista_expresiones: ',' exp resto_lista_expresiones
 comparacion: exp TOK_IGUAL exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La division requiere que ambos operandos sean numeros");
-        }
-        if ($1.direcciones == 1) {
-            //escribir_operando(fout, $1.lexema, $1.direcciones);
-        }
-        if ($3.direcciones == 1) {
-            //escribir_operando(fout, $3.lexema, $3.direcciones);
+            sprintf(msg, "La igualacion requiere que ambos operandos sean booleanos");
+            return -1;
         }
 
         igual(fout, $1.direcciones, $3.direcciones, etiqueta);
@@ -980,8 +992,13 @@ comparacion: exp TOK_IGUAL exp
     exp TOK_DISTINTO exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La division requiere que ambos operandos sean numeros");
+            sprintf(msg, "La distincion requiere que ambos operandos sean booleanos");
+            return -1;
         }
+
+        distinto(fout, $1.direcciones, $3.direcciones, etiqueta);
+        etiqueta++;
+
         $$.tipo = BOOLEAN;
         $$.direcciones = 0;
     }
@@ -989,8 +1006,13 @@ comparacion: exp TOK_IGUAL exp
     exp TOK_MENORIGUAL exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La division requiere que ambos operandos sean numeros");
+            sprintf(msg, "La comparacion requiere que ambos operandos sean booleanos");
+            return -1;
         }
+
+        menor_igual(fout, $1.direcciones, $3.direcciones, etiqueta);
+        etiqueta++;
+
         $$.tipo = BOOLEAN;
         $$.direcciones = 0;
     }
@@ -998,8 +1020,13 @@ comparacion: exp TOK_IGUAL exp
     exp TOK_MAYORIGUAL exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La division requiere que ambos operandos sean numeros");
+            sprintf(msg, "La comparacion requiere que ambos operandos sean booleanos");
+            return -1;
         }
+
+        mayor_igual(fout, $1.direcciones, $3.direcciones, etiqueta);
+        etiqueta++;
+
         $$.tipo = BOOLEAN;
         $$.direcciones = 0;
     }
@@ -1007,8 +1034,13 @@ comparacion: exp TOK_IGUAL exp
     exp '<' exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La division requiere que ambos operandos sean numeros");
+            sprintf(msg, "La comparacion requiere que ambos operandos sean booleanos");
+            return -1;
         }
+
+        menor(fout, $1.direcciones, $3.direcciones, etiqueta);
+        etiqueta++;
+
         $$.tipo = BOOLEAN;
         $$.direcciones = 0;
     }
@@ -1016,8 +1048,13 @@ comparacion: exp TOK_IGUAL exp
     exp '>' exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La division requiere que ambos operandos sean numeros");
+            sprintf(msg, "La comparacion requiere que ambos operandos sean booleanos");
+            return -1;
         }
+
+        mayor(fout, $1.direcciones, $3.direcciones, etiqueta);
+        etiqueta++;
+
         $$.tipo = BOOLEAN;
         $$.direcciones = 0;
     }
