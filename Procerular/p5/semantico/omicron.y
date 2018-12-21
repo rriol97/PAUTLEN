@@ -31,12 +31,13 @@ int etiqueta = 1;
 char aux[MAX_LEN+100];
 char fname_aux[MAX_LEN];
 int nargs;
-char msg[MAX_LEN];
+char msg[MAX_LEN*2];
 int i;
 int nlocalvar;
 int hay_return = 0;
 int flag_lista_exp = 0;
 int en_funcion = 0;
+int error_semantico = 0;
 
 Fcn fcn;
 %}
@@ -119,6 +120,7 @@ Fcn fcn;
 %type <atributos> bucle
 %type <atributos> bucle_inicio
 %type <atributos> sentencia_simple
+%type <atributos> bucle_medio
 
 %left '+' '-' TOK_OR
 %left '*' '/' TOK_AND
@@ -144,7 +146,7 @@ programa: TOK_MAIN inicioTabla '{' declaraciones escribirHastaMain funciones sen
 inicioTabla: {
     /* Inic tabla simbolos */
     if ( abrirAmbitoClase(&tabla_main, "main", 1) == -1) { /* init tabla simbolos */
-        printf("error inicializando en la tabla de simbolos");
+        printf("ERROR: No inicializada tabla de simbolos\n");
     }
     escribir_subseccion_data(fout);
     escribir_cabecera_bss(fout);
@@ -250,7 +252,6 @@ clase_escalar: tipo
 tipo: TOK_INT
     {
         
-        printf("llego bien (int)\n\n");
         $$.tipo = ENTERO;
         tipo_declaracion = ENTERO;
     }
@@ -315,12 +316,11 @@ identificador: TOK_IDENTIFICADOR
 
         if (en_funcion == 0) {
             declarar_variable(fout, $1.lexema, $1.tipo, 1);
-        
-            insertarTablaSimbolosAmbitos(tabla_main, "main", $1.lexema, ESCALAR, $1.tipo, $1.direcciones, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
-            printf("Insertamos en tabla simbolos la variable: %s [%d]\n", $1.lexema, $1.tipo);
             if (buscarIdNoCualificado(NULL, tabla_main, $1.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
-                printf("found!!!\n");
-            }
+               error_semantico = 1;
+                yyerror("Declaracion duplicada");
+            }        
+            insertarTablaSimbolosAmbitos(tabla_main, "main", $1.lexema, ESCALAR, $1.tipo, $1.direcciones, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
         }
     }
 ;
@@ -338,12 +338,13 @@ funciones: funcion funciones
 funcion: fn_declaracion sentencias '}'
     {
         if (hay_return == 0) {
-            sprintf(msg, "No hay return en funcion");
+            error_semantico = 1;
+            sprintf(msg, "Funcion %s sin sentencia de retorno.", fcn.nombre);
+            yyerror(msg);
         }
         hay_return = 0;
         en_funcion = 0;
 
-        printf("--- Termina funcion ---\n");
     }
 ;
 
@@ -358,6 +359,12 @@ fn_declaracion: fn_complete_name '{' declaraciones_funcion
             strcat(aux, "_");
             strcat(aux, fcn.nombre_args[i]);
             printf("introducimos el parametro %s en el ambito %s\n", aux, fcn.nombre);
+
+            if (buscarParaDeclararIdTablaSimbolosAmbitos(tabla_main, aux, &elem, "main", nombre_ambito_encontrado) == OK) {
+                error_semantico = 1;
+                sprintf(msg, "Declaracion duplicada\n");
+                yyerror(msg);
+            }
             insertarTablaSimbolosAmbitos(tabla_main, "main", aux, FUNCION, fcn.tipo_args[i], PARAMETRO, 1, fcn.nargs, 0, 1, i, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
         
         }
@@ -366,6 +373,12 @@ fn_declaracion: fn_complete_name '{' declaraciones_funcion
             strcpy(aux, fcn.nombre);
             strcat(aux, "_");
             strcat(aux, fcn.nombre_var[i]);
+
+            if (buscarParaDeclararIdTablaSimbolosAmbitos(tabla_main, aux, &elem, "main", nombre_ambito_encontrado) == OK) {
+                error_semantico = 1;
+                sprintf(msg, "Declaracion duplicada\n");
+                yyerror(msg);
+            }
             insertarTablaSimbolosAmbitos(tabla_main, "main", aux, FUNCION, fcn.tipo_var[i], VARIABLE, 1, 0, nlocalvar, i, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
             
         }
@@ -379,17 +392,17 @@ fn_complete_name: fn_name '(' parametros_funcion ')'
             strcat(fcn.nombre, aux);
         }
 
-        printf("--> Nombre de la funcion: %s  <--\n", fcn.nombre);
-
         if (buscarIdNoCualificado(NULL, tabla_main, fname_aux, "main", &elem, nombre_ambito_encontrado) == OK) {
-            sprintf(msg, "El nombre de esta funcion ya existe");
-            return -1;
+                error_semantico = 1;
+                sprintf(msg, "Declaracion duplicada\n");
+                yyerror(msg);
         }
         insertarTablaSimbolosAmbitos(tabla_main, "main", fcn.nombre, FUNCION, fcn.tipo_retorno, FUNCION, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, ACCESO_TODOS, MIEMBRO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
 
         if (AbrirAmbitoPrefijos(tabla_main, "main", fcn.nombre, FUNCION, 0, fcn.tipo_retorno, 0, 1) == -1) {
-            sprintf(msg, "Variable no encontrada\n");
-            return -1;
+                error_semantico = 1;
+                sprintf(msg, "Acceso a funcion no declarada\n");
+                yyerror(msg);
         }
         
 
@@ -514,15 +527,20 @@ sentencia_simple: asignacion
         strcat(fname_aux, $1.lexema);
         strcat(fname_aux, aux);
 
-
-
         if (buscarIdNoCualificado(NULL, tabla_main, fname_aux, "main", &elem, nombre_ambito_encontrado) != OK) {
-            sprintf(msg, "la funcion no existe");
-            return -1;
+            error_semantico = 1;
+            sprintf(msg, "Acceso a funcion no declarada (<%s>).\n", $1.lexema);
+            yyerror(msg);
         }
         if (elem->clase != FUNCION) {
-            sprintf(msg, "la funcion no existe");
-            return -1;
+            error_semantico = 1;
+            sprintf(msg, "Acceso a funcion no declarada (<%s>).\n", $1.lexema);
+            yyerror(msg);
+        }
+        if (elem->numero_parametros != nargs) {
+            error_semantico = 1;
+            sprintf(msg, "Numero incorrecto de parametros en llamada a funcion.\n");
+            yyerror(msg);
         }
 
         llamarFuncion(fout, fname_aux, nargs);
@@ -560,8 +578,9 @@ asignacion: TOK_IDENTIFICADOR '=' exp
                 asignar_en_funcion(fout, $3.direcciones, elem->posicion_variable_local+1);
             }
             else {
-                sprintf(msg, "Varible local no encontrada\n");
-                return -1;
+                error_semantico = 1;
+                sprintf(msg, "Acceso a variable no declarada (<%s>).\n", $1.lexema);
+                yyerror(msg);
             }
         }
         else {
@@ -570,12 +589,15 @@ asignacion: TOK_IDENTIFICADOR '=' exp
                 $1.tipo = elem->tipo;
             }
             else {
-                sprintf(msg, "Variable no encontrada\n");
-                printf("fgeiufgeiufgeiufg");
+                error_semantico = 1;
+                sprintf(msg, "Acceso a variable no declarada (<%s>).\n", $1.lexema);
+                yyerror(msg);
             }
 
             if ($1.tipo != $3.tipo) {
-            sprintf(msg, "Variables distintas\n");
+                error_semantico = 1;
+                sprintf(msg, "Asignacion incompatible.\n");
+                yyerror(msg);
             }
 
             if ($3.direcciones == 0) {
@@ -590,7 +612,9 @@ asignacion: TOK_IDENTIFICADOR '=' exp
     elemento_vector '=' exp
     {
         if ($1.tipo != $3.tipo) {
-            sprintf(msg, "tipos incompatibles");
+                error_semantico = 1;
+                sprintf(msg, "Asignacion incompatible.\n");
+                yyerror(msg);
         }
     }
     |
@@ -612,10 +636,14 @@ elemento_vector: TOK_IDENTIFICADOR '[' exp ']'
         if (buscarIdNoCualificado(NULL, tabla_main, $1.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
             $1.tipo = elem->tipo;
             if (elem->clase != VECTOR) {
-                sprintf(msg, "no es vector");
+                error_semantico = 1;
+                sprintf(msg, "Intento de indexacion de una variable que no es de tipo vector.\n");
+                yyerror(msg);
             }
             if ($3.tipo != ENTERO) {
-                sprintf(msg, "el indice debe ser de tipo entero");
+                error_semantico = 1;
+                sprintf(msg, "El indice en una operacion de indexacion tiene que ser de tipo entero.\n");
+                yyerror(msg);
             }
 
             $$.tipo = elem->tipo;
@@ -623,7 +651,9 @@ elemento_vector: TOK_IDENTIFICADOR '[' exp ']'
             //Comprobacion indice, 0<i<64
         }
         else {
-            sprintf(msg, "Variable no encontrada\n");
+                error_semantico = 1;
+                sprintf(msg, "Acceso a variable no declarada (<%s>).\n", $1.lexema);
+                yyerror(msg);
         }
     }
 ;
@@ -645,7 +675,9 @@ if_exp_sentencias: if_exp sentencias '}'
 if_exp: TOK_IF '(' exp ')' '{'
     {
         if ($3.tipo != BOOLEAN) {
-            sprintf(msg, "condicion del if no booleano");
+            error_semantico = 1;
+            sprintf(msg, "Condicional con condicion de tipo int.\n");
+            yyerror(msg);
         }
         $$.etiqueta = etiqueta;
         etiqueta++;
@@ -654,24 +686,31 @@ if_exp: TOK_IF '(' exp ')' '{'
     }
 ;
 
-bucle: bucle_inicio sentencias '}'
+bucle: bucle_medio sentencias '}'
     {
         while_fin(fout, $1.etiqueta);
     }
 ;
 
-bucle_inicio: TOK_WHILE '(' exp ')' '{'
+bucle_medio: bucle_inicio exp ')' '{'
     {
-        if ($3.tipo != BOOLEAN) {
-            sprintf(msg, "condicion del if no booleano");
+        if ($2.tipo != BOOLEAN) {
+            error_semantico = 1;
+            sprintf(msg, "Bucle con condicion de tipo int.\n");
+            yyerror(msg);
         }
-        $$.etiqueta = etiqueta;
-        etiqueta++;
-
-        while_inicio(fout, $$.etiqueta);
-        while_exp_pila(fout, $3.direcciones, $$.etiqueta);
+        $$.etiqueta = $1.etiqueta;
+        
+        while_exp_pila(fout, $2.direcciones, $$.etiqueta);
     }
 ;
+
+bucle_inicio: TOK_WHILE '('
+    {
+        while_inicio(fout, etiqueta);
+        $$.etiqueta = etiqueta;
+        etiqueta++;
+    }
 
 lectura: TOK_SCANF TOK_IDENTIFICADOR
     {
@@ -727,6 +766,11 @@ escritura: TOK_PRINTF exp
 
 retorno_funcion: TOK_RETURN exp
     {
+        if (en_funcion == 0) {
+            error_semantico = 1;
+            sprintf(msg, "Sentencia de retorno fuera del cuerpo de una función.\n");
+            yyerror(msg);
+        }
         retornarFuncion(fout, $2.direcciones);
         hay_return = 1;
     }
@@ -739,7 +783,9 @@ retorno_funcion: TOK_RETURN exp
 exp: exp '+' exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La suma requiere que ambos operandos sean numeros");
+            error_semantico = 1;
+            sprintf(msg, "Operacion aritmetica con operandos boolean.\n");
+            yyerror(msg);
         }
 
         sumar(fout, $1.direcciones, $3.direcciones);
@@ -751,7 +797,9 @@ exp: exp '+' exp
     exp '-' exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La resta requiere que ambos operandos sean numeros");
+            error_semantico = 1;
+            sprintf(msg, "Operacion aritmetica con operandos boolean.\n");
+            yyerror(msg);
         }
 
         restar(fout, $1.direcciones, $3.direcciones);
@@ -763,7 +811,9 @@ exp: exp '+' exp
     exp '/' exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La division requiere que ambos operandos sean numeros");
+            error_semantico = 1;
+            sprintf(msg, "Operacion aritmetica con operandos boolean.\n");
+            yyerror(msg);
         }
         
         dividir(fout, $1.direcciones, $3.direcciones);
@@ -775,7 +825,9 @@ exp: exp '+' exp
     exp '*' exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La multiplicacion requiere que ambos operandos sean numeros");
+            error_semantico = 1;
+            sprintf(msg, "Operacion aritmetica con operandos boolean.\n");
+            yyerror(msg);
         }
 
         multiplicar(fout, $1.direcciones, $3.direcciones);
@@ -787,7 +839,9 @@ exp: exp '+' exp
     '-' %prec UNARIO exp
     {
         if ($2.tipo == BOOLEAN) {
-            sprintf(msg, "El cambio de signo requiere operandos que sean numeros");
+            error_semantico = 1;
+            sprintf(msg, "Operacion aritmetica con operandos boolean.\n");
+            yyerror(msg);
         }
 
         cambiar_signo(fout, $2.direcciones);
@@ -800,8 +854,9 @@ exp: exp '+' exp
     {
 
         if ($1.tipo == ENTERO || $3.tipo == ENTERO) {
-            sprintf(msg, "La conjuncion requiere operandos que sean booleans");
-            return -1;
+            error_semantico = 1;
+            sprintf(msg, "Operacion logica con operandos int.\n");
+            yyerror(msg);
         }
 
         y(fout, $1.direcciones, $3.direcciones);
@@ -813,8 +868,9 @@ exp: exp '+' exp
     exp TOK_OR exp
     {
         if ($1.tipo == ENTERO || $3.tipo == ENTERO) {
-            sprintf(msg, "La disyuncion requiere operandos que sean booleans");
-            return -1;
+            error_semantico = 1;
+            sprintf(msg, "Operacion logica con operandos int.\n");
+            yyerror(msg);
         }
 
         o(fout, $1.direcciones, $3.direcciones);
@@ -826,8 +882,9 @@ exp: exp '+' exp
     '!' exp
     {
         if ($2.tipo == ENTERO) {
-            sprintf(msg, "La negacion requiere operandos que sean booleans");
-            return -1;
+            error_semantico = 1;
+            sprintf(msg, "Operacion logica con operandos int.\n");
+            yyerror(msg);
         }
 
         no(fout, $2.direcciones, etiqueta);
@@ -844,7 +901,9 @@ exp: exp '+' exp
             strcat(aux, $1.lexema);
 
             if(buscarParaDeclararIdTablaSimbolosAmbitos(tabla_main, aux, &elem, "main", nombre_ambito_encontrado) != OK) {
-                sprintf(msg, "identificador inexistente");
+                error_semantico = 1;
+                sprintf(msg, "Acceso a variable no declarada <%s>\n", $1.lexema);
+                yyerror(msg);
             }
             printf("[[[ Encontramos %s en el ambito %s ]]]\n", aux, nombre_ambito_encontrado);
 
@@ -868,7 +927,6 @@ exp: exp '+' exp
             }
         }
 
-        printf("soy un boolean con complejo de caac (%s)\n", $1.lexema);
         //TODO comprobar que no sea de categoria funcion ni clase vector
         $$.tipo = elem->tipo;
         $$.direcciones = 1;
@@ -876,7 +934,6 @@ exp: exp '+' exp
     |
     constante
     {
-        printf("soy contanteeee\n");
         $$.tipo = $1.tipo;
         $$.direcciones = $1.direcciones;
     }
@@ -906,16 +963,16 @@ exp: exp '+' exp
         strcat(fname_aux, $1.lexema);
         strcat(fname_aux, aux);
 
-        printf("oooooooh: %s\n", fname_aux);
 
         if (buscarIdNoCualificado(NULL, tabla_main, fname_aux, "main", &elem, nombre_ambito_encontrado) != OK) {
-            sprintf(msg, "la funcion no existe");
-            printf("que nooooo\n");
-            return -1;
+            error_semantico = 1;
+            sprintf(msg, "Acceso a variable no declarada <%s>\n", $1.lexema);
+            yyerror(msg);
         }
         if (elem->clase != FUNCION) {
-            sprintf(msg, "la funcion no existe");
-            return -1;
+            error_semantico = 1;
+            sprintf(msg, "Acceso a variable no declarada <%s>\n", $1.lexema);
+            yyerror(msg);
         }
 
         llamarFuncion(fout, fname_aux, nargs);
@@ -936,9 +993,9 @@ exp: exp '+' exp
 activar_flag_lista_exp:
     {
         if (flag_lista_exp) {
-            sprintf(msg, "No puedes declrarar funciones dentro de otra");
-            return -1;
-
+                error_semantico = 1;
+                sprintf(msg, "No esta permitido el uso de llamadas a funciones como parametros de otras\n");
+                yyerror(msg);
         }
         flag_lista_exp = 1;
     }
@@ -952,7 +1009,7 @@ identificador_clase: TOK_IDENTIFICADOR
     }
 ;
 
-lista_expresiones: averkpasa exp resto_lista_expresiones
+lista_expresiones: intermedio exp resto_lista_expresiones
     {
         
         if ($2.tipo == ENTERO) {
@@ -968,7 +1025,7 @@ lista_expresiones: averkpasa exp resto_lista_expresiones
     }
 ;
 
-averkpasa: 
+intermedio: 
     {
         nargs = 1;
         aux[0] = '\0';
@@ -992,8 +1049,9 @@ resto_lista_expresiones: ',' exp resto_lista_expresiones
 comparacion: exp TOK_IGUAL exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La igualacion requiere que ambos operandos sean booleanos");
-            return -1;
+            error_semantico = 1;
+            sprintf(msg, "Comparacion con datos boolean.\n");
+            yyerror(msg);
         }
 
         igual(fout, $1.direcciones, $3.direcciones, etiqueta);
@@ -1006,8 +1064,9 @@ comparacion: exp TOK_IGUAL exp
     exp TOK_DISTINTO exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La distincion requiere que ambos operandos sean booleanos");
-            return -1;
+            error_semantico = 1;
+            sprintf(msg, "Comparacion con datos boolean.\n");
+            yyerror(msg);
         }
 
         distinto(fout, $1.direcciones, $3.direcciones, etiqueta);
@@ -1020,8 +1079,9 @@ comparacion: exp TOK_IGUAL exp
     exp TOK_MENORIGUAL exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La comparacion requiere que ambos operandos sean booleanos");
-            return -1;
+            error_semantico = 1;
+            sprintf(msg, "Comparacion con datos boolean.\n");
+            yyerror(msg);
         }
 
         menor_igual(fout, $1.direcciones, $3.direcciones, etiqueta);
@@ -1034,8 +1094,9 @@ comparacion: exp TOK_IGUAL exp
     exp TOK_MAYORIGUAL exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La comparacion requiere que ambos operandos sean booleanos");
-            return -1;
+            error_semantico = 1;
+            sprintf(msg, "Comparacion con datos boolean.\n");
+            yyerror(msg);
         }
 
         mayor_igual(fout, $1.direcciones, $3.direcciones, etiqueta);
@@ -1048,8 +1109,9 @@ comparacion: exp TOK_IGUAL exp
     exp '<' exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La comparacion requiere que ambos operandos sean booleanos");
-            return -1;
+            error_semantico = 1;
+            sprintf(msg, "Comparacion con datos boolean.\n");
+            yyerror(msg);
         }
 
         menor(fout, $1.direcciones, $3.direcciones, etiqueta);
@@ -1062,8 +1124,9 @@ comparacion: exp TOK_IGUAL exp
     exp '>' exp
     {
         if ($1.tipo == BOOLEAN || $3.tipo == BOOLEAN) {
-            sprintf(msg, "La comparacion requiere que ambos operandos sean booleanos");
-            return -1;
+            error_semantico = 1;
+            sprintf(msg, "Comparacion con datos boolean.\n");
+            yyerror(msg);
         }
 
         mayor(fout, $1.direcciones, $3.direcciones, etiqueta);
@@ -1114,14 +1177,15 @@ constante_entera: TOK_CONSTANTE_ENTERA
 %%
 
 int yyerror(char* s) {
-    if (!flag_error)
+    if (!flag_error && error_semantico == 0)
     {
         fprintf(stderr, "ERROR SINTÁCTICO:%d:%d\n", fila, columna);
     }
-    if (!flag_error)
+    if (error_semantico)
     {
-        fprintf(stderr, "****Error semantico en lin %d: %s\n", fila, msg);
+        fprintf(stderr, "****Error semantico en lin %d: %s\n", fila, s);
     }
     flag_error = 0;
+    error_semantico = 0;
     return -1;
 }

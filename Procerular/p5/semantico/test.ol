@@ -1,13 +1,10 @@
 main {
-    boolean y;
+    int x;
+    
+    x = 0;
 
-    function int doble(boolean arg) {
-        boolean x, l;
-        scanf l; 
-        x = arg && l;
-        return x;
+    while ( (x < 100) ) {
+        printf x;
+        x = x + 1;
     }
-
-    scanf y;
-    printf doble(y);
 }

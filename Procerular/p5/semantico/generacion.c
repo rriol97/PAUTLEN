@@ -281,7 +281,6 @@ void multiplicar(FILE *fpasm, int es_variable_1, int es_variable_2)
 }
 void dividir(FILE *fpasm, int es_variable_1, int es_variable_2)
 {
-
 	if (!fpasm)
 	{
 		printf("Error del fichero (dividir)\n");
@@ -772,7 +771,7 @@ void while_fin(FILE *fpasm, int etiqueta)
 		return;
 	}
 
-	fprintf(fpasm, "\twhile_%d:\n", etiqueta);
+	fprintf(fpasm, "\tjmp while_%d\n", etiqueta);
 	fprintf(fpasm, "fin_while_%d:\n", etiqueta);
 }
 
