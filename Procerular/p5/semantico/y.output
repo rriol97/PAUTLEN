@@ -67,7 +67,7 @@ Gramática
 
    27 clase_objeto: '{' TOK_IDENTIFICADOR '}'
 
-   28 clase_vector: TOK_ARRAY tipo '[' constante_entera ']'
+   28 clase_vector: TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'
 
    29 identificadores: TOK_IDENTIFICADOR
    30                | TOK_IDENTIFICADOR ',' identificadores
@@ -253,7 +253,7 @@ TOK_MENORIGUAL (286) 109
 TOK_MAYORIGUAL (287) 110
 TOK_OR (288) 89
 TOK_AND (289) 88
-TOK_CONSTANTE_ENTERA (290) 117
+TOK_CONSTANTE_ENTERA (290) 28 117
 TOK_FALSE (291) 116
 TOK_TRUE (292) 115
 TOK_ERROR (293)
@@ -388,7 +388,7 @@ constante (125)
 constante_logica (126)
     en la izquierda: 115 116, en la derecha: 113
 constante_entera (127)
-    en la izquierda: 117, en la derecha: 28 114
+    en la izquierda: 117, en la derecha: 114
 
 
 Estado 0
@@ -725,7 +725,7 @@ Estado 26
 
 Estado 27
 
-   28 clase_vector: TOK_ARRAY . tipo '[' constante_entera ']'
+   28 clase_vector: TOK_ARRAY . tipo '[' TOK_CONSTANTE_ENTERA ']'
 
     TOK_INT      desplazar e ir al estado 25
     TOK_BOOLEAN  desplazar e ir al estado 26
@@ -1204,7 +1204,7 @@ Estado 66
 
 Estado 67
 
-   28 clase_vector: TOK_ARRAY tipo . '[' constante_entera ']'
+   28 clase_vector: TOK_ARRAY tipo . '[' TOK_CONSTANTE_ENTERA ']'
 
     '['  desplazar e ir al estado 118
 
@@ -1728,11 +1728,9 @@ Estado 117
 
 Estado 118
 
-   28 clase_vector: TOK_ARRAY tipo '[' . constante_entera ']'
+   28 clase_vector: TOK_ARRAY tipo '[' . TOK_CONSTANTE_ENTERA ']'
 
-    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 81
-
-    constante_entera  ir al estado 155
+    TOK_CONSTANTE_ENTERA  desplazar e ir al estado 155
 
 
 Estado 119
@@ -2217,7 +2215,7 @@ Estado 154
 
 Estado 155
 
-   28 clase_vector: TOK_ARRAY tipo '[' constante_entera . ']'
+   28 clase_vector: TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA . ']'
 
     ']'  desplazar e ir al estado 187
 
@@ -2630,7 +2628,7 @@ Estado 186
 
 Estado 187
 
-   28 clase_vector: TOK_ARRAY tipo '[' constante_entera ']' .
+   28 clase_vector: TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']' .
 
     $default  reduce usando la regla 28 (clase_vector)
 

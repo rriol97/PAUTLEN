@@ -1,10 +1,17 @@
 main {
-    int x;
-    
-    x = 0;
+    int i;
+    array int [8] x;
 
-    while ( (x < 100) ) {
-        printf x;
-        x = x + 1;
+    i = 0;
+    while ((i < 8)) {
+        x[i] = i * (i-1);
+        i = i + 1;
     }
+
+    i = 0;
+    while ((x[i] < 40)) {
+        printf x[i];
+        i = i + 1;
+    }
+
 }

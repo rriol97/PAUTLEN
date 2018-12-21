@@ -136,6 +136,9 @@ void operandoEnPilaAArgumento(FILE * fd_asm, int es_variable);
 void llamarFuncion(FILE * fd_asm, char * nombre_funcion, int num_argumentos);
 void limpiarPila(FILE * fd_asm, int num_argumentos);
 
+void escribir_elemento_vector(FILE * fpasm, char * nombre_vector, int tam_max, int exp_es_direccion);
+
+
 /* FUNCIONES DE OO */
 char * claseATabla(char * nombre_fuente_clase);
 void instance_of(FILE * fpasm, char * nombre_fuente_clase, int numero_atributos_instancia);

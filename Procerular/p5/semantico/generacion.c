@@ -19,7 +19,6 @@ Se te sugiere el nombre __esp para esta variable.
 */
 void escribir_cabecera_bss(FILE *fpasm)
 {
-
 	if (!fpasm)
 	{
 		printf("Error de fichero (escribir_cabecera_bss)\n");
@@ -45,7 +44,7 @@ void escribir_subseccion_data(FILE *fpasm)
 	}
 	else
 	{
-		fprintf(fpasm, "segment .data\n\tmsg_error_division_por_0\tdb \"Division por 0\", 0\n");
+		fprintf(fpasm, "segment .data\n\tmsg_div_0\tdb \"Division por 0\", 0\n\tmsg_tam_vector\tdb \"Index out of range\", 0\n");
 	}
 	return;
 }
@@ -132,7 +131,19 @@ void escribir_fin(FILE *fpasm)
 		printf("Error de fichero (escribir_fin)\n");
 	}
 	else
-	{
+	{	
+		fprintf(fpasm, "jmp fin\n");
+		fprintf(fpasm, "mensaje_tam_vector:\n");
+		fprintf(fpasm, "\tpush dword msg_tam_vector\n");
+		fprintf(fpasm, "\tcall print_string\n");
+		fprintf(fpasm, "\tadd esp, 4\n");
+		fprintf(fpasm, "\tjmp near fin\n");
+
+		fprintf(fpasm, "mensaje_div_0:\n");
+		fprintf(fpasm, "\tpush dword msg_div_0\n");
+		fprintf(fpasm, "\tcall print_string\n");
+		fprintf(fpasm, "\tadd esp, 4\n");
+
 		fprintf(fpasm, "fin:\n\tmov dword [%s], %s\n\tret\n", PUNTERO_A_PILA, PUNTERO_A_PILA);
 	}
 	return;
@@ -299,6 +310,9 @@ void dividir(FILE *fpasm, int es_variable_1, int es_variable_2)
 		{
 			fprintf(fpasm, "\tmov ecx, [ecx]\n");
 		}
+
+		fprintf(fpasm, "\tcmp eax, 0\n");
+		fprintf(fpasm, "\tje near mensaje_div_0\n");
 
 		fprintf(fpasm, "\tidiv ecx\n\tpush eax\n");
 	}
@@ -943,9 +957,9 @@ void asignarDestinoEnPila(FILE* fpasm, int es_variable) {
         return;
 
     /*obtengo la direccion donde dejar el valor*/
-    fprintf(fpasm, "\tpop dword edx\n");
-    /*obtengo el valor*/
     fprintf(fpasm, "\tpop dword eax\n");
+    /*obtengo el valor*/
+    fprintf(fpasm, "\tpop dword edx\n");
     if (es_variable) {
         /*si es variable obtengo el valor que contiene*/
         fprintf(fpasm, "\tmov eax, [eax]\n");
@@ -968,4 +982,25 @@ void asignar_en_funcion(FILE* fpasm, int es_variable, int pos) {
     fprintf(fpasm, "\tmov [ebp-%d], eax\n", 4*pos);
 
 	fprintf(fpasm, "\t; fin asignacion en funcion -----\n\n");
+}
+
+void escribir_elemento_vector(FILE * fpasm, char * nombre_vector, int tam_max, int exp_es_direccion) {
+	
+	if (!fpasm || !nombre_vector || tam_max < 1 || tam_max > 64) {
+		return;
+	}
+	
+	fprintf(fpasm, "\tpop dword eax\n");
+	if (exp_es_direccion) {
+		fprintf(fpasm, "\tmov eax, [eax]\n");
+	}
+	
+	fprintf(fpasm, "\tcmp eax, 0\n");
+	fprintf(fpasm, "\tjl near mensaje_tam_vector\n");
+	fprintf(fpasm, "\tcmp eax, %d\n", tam_max - 1);
+	fprintf(fpasm, "\tjg near mensaje_tam_vector\n");
+
+	fprintf(fpasm, "\tmov dword edx, _%s\n", nombre_vector);
+	fprintf(fpasm, "\tlea eax, [edx + eax*4]\n");
+	fprintf(fpasm, "\tpush dword eax\n");
 }

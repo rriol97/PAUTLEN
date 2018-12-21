@@ -92,6 +92,8 @@ TablaAmbito * tabla_main;
 elementoTablaSimbolos * elem;
 char nombre_ambito_encontrado[MAX_NAME];
 int tipo_declaracion;
+int tipo_clase;
+int tamanio_vector_actual;
 int etiqueta = 1;
 char aux[MAX_LEN+100];
 char fname_aux[MAX_LEN];
@@ -106,7 +108,7 @@ int error_semantico = 0;
 
 Fcn fcn;
 
-#line 110 "y.tab.c" /* yacc.c:339  */
+#line 112 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -258,11 +260,11 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 45 "omicron.y" /* yacc.c:355  */
+#line 47 "omicron.y" /* yacc.c:355  */
 
     tipo_atributos atributos;
 
-#line 266 "y.tab.c" /* yacc.c:355  */
+#line 268 "y.tab.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -279,7 +281,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 283 "y.tab.c" /* yacc.c:358  */
+#line 285 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -521,7 +523,7 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  4
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   271
+#define YYLAST   270
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  74
@@ -582,18 +584,18 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   133,   133,   139,   146,   155,   160,   164,   169,   176,
-     181,   185,   189,   193,   197,   201,   205,   210,   214,   219,
-     223,   228,   232,   236,   242,   246,   252,   259,   266,   271,
-     276,   280,   285,   299,   311,   328,   333,   338,   351,   388,
-     413,   424,   428,   433,   438,   443,   448,   452,   457,   461,
-     471,   476,   481,   485,   489,   494,   498,   503,   507,   511,
-     515,   519,   523,   552,   557,   562,   566,   571,   612,   621,
-     625,   629,   634,   661,   667,   675,   689,   695,   708,   715,
-     743,   748,   767,   778,   783,   797,   811,   825,   839,   853,
-     868,   882,   897,   935,   941,   947,   953,   959,   984,   988,
-     994,  1003,  1007,  1012,  1023,  1029,  1034,  1045,  1049,  1064,
-    1079,  1094,  1109,  1124,  1140,  1146,  1153,  1160,  1168
+       0,   136,   136,   142,   149,   158,   163,   167,   172,   179,
+     184,   188,   192,   196,   200,   204,   208,   213,   217,   223,
+     230,   235,   239,   243,   249,   253,   259,   266,   273,   278,
+     290,   294,   299,   313,   325,   349,   354,   359,   372,   409,
+     434,   445,   449,   454,   459,   464,   469,   473,   478,   482,
+     492,   497,   502,   506,   510,   515,   519,   524,   528,   532,
+     536,   540,   544,   573,   578,   583,   587,   592,   633,   643,
+     647,   651,   656,   689,   695,   703,   717,   723,   736,   743,
+     771,   776,   795,   806,   811,   825,   839,   853,   867,   881,
+     896,   910,   925,   963,   969,   975,   981,   987,  1012,  1016,
+    1022,  1031,  1035,  1040,  1051,  1057,  1062,  1073,  1077,  1092,
+    1107,  1122,  1137,  1152,  1168,  1174,  1181,  1188,  1196
 };
 #endif
 
@@ -725,7 +727,7 @@ static const yytype_int16 yypgoto[] =
      -58,   -58,   -58,   -58,   -58,    82,   117,   -58,     8,   -58,
      -58,   -58,   -58,   -58,   -15,   -58,   -58,   -58,   -58,   -58,
      -58,   -58,   -58,   -58,   -41,   -58,    -8,   -17,   -58,    57,
-     -58,   -58,   -58,   153
+     -58,   -58,   -58,   -58
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
@@ -763,7 +765,7 @@ static const yytype_int16 yytable[] =
      123,    84,   135,    98,  -104,    85,   145,   205,   146,   208,
      129,   130,    86,   144,   161,   162,   163,   164,   129,   130,
      148,   212,   151,   149,   150,   214,   215,   129,   130,   152,
-     154,   220,    81,   131,   132,   133,   134,   -17,   168,   219,
+     154,   220,   155,   131,   132,   133,   134,   -17,   168,   219,
      225,   131,   132,   133,   134,   175,   147,   129,   130,   178,
      131,   132,   133,   134,   165,   180,   181,   166,   167,   129,
      130,    37,    38,   176,   129,   130,   183,   187,   189,    39,
@@ -771,7 +773,7 @@ static const yytype_int16 yytable[] =
      199,   200,   131,   132,   133,   134,   209,   131,   132,   133,
      134,   202,   177,   203,    23,   204,   210,    36,   211,   216,
      217,   226,   221,   156,   223,   224,   227,   218,   207,   186,
-     222,   155
+     222
 };
 
 static const yytype_uint8 yycheck[] =
@@ -803,7 +805,7 @@ static const yytype_uint8 yycheck[] =
       62,    67,    56,    57,    58,    59,    67,    56,    57,    58,
       59,    68,    66,    68,    11,    63,    62,    17,    69,    69,
       63,    63,    69,   121,    69,    69,    63,   209,   186,   152,
-     213,   118
+     213
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -825,7 +827,7 @@ static const yytype_uint8 yystos[] =
       64,    67,    28,    28,    68,   118,   118,   118,   124,    33,
       34,    56,    57,    58,    59,    70,   118,   118,   121,   122,
        9,   118,     9,   118,    62,    63,    63,    69,    28,    28,
-      28,    69,    64,    99,    63,   127,    89,     8,    62,    97,
+      28,    69,    64,    99,    63,    35,    89,     8,    62,    97,
      119,    29,    30,    31,    32,    69,    72,    73,    69,   118,
      118,   118,   118,   118,   118,    28,    69,    66,    69,   118,
       28,    28,   102,    62,    68,    71,   100,    66,    78,    28,
@@ -1543,25 +1545,25 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 134 "omicron.y" /* yacc.c:1646  */
+#line 137 "omicron.y" /* yacc.c:1646  */
     {
         escribir_fin(fout);
         tablaFree(tabla_main);
     }
-#line 1552 "y.tab.c" /* yacc.c:1646  */
+#line 1554 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 140 "omicron.y" /* yacc.c:1646  */
+#line 143 "omicron.y" /* yacc.c:1646  */
     {
         escribir_fin(fout);
         tablaFree(tabla_main);
     }
-#line 1561 "y.tab.c" /* yacc.c:1646  */
+#line 1563 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 146 "omicron.y" /* yacc.c:1646  */
+#line 149 "omicron.y" /* yacc.c:1646  */
     {
     /* Inic tabla simbolos */
     if ( abrirAmbitoClase(&tabla_main, "main", 1) == -1) { /* init tabla simbolos */
@@ -1570,212 +1572,223 @@ yyreduce:
     escribir_subseccion_data(fout);
     escribir_cabecera_bss(fout);
 }
-#line 1574 "y.tab.c" /* yacc.c:1646  */
+#line 1576 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 155 "omicron.y" /* yacc.c:1646  */
+#line 158 "omicron.y" /* yacc.c:1646  */
     {
     escribir_segmento_codigo(fout);
     escribir_inicio_main(fout);
 }
-#line 1583 "y.tab.c" /* yacc.c:1646  */
+#line 1585 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 161 "omicron.y" /* yacc.c:1646  */
+#line 164 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1590 "y.tab.c" /* yacc.c:1646  */
+#line 1592 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 165 "omicron.y" /* yacc.c:1646  */
+#line 168 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1597 "y.tab.c" /* yacc.c:1646  */
+#line 1599 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 170 "omicron.y" /* yacc.c:1646  */
+#line 173 "omicron.y" /* yacc.c:1646  */
     {
         if ((yyvsp[-2].atributos).tipo != (yyvsp[-1].atributos).tipo) {
             printf("Declaracion de distintos tipos NOT GOOD\n");
         }
     }
-#line 1607 "y.tab.c" /* yacc.c:1646  */
+#line 1609 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 177 "omicron.y" /* yacc.c:1646  */
+#line 180 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1614 "y.tab.c" /* yacc.c:1646  */
+#line 1616 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 182 "omicron.y" /* yacc.c:1646  */
+#line 185 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1621 "y.tab.c" /* yacc.c:1646  */
+#line 1623 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 186 "omicron.y" /* yacc.c:1646  */
+#line 189 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1628 "y.tab.c" /* yacc.c:1646  */
+#line 1630 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 190 "omicron.y" /* yacc.c:1646  */
+#line 193 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1635 "y.tab.c" /* yacc.c:1646  */
+#line 1637 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 194 "omicron.y" /* yacc.c:1646  */
+#line 197 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1642 "y.tab.c" /* yacc.c:1646  */
+#line 1644 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 198 "omicron.y" /* yacc.c:1646  */
+#line 201 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1649 "y.tab.c" /* yacc.c:1646  */
+#line 1651 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 202 "omicron.y" /* yacc.c:1646  */
+#line 205 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1656 "y.tab.c" /* yacc.c:1646  */
+#line 1658 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 206 "omicron.y" /* yacc.c:1646  */
+#line 209 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1663 "y.tab.c" /* yacc.c:1646  */
+#line 1665 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 210 "omicron.y" /* yacc.c:1646  */
+#line 213 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1670 "y.tab.c" /* yacc.c:1646  */
+#line 1672 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 215 "omicron.y" /* yacc.c:1646  */
+#line 218 "omicron.y" /* yacc.c:1646  */
     {
         (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
+        tipo_clase = ESCALAR;
     }
-#line 1678 "y.tab.c" /* yacc.c:1646  */
+#line 1681 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 220 "omicron.y" /* yacc.c:1646  */
+#line 224 "omicron.y" /* yacc.c:1646  */
     {
+        (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
+        tipo_clase = VECTOR;
+        
     }
-#line 1685 "y.tab.c" /* yacc.c:1646  */
+#line 1691 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 224 "omicron.y" /* yacc.c:1646  */
+#line 231 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1692 "y.tab.c" /* yacc.c:1646  */
+#line 1698 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 229 "omicron.y" /* yacc.c:1646  */
+#line 236 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1699 "y.tab.c" /* yacc.c:1646  */
+#line 1705 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 233 "omicron.y" /* yacc.c:1646  */
+#line 240 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1706 "y.tab.c" /* yacc.c:1646  */
+#line 1712 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 237 "omicron.y" /* yacc.c:1646  */
+#line 244 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1713 "y.tab.c" /* yacc.c:1646  */
+#line 1719 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 242 "omicron.y" /* yacc.c:1646  */
+#line 249 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1720 "y.tab.c" /* yacc.c:1646  */
+#line 1726 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 247 "omicron.y" /* yacc.c:1646  */
+#line 254 "omicron.y" /* yacc.c:1646  */
     {
        (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
     }
-#line 1728 "y.tab.c" /* yacc.c:1646  */
+#line 1734 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 253 "omicron.y" /* yacc.c:1646  */
+#line 260 "omicron.y" /* yacc.c:1646  */
     {
         
         (yyval.atributos).tipo = ENTERO;
         tipo_declaracion = ENTERO;
     }
-#line 1738 "y.tab.c" /* yacc.c:1646  */
+#line 1744 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 260 "omicron.y" /* yacc.c:1646  */
+#line 267 "omicron.y" /* yacc.c:1646  */
     {
         (yyval.atributos).tipo = BOOLEAN;
         tipo_declaracion = BOOLEAN;
     }
-#line 1747 "y.tab.c" /* yacc.c:1646  */
+#line 1753 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 267 "omicron.y" /* yacc.c:1646  */
+#line 274 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1754 "y.tab.c" /* yacc.c:1646  */
+#line 1760 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 272 "omicron.y" /* yacc.c:1646  */
+#line 279 "omicron.y" /* yacc.c:1646  */
     {
+        tamanio_vector_actual = (yyvsp[-1].atributos).valor_entero;
+        (yyval.atributos).tipo = (yyvsp[-3].atributos).tipo;
+        if ((tamanio_vector_actual < 1) || (tamanio_vector_actual > MAX_COLUMNAS_VECTOR)) {
+            error_semantico = 1;
+            sprintf (msg, "El tamanyo del vector excede los limites permitidos (1,64).\n");
+            yyerror(msg);
+        }
     }
-#line 1761 "y.tab.c" /* yacc.c:1646  */
+#line 1774 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 277 "omicron.y" /* yacc.c:1646  */
+#line 291 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1768 "y.tab.c" /* yacc.c:1646  */
+#line 1781 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 281 "omicron.y" /* yacc.c:1646  */
+#line 295 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1775 "y.tab.c" /* yacc.c:1646  */
+#line 1788 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 286 "omicron.y" /* yacc.c:1646  */
+#line 300 "omicron.y" /* yacc.c:1646  */
     {
         /* Aqui solo se accede al declarar varibles */
         (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
@@ -1788,11 +1801,11 @@ yyreduce:
 
 
     }
-#line 1792 "y.tab.c" /* yacc.c:1646  */
+#line 1805 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 300 "omicron.y" /* yacc.c:1646  */
+#line 314 "omicron.y" /* yacc.c:1646  */
     {
         (yyval.atributos).tipo = (yyvsp[-2].atributos).tipo;
 
@@ -1802,45 +1815,52 @@ yyreduce:
             nlocalvar++;
         }
     }
-#line 1806 "y.tab.c" /* yacc.c:1646  */
+#line 1819 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 312 "omicron.y" /* yacc.c:1646  */
+#line 326 "omicron.y" /* yacc.c:1646  */
     {
         (yyval.atributos).direcciones = 1;
         (yyvsp[0].atributos).tipo = tipo_declaracion;
+        
         (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
 
         if (en_funcion == 0) {
-            declarar_variable(fout, (yyvsp[0].atributos).lexema, (yyvsp[0].atributos).tipo, 1);
             if (buscarIdNoCualificado(NULL, tabla_main, (yyvsp[0].atributos).lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
                error_semantico = 1;
                 yyerror("Declaracion duplicada");
-            }        
-            insertarTablaSimbolosAmbitos(tabla_main, "main", (yyvsp[0].atributos).lexema, ESCALAR, (yyvsp[0].atributos).tipo, (yyvsp[0].atributos).direcciones, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+            }
+            if (tipo_clase == VECTOR) {
+                insertarTablaSimbolosAmbitos(tabla_main, "main", (yyvsp[0].atributos).lexema, tipo_clase, (yyvsp[0].atributos).tipo, (yyvsp[0].atributos).direcciones, 1, 0, 0, 1, 0, tamanio_vector_actual, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+                declarar_variable(fout, (yyvsp[0].atributos).lexema, (yyvsp[0].atributos).tipo, tamanio_vector_actual);
+            }
+            else {
+                insertarTablaSimbolosAmbitos(tabla_main, "main", (yyvsp[0].atributos).lexema, tipo_clase, (yyvsp[0].atributos).tipo, (yyvsp[0].atributos).direcciones, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+                declarar_variable(fout, (yyvsp[0].atributos).lexema, (yyvsp[0].atributos).tipo, 1);
+            }
         }
     }
-#line 1825 "y.tab.c" /* yacc.c:1646  */
+#line 1845 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 329 "omicron.y" /* yacc.c:1646  */
+#line 350 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1832 "y.tab.c" /* yacc.c:1646  */
+#line 1852 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 333 "omicron.y" /* yacc.c:1646  */
+#line 354 "omicron.y" /* yacc.c:1646  */
     {
         comienzo_sentencias(fout);
     }
-#line 1840 "y.tab.c" /* yacc.c:1646  */
+#line 1860 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 339 "omicron.y" /* yacc.c:1646  */
+#line 360 "omicron.y" /* yacc.c:1646  */
     {
         if (hay_return == 0) {
             error_semantico = 1;
@@ -1851,11 +1871,11 @@ yyreduce:
         en_funcion = 0;
 
     }
-#line 1855 "y.tab.c" /* yacc.c:1646  */
+#line 1875 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 352 "omicron.y" /* yacc.c:1646  */
+#line 373 "omicron.y" /* yacc.c:1646  */
     {
         /**Ensamblador*/
         declararFuncion(fout, fcn.nombre, nlocalvar);
@@ -1890,11 +1910,11 @@ yyreduce:
             
         }
     }
-#line 1894 "y.tab.c" /* yacc.c:1646  */
+#line 1914 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 389 "omicron.y" /* yacc.c:1646  */
+#line 410 "omicron.y" /* yacc.c:1646  */
     {
         for (i = 0; i < fcn.nargs; i++) {
             sprintf(aux, "@%d", fcn.tipo_args[i]);
@@ -1917,79 +1937,79 @@ yyreduce:
 
         nlocalvar = 0;
     }
-#line 1921 "y.tab.c" /* yacc.c:1646  */
+#line 1941 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 414 "omicron.y" /* yacc.c:1646  */
+#line 435 "omicron.y" /* yacc.c:1646  */
     {
         en_funcion = 1;
         strcpy(fcn.nombre, (yyvsp[0].atributos).lexema);
         fcn.nargs = 0;
         fcn.tipo_retorno = (yyvsp[-1].atributos).tipo;
     }
-#line 1932 "y.tab.c" /* yacc.c:1646  */
+#line 1952 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 425 "omicron.y" /* yacc.c:1646  */
+#line 446 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1939 "y.tab.c" /* yacc.c:1646  */
+#line 1959 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 429 "omicron.y" /* yacc.c:1646  */
+#line 450 "omicron.y" /* yacc.c:1646  */
     {
         (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
     }
-#line 1947 "y.tab.c" /* yacc.c:1646  */
+#line 1967 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 434 "omicron.y" /* yacc.c:1646  */
+#line 455 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1954 "y.tab.c" /* yacc.c:1646  */
+#line 1974 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 439 "omicron.y" /* yacc.c:1646  */
+#line 460 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1961 "y.tab.c" /* yacc.c:1646  */
+#line 1981 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 444 "omicron.y" /* yacc.c:1646  */
+#line 465 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1968 "y.tab.c" /* yacc.c:1646  */
+#line 1988 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 448 "omicron.y" /* yacc.c:1646  */
+#line 469 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1975 "y.tab.c" /* yacc.c:1646  */
+#line 1995 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 453 "omicron.y" /* yacc.c:1646  */
+#line 474 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1982 "y.tab.c" /* yacc.c:1646  */
+#line 2002 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 457 "omicron.y" /* yacc.c:1646  */
+#line 478 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 1989 "y.tab.c" /* yacc.c:1646  */
+#line 2009 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 462 "omicron.y" /* yacc.c:1646  */
+#line 483 "omicron.y" /* yacc.c:1646  */
     {
         printf("precesamos argumento: %s (%d)\n", (yyvsp[0].atributos).lexema, fcn.nargs);
         strcpy(fcn.nombre_args[fcn.nargs], (yyvsp[0].atributos).lexema);
@@ -1998,95 +2018,95 @@ yyreduce:
         fcn.tipo_args[fcn.nargs] = (yyvsp[0].atributos).tipo;
         fcn.nargs++;
     }
-#line 2002 "y.tab.c" /* yacc.c:1646  */
+#line 2022 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 472 "omicron.y" /* yacc.c:1646  */
+#line 493 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 2009 "y.tab.c" /* yacc.c:1646  */
+#line 2029 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 477 "omicron.y" /* yacc.c:1646  */
+#line 498 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 2016 "y.tab.c" /* yacc.c:1646  */
+#line 2036 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 481 "omicron.y" /* yacc.c:1646  */
+#line 502 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 2023 "y.tab.c" /* yacc.c:1646  */
+#line 2043 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 486 "omicron.y" /* yacc.c:1646  */
+#line 507 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 2030 "y.tab.c" /* yacc.c:1646  */
+#line 2050 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 490 "omicron.y" /* yacc.c:1646  */
+#line 511 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 2037 "y.tab.c" /* yacc.c:1646  */
+#line 2057 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 495 "omicron.y" /* yacc.c:1646  */
-    {
-    }
-#line 2044 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 56:
-#line 499 "omicron.y" /* yacc.c:1646  */
-    {
-    }
-#line 2051 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 57:
-#line 504 "omicron.y" /* yacc.c:1646  */
-    {
-    }
-#line 2058 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 58:
-#line 508 "omicron.y" /* yacc.c:1646  */
-    {
-    }
-#line 2065 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 59:
-#line 512 "omicron.y" /* yacc.c:1646  */
-    {
-    }
-#line 2072 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 60:
 #line 516 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 2079 "y.tab.c" /* yacc.c:1646  */
+#line 2064 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 61:
+  case 56:
 #line 520 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 2086 "y.tab.c" /* yacc.c:1646  */
+#line 2071 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 57:
+#line 525 "omicron.y" /* yacc.c:1646  */
+    {
+    }
+#line 2078 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 58:
+#line 529 "omicron.y" /* yacc.c:1646  */
+    {
+    }
+#line 2085 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 59:
+#line 533 "omicron.y" /* yacc.c:1646  */
+    {
+    }
+#line 2092 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 60:
+#line 537 "omicron.y" /* yacc.c:1646  */
+    {
+    }
+#line 2099 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 61:
+#line 541 "omicron.y" /* yacc.c:1646  */
+    {
+    }
+#line 2106 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 524 "omicron.y" /* yacc.c:1646  */
+#line 545 "omicron.y" /* yacc.c:1646  */
     {
         flag_lista_exp = 0;
 
@@ -2114,39 +2134,39 @@ yyreduce:
         (yyval.atributos).tipo = elem->tipo;
         (yyval.atributos).direcciones = 0;
     }
-#line 2118 "y.tab.c" /* yacc.c:1646  */
+#line 2138 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 553 "omicron.y" /* yacc.c:1646  */
+#line 574 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 2125 "y.tab.c" /* yacc.c:1646  */
+#line 2145 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 558 "omicron.y" /* yacc.c:1646  */
+#line 579 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 2132 "y.tab.c" /* yacc.c:1646  */
+#line 2152 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 563 "omicron.y" /* yacc.c:1646  */
+#line 584 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 2139 "y.tab.c" /* yacc.c:1646  */
+#line 2159 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 567 "omicron.y" /* yacc.c:1646  */
+#line 588 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 2146 "y.tab.c" /* yacc.c:1646  */
+#line 2166 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 572 "omicron.y" /* yacc.c:1646  */
+#line 593 "omicron.y" /* yacc.c:1646  */
     {
 
         if (en_funcion) {
@@ -2186,44 +2206,45 @@ yyreduce:
         }
 
     }
-#line 2190 "y.tab.c" /* yacc.c:1646  */
+#line 2210 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 613 "omicron.y" /* yacc.c:1646  */
+#line 634 "omicron.y" /* yacc.c:1646  */
     {
         if ((yyvsp[-2].atributos).tipo != (yyvsp[0].atributos).tipo) {
                 error_semantico = 1;
                 sprintf(msg, "Asignacion incompatible.\n");
                 yyerror(msg);
         }
-    }
-#line 2202 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 69:
-#line 622 "omicron.y" /* yacc.c:1646  */
-    {
-    }
-#line 2209 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 70:
-#line 626 "omicron.y" /* yacc.c:1646  */
-    {
-    }
-#line 2216 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 71:
-#line 630 "omicron.y" /* yacc.c:1646  */
-    {
+        asignarDestinoEnPila(fout, (yyvsp[0].atributos).direcciones);
     }
 #line 2223 "y.tab.c" /* yacc.c:1646  */
     break;
 
+  case 69:
+#line 644 "omicron.y" /* yacc.c:1646  */
+    {
+    }
+#line 2230 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 70:
+#line 648 "omicron.y" /* yacc.c:1646  */
+    {
+    }
+#line 2237 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 71:
+#line 652 "omicron.y" /* yacc.c:1646  */
+    {
+    }
+#line 2244 "y.tab.c" /* yacc.c:1646  */
+    break;
+
   case 72:
-#line 635 "omicron.y" /* yacc.c:1646  */
+#line 657 "omicron.y" /* yacc.c:1646  */
     {
         if (buscarIdNoCualificado(NULL, tabla_main, (yyvsp[-3].atributos).lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
             (yyvsp[-3].atributos).tipo = elem->tipo;
@@ -2240,7 +2261,13 @@ yyreduce:
 
             (yyval.atributos).tipo = elem->tipo;
             (yyval.atributos).direcciones = 1;
-            //Comprobacion indice, 0<i<64
+
+            if ((yyvsp[-1].atributos).valor_entero < 0 || (yyvsp[-1].atributos).valor_entero > MAX_COLUMNAS_VECTOR) {
+                error_semantico = 1;
+                sprintf(msg, "Intento de indexacion de una variable que no es de tipo vector.\n");
+                yyerror(msg);
+            }
+            escribir_elemento_vector(fout, (yyvsp[-3].atributos).lexema, elem->tamanio, (yyvsp[-1].atributos).direcciones);
         }
         else {
                 error_semantico = 1;
@@ -2248,29 +2275,29 @@ yyreduce:
                 yyerror(msg);
         }
     }
-#line 2252 "y.tab.c" /* yacc.c:1646  */
+#line 2279 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 662 "omicron.y" /* yacc.c:1646  */
+#line 690 "omicron.y" /* yacc.c:1646  */
     {
         ifthenelse_fin(fout, (yyvsp[-4].atributos).etiqueta);
     }
-#line 2260 "y.tab.c" /* yacc.c:1646  */
+#line 2287 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 668 "omicron.y" /* yacc.c:1646  */
+#line 696 "omicron.y" /* yacc.c:1646  */
     {
         (yyval.atributos).etiqueta = (yyvsp[-2].atributos).etiqueta;
 
         ifthenelse_fin_then(fout, (yyvsp[-2].atributos).etiqueta);
     }
-#line 2270 "y.tab.c" /* yacc.c:1646  */
+#line 2297 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 75:
-#line 676 "omicron.y" /* yacc.c:1646  */
+#line 704 "omicron.y" /* yacc.c:1646  */
     {
         if ((yyvsp[-2].atributos).tipo != BOOLEAN) {
             error_semantico = 1;
@@ -2282,19 +2309,19 @@ yyreduce:
 
         ifthenelse_inicio(fout, (yyvsp[-2].atributos).direcciones, (yyval.atributos).etiqueta);
     }
-#line 2286 "y.tab.c" /* yacc.c:1646  */
+#line 2313 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 76:
-#line 690 "omicron.y" /* yacc.c:1646  */
+#line 718 "omicron.y" /* yacc.c:1646  */
     {
         while_fin(fout, (yyvsp[-2].atributos).etiqueta);
     }
-#line 2294 "y.tab.c" /* yacc.c:1646  */
+#line 2321 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 77:
-#line 696 "omicron.y" /* yacc.c:1646  */
+#line 724 "omicron.y" /* yacc.c:1646  */
     {
         if ((yyvsp[-2].atributos).tipo != BOOLEAN) {
             error_semantico = 1;
@@ -2305,21 +2332,21 @@ yyreduce:
         
         while_exp_pila(fout, (yyvsp[-2].atributos).direcciones, (yyval.atributos).etiqueta);
     }
-#line 2309 "y.tab.c" /* yacc.c:1646  */
+#line 2336 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 78:
-#line 709 "omicron.y" /* yacc.c:1646  */
+#line 737 "omicron.y" /* yacc.c:1646  */
     {
         while_inicio(fout, etiqueta);
         (yyval.atributos).etiqueta = etiqueta;
         etiqueta++;
     }
-#line 2319 "y.tab.c" /* yacc.c:1646  */
+#line 2346 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 79:
-#line 716 "omicron.y" /* yacc.c:1646  */
+#line 744 "omicron.y" /* yacc.c:1646  */
     {
         if (en_funcion) {
             sprintf(aux, "%s_", fcn.nombre);
@@ -2346,18 +2373,18 @@ yyreduce:
             }
         }
     }
-#line 2350 "y.tab.c" /* yacc.c:1646  */
+#line 2377 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 80:
-#line 744 "omicron.y" /* yacc.c:1646  */
+#line 772 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 2357 "y.tab.c" /* yacc.c:1646  */
+#line 2384 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 81:
-#line 749 "omicron.y" /* yacc.c:1646  */
+#line 777 "omicron.y" /* yacc.c:1646  */
     {
         if ((yyvsp[0].atributos).direcciones == 1) {
             if(buscarIdNoCualificado(NULL, tabla_main, (yyvsp[0].atributos).lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
@@ -2374,11 +2401,11 @@ yyreduce:
 
 
     }
-#line 2378 "y.tab.c" /* yacc.c:1646  */
+#line 2405 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 82:
-#line 768 "omicron.y" /* yacc.c:1646  */
+#line 796 "omicron.y" /* yacc.c:1646  */
     {
         if (en_funcion == 0) {
             error_semantico = 1;
@@ -2388,18 +2415,18 @@ yyreduce:
         retornarFuncion(fout, (yyvsp[0].atributos).direcciones);
         hay_return = 1;
     }
-#line 2392 "y.tab.c" /* yacc.c:1646  */
+#line 2419 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 779 "omicron.y" /* yacc.c:1646  */
+#line 807 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 2399 "y.tab.c" /* yacc.c:1646  */
+#line 2426 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 84:
-#line 784 "omicron.y" /* yacc.c:1646  */
+#line 812 "omicron.y" /* yacc.c:1646  */
     {
         if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
             error_semantico = 1;
@@ -2412,11 +2439,11 @@ yyreduce:
         (yyval.atributos).tipo = ENTERO;
         (yyval.atributos).direcciones = 0;
     }
-#line 2416 "y.tab.c" /* yacc.c:1646  */
+#line 2443 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 798 "omicron.y" /* yacc.c:1646  */
+#line 826 "omicron.y" /* yacc.c:1646  */
     {
         if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
             error_semantico = 1;
@@ -2429,11 +2456,11 @@ yyreduce:
         (yyval.atributos).tipo = ENTERO;
         (yyval.atributos).direcciones = 0;
     }
-#line 2433 "y.tab.c" /* yacc.c:1646  */
+#line 2460 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 86:
-#line 812 "omicron.y" /* yacc.c:1646  */
+#line 840 "omicron.y" /* yacc.c:1646  */
     {
         if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
             error_semantico = 1;
@@ -2446,11 +2473,11 @@ yyreduce:
         (yyval.atributos).tipo = ENTERO;
         (yyval.atributos).direcciones = 0;
     }
-#line 2450 "y.tab.c" /* yacc.c:1646  */
+#line 2477 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 87:
-#line 826 "omicron.y" /* yacc.c:1646  */
+#line 854 "omicron.y" /* yacc.c:1646  */
     {
         if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
             error_semantico = 1;
@@ -2463,11 +2490,11 @@ yyreduce:
         (yyval.atributos).tipo = ENTERO;
         (yyval.atributos).direcciones = 0;
     }
-#line 2467 "y.tab.c" /* yacc.c:1646  */
+#line 2494 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 88:
-#line 840 "omicron.y" /* yacc.c:1646  */
+#line 868 "omicron.y" /* yacc.c:1646  */
     {
         if ((yyvsp[0].atributos).tipo == BOOLEAN) {
             error_semantico = 1;
@@ -2480,11 +2507,11 @@ yyreduce:
         (yyval.atributos).tipo = ENTERO;
         (yyval.atributos).direcciones = 0;
     }
-#line 2484 "y.tab.c" /* yacc.c:1646  */
+#line 2511 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 89:
-#line 854 "omicron.y" /* yacc.c:1646  */
+#line 882 "omicron.y" /* yacc.c:1646  */
     {
 
         if ((yyvsp[-2].atributos).tipo == ENTERO || (yyvsp[0].atributos).tipo == ENTERO) {
@@ -2498,11 +2525,11 @@ yyreduce:
         (yyval.atributos).tipo = BOOLEAN;
         (yyval.atributos).direcciones = 0;
     }
-#line 2502 "y.tab.c" /* yacc.c:1646  */
+#line 2529 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 90:
-#line 869 "omicron.y" /* yacc.c:1646  */
+#line 897 "omicron.y" /* yacc.c:1646  */
     {
         if ((yyvsp[-2].atributos).tipo == ENTERO || (yyvsp[0].atributos).tipo == ENTERO) {
             error_semantico = 1;
@@ -2515,11 +2542,11 @@ yyreduce:
         (yyval.atributos).tipo = BOOLEAN;
         (yyval.atributos).direcciones = 0;
     }
-#line 2519 "y.tab.c" /* yacc.c:1646  */
+#line 2546 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 91:
-#line 883 "omicron.y" /* yacc.c:1646  */
+#line 911 "omicron.y" /* yacc.c:1646  */
     {
         if ((yyvsp[0].atributos).tipo == ENTERO) {
             error_semantico = 1;
@@ -2533,11 +2560,11 @@ yyreduce:
         (yyval.atributos).tipo = BOOLEAN;
         (yyval.atributos).direcciones = 0;
     }
-#line 2537 "y.tab.c" /* yacc.c:1646  */
+#line 2564 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 92:
-#line 898 "omicron.y" /* yacc.c:1646  */
+#line 926 "omicron.y" /* yacc.c:1646  */
     {
         if (en_funcion) {
             sprintf(aux, "%s_", fcn.nombre);
@@ -2574,38 +2601,11 @@ yyreduce:
         (yyval.atributos).tipo = elem->tipo;
         (yyval.atributos).direcciones = 1;
     }
-#line 2578 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 93:
-#line 936 "omicron.y" /* yacc.c:1646  */
-    {
-        (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
-        (yyval.atributos).direcciones = (yyvsp[0].atributos).direcciones;
-    }
-#line 2587 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 94:
-#line 942 "omicron.y" /* yacc.c:1646  */
-    {
-        (yyval.atributos).tipo = (yyvsp[-1].atributos).tipo;
-        (yyval.atributos).direcciones = (yyvsp[-1].atributos).direcciones;
-    }
-#line 2596 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 95:
-#line 948 "omicron.y" /* yacc.c:1646  */
-    {
-        (yyval.atributos).tipo = (yyvsp[-1].atributos).tipo;
-        (yyval.atributos).direcciones = (yyvsp[-1].atributos).direcciones;
-    }
 #line 2605 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 96:
-#line 954 "omicron.y" /* yacc.c:1646  */
+  case 93:
+#line 964 "omicron.y" /* yacc.c:1646  */
     {
         (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
         (yyval.atributos).direcciones = (yyvsp[0].atributos).direcciones;
@@ -2613,8 +2613,35 @@ yyreduce:
 #line 2614 "y.tab.c" /* yacc.c:1646  */
     break;
 
+  case 94:
+#line 970 "omicron.y" /* yacc.c:1646  */
+    {
+        (yyval.atributos).tipo = (yyvsp[-1].atributos).tipo;
+        (yyval.atributos).direcciones = (yyvsp[-1].atributos).direcciones;
+    }
+#line 2623 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 95:
+#line 976 "omicron.y" /* yacc.c:1646  */
+    {
+        (yyval.atributos).tipo = (yyvsp[-1].atributos).tipo;
+        (yyval.atributos).direcciones = (yyvsp[-1].atributos).direcciones;
+    }
+#line 2632 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 96:
+#line 982 "omicron.y" /* yacc.c:1646  */
+    {
+        (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
+        (yyval.atributos).direcciones = (yyvsp[0].atributos).direcciones;
+    }
+#line 2641 "y.tab.c" /* yacc.c:1646  */
+    break;
+
   case 97:
-#line 960 "omicron.y" /* yacc.c:1646  */
+#line 988 "omicron.y" /* yacc.c:1646  */
     {
         flag_lista_exp = 0;
 
@@ -2638,25 +2665,25 @@ yyreduce:
         (yyval.atributos).tipo = elem->tipo;
         (yyval.atributos).direcciones = 0;
     }
-#line 2642 "y.tab.c" /* yacc.c:1646  */
+#line 2669 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 98:
-#line 985 "omicron.y" /* yacc.c:1646  */
+#line 1013 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 2649 "y.tab.c" /* yacc.c:1646  */
+#line 2676 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 99:
-#line 989 "omicron.y" /* yacc.c:1646  */
+#line 1017 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 2656 "y.tab.c" /* yacc.c:1646  */
+#line 2683 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 100:
-#line 994 "omicron.y" /* yacc.c:1646  */
+#line 1022 "omicron.y" /* yacc.c:1646  */
     {
         if (flag_lista_exp) {
                 error_semantico = 1;
@@ -2665,25 +2692,25 @@ yyreduce:
         }
         flag_lista_exp = 1;
     }
-#line 2669 "y.tab.c" /* yacc.c:1646  */
+#line 2696 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 101:
-#line 1004 "omicron.y" /* yacc.c:1646  */
+#line 1032 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 2676 "y.tab.c" /* yacc.c:1646  */
+#line 2703 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 102:
-#line 1008 "omicron.y" /* yacc.c:1646  */
+#line 1036 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 2683 "y.tab.c" /* yacc.c:1646  */
+#line 2710 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 103:
-#line 1013 "omicron.y" /* yacc.c:1646  */
+#line 1041 "omicron.y" /* yacc.c:1646  */
     {
         
         if ((yyvsp[-1].atributos).tipo == ENTERO) {
@@ -2692,28 +2719,28 @@ yyreduce:
             strcat(aux, "@3");
         }
     }
-#line 2696 "y.tab.c" /* yacc.c:1646  */
+#line 2723 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 104:
-#line 1023 "omicron.y" /* yacc.c:1646  */
+#line 1051 "omicron.y" /* yacc.c:1646  */
     {
         nargs = 0;
     }
-#line 2704 "y.tab.c" /* yacc.c:1646  */
+#line 2731 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 105:
-#line 1029 "omicron.y" /* yacc.c:1646  */
+#line 1057 "omicron.y" /* yacc.c:1646  */
     {
         nargs = 1;
         aux[0] = '\0';
     }
-#line 2713 "y.tab.c" /* yacc.c:1646  */
+#line 2740 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 106:
-#line 1035 "omicron.y" /* yacc.c:1646  */
+#line 1063 "omicron.y" /* yacc.c:1646  */
     {
         nargs++;
         if ((yyvsp[-1].atributos).tipo == ENTERO) {
@@ -2722,18 +2749,18 @@ yyreduce:
             strcat(aux, "@3");
         }
     }
-#line 2726 "y.tab.c" /* yacc.c:1646  */
+#line 2753 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 107:
-#line 1045 "omicron.y" /* yacc.c:1646  */
+#line 1073 "omicron.y" /* yacc.c:1646  */
     {
     }
-#line 2733 "y.tab.c" /* yacc.c:1646  */
+#line 2760 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 108:
-#line 1050 "omicron.y" /* yacc.c:1646  */
+#line 1078 "omicron.y" /* yacc.c:1646  */
     {
         if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
             error_semantico = 1;
@@ -2747,11 +2774,11 @@ yyreduce:
         (yyval.atributos).tipo = BOOLEAN;
         (yyval.atributos).direcciones = 0;
     }
-#line 2751 "y.tab.c" /* yacc.c:1646  */
+#line 2778 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 109:
-#line 1065 "omicron.y" /* yacc.c:1646  */
+#line 1093 "omicron.y" /* yacc.c:1646  */
     {
         if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
             error_semantico = 1;
@@ -2765,11 +2792,11 @@ yyreduce:
         (yyval.atributos).tipo = BOOLEAN;
         (yyval.atributos).direcciones = 0;
     }
-#line 2769 "y.tab.c" /* yacc.c:1646  */
+#line 2796 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 110:
-#line 1080 "omicron.y" /* yacc.c:1646  */
+#line 1108 "omicron.y" /* yacc.c:1646  */
     {
         if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
             error_semantico = 1;
@@ -2783,11 +2810,11 @@ yyreduce:
         (yyval.atributos).tipo = BOOLEAN;
         (yyval.atributos).direcciones = 0;
     }
-#line 2787 "y.tab.c" /* yacc.c:1646  */
+#line 2814 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 111:
-#line 1095 "omicron.y" /* yacc.c:1646  */
+#line 1123 "omicron.y" /* yacc.c:1646  */
     {
         if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
             error_semantico = 1;
@@ -2801,11 +2828,11 @@ yyreduce:
         (yyval.atributos).tipo = BOOLEAN;
         (yyval.atributos).direcciones = 0;
     }
-#line 2805 "y.tab.c" /* yacc.c:1646  */
+#line 2832 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 112:
-#line 1110 "omicron.y" /* yacc.c:1646  */
+#line 1138 "omicron.y" /* yacc.c:1646  */
     {
         if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
             error_semantico = 1;
@@ -2819,11 +2846,11 @@ yyreduce:
         (yyval.atributos).tipo = BOOLEAN;
         (yyval.atributos).direcciones = 0;
     }
-#line 2823 "y.tab.c" /* yacc.c:1646  */
+#line 2850 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 113:
-#line 1125 "omicron.y" /* yacc.c:1646  */
+#line 1153 "omicron.y" /* yacc.c:1646  */
     {
         if ((yyvsp[-2].atributos).tipo == BOOLEAN || (yyvsp[0].atributos).tipo == BOOLEAN) {
             error_semantico = 1;
@@ -2837,60 +2864,60 @@ yyreduce:
         (yyval.atributos).tipo = BOOLEAN;
         (yyval.atributos).direcciones = 0;
     }
-#line 2841 "y.tab.c" /* yacc.c:1646  */
+#line 2868 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 114:
-#line 1141 "omicron.y" /* yacc.c:1646  */
+#line 1169 "omicron.y" /* yacc.c:1646  */
     {
         (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
         (yyval.atributos).direcciones = (yyvsp[0].atributos).direcciones;
     }
-#line 2850 "y.tab.c" /* yacc.c:1646  */
+#line 2877 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 115:
-#line 1147 "omicron.y" /* yacc.c:1646  */
+#line 1175 "omicron.y" /* yacc.c:1646  */
     {
         (yyval.atributos).tipo = (yyvsp[0].atributos).tipo;
         (yyval.atributos).direcciones = (yyvsp[0].atributos).direcciones;
     }
-#line 2859 "y.tab.c" /* yacc.c:1646  */
+#line 2886 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 116:
-#line 1154 "omicron.y" /* yacc.c:1646  */
+#line 1182 "omicron.y" /* yacc.c:1646  */
     {
         (yyval.atributos).tipo = BOOLEAN;
         (yyval.atributos).direcciones = 0;
         escribir_operando(fout, "1", 0);
     }
-#line 2869 "y.tab.c" /* yacc.c:1646  */
+#line 2896 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 117:
-#line 1161 "omicron.y" /* yacc.c:1646  */
+#line 1189 "omicron.y" /* yacc.c:1646  */
     {
         (yyval.atributos).tipo = BOOLEAN;
         (yyval.atributos).direcciones = 0;
         escribir_operando(fout, "0", 0);
     }
-#line 2879 "y.tab.c" /* yacc.c:1646  */
+#line 2906 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 118:
-#line 1169 "omicron.y" /* yacc.c:1646  */
+#line 1197 "omicron.y" /* yacc.c:1646  */
     {
         (yyval.atributos).tipo = ENTERO;
         (yyval.atributos).direcciones = 0;
         sprintf((yyvsp[0].atributos).lexema, "%d", (yyvsp[0].atributos).valor_entero);
         escribir_operando(fout, (yyvsp[0].atributos).lexema, 0);
     }
-#line 2890 "y.tab.c" /* yacc.c:1646  */
+#line 2917 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 2894 "y.tab.c" /* yacc.c:1646  */
+#line 2921 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3118,7 +3145,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 1177 "omicron.y" /* yacc.c:1906  */
+#line 1205 "omicron.y" /* yacc.c:1906  */
 
 
 int yyerror(char* s) {

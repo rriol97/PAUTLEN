@@ -5,8 +5,8 @@
 ################################################################################
 
 
-all: pruebaSintactico.c lex.yy.c y.tab.c generacion.c hash.c graph.c tabla.c
-	gcc -Wall -o pruebaSintactico pruebaSintactico.c lex.yy.c y.tab.c generacion.c hash.c graph.c tabla.c
+all: pruebaSemantico.c lex.yy.c y.tab.c generacion.c hash.c graph.c tabla.c
+	gcc -Wall -o pruebaSemantico pruebaSemantico.c lex.yy.c y.tab.c generacion.c hash.c graph.c tabla.c
 
 lex.yy.c: omicron.l
 	$ flex omicron.l
@@ -26,5 +26,5 @@ clean:
 	rm -f y.tab.*
 	rm -f lex.yy.c
 	rm -f y.output
-	rm -f pruebaSintactico
+	rm -f pruebaSemantico
 	rm -f test

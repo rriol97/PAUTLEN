@@ -27,6 +27,8 @@ TablaAmbito * tabla_main;
 elementoTablaSimbolos * elem;
 char nombre_ambito_encontrado[MAX_NAME];
 int tipo_declaracion;
+int tipo_clase;
+int tamanio_vector_actual;
 int etiqueta = 1;
 char aux[MAX_LEN+100];
 char fname_aux[MAX_LEN];
@@ -121,6 +123,7 @@ Fcn fcn;
 %type <atributos> bucle_inicio
 %type <atributos> sentencia_simple
 %type <atributos> bucle_medio
+%type <atributos> clase_vector
 
 %left '+' '-' TOK_OR
 %left '*' '/' TOK_AND
@@ -214,10 +217,14 @@ modificadores_acceso: TOK_HIDDEN TOK_UNIQUE
 clase: clase_escalar
     {
         $$.tipo = $1.tipo;
+        tipo_clase = ESCALAR;
     }
     |
     clase_vector
     {
+        $$.tipo = $1.tipo;
+        tipo_clase = VECTOR;
+        
     }
     |
     clase_objeto
@@ -268,8 +275,15 @@ clase_objeto: '{' TOK_IDENTIFICADOR '}'
     }
 ;
 
-clase_vector: TOK_ARRAY tipo '[' constante_entera ']'
+clase_vector: TOK_ARRAY tipo '[' TOK_CONSTANTE_ENTERA ']'
     {
+        tamanio_vector_actual = $4.valor_entero;
+        $$.tipo = $2.tipo;
+        if ((tamanio_vector_actual < 1) || (tamanio_vector_actual > MAX_COLUMNAS_VECTOR)) {
+            error_semantico = 1;
+            sprintf (msg, "El tamanyo del vector excede los limites permitidos (1,64).\n");
+            yyerror(msg);
+        }
     }
 ;
 
@@ -312,15 +326,22 @@ identificador: TOK_IDENTIFICADOR
     {
         $$.direcciones = 1;
         $1.tipo = tipo_declaracion;
+        
         $$.tipo = $1.tipo;
 
         if (en_funcion == 0) {
-            declarar_variable(fout, $1.lexema, $1.tipo, 1);
             if (buscarIdNoCualificado(NULL, tabla_main, $1.lexema, "main", &elem, nombre_ambito_encontrado) == OK) {
                error_semantico = 1;
                 yyerror("Declaracion duplicada");
-            }        
-            insertarTablaSimbolosAmbitos(tabla_main, "main", $1.lexema, ESCALAR, $1.tipo, $1.direcciones, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+            }
+            if (tipo_clase == VECTOR) {
+                insertarTablaSimbolosAmbitos(tabla_main, "main", $1.lexema, tipo_clase, $1.tipo, $1.direcciones, 1, 0, 0, 1, 0, tamanio_vector_actual, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+                declarar_variable(fout, $1.lexema, $1.tipo, tamanio_vector_actual);
+            }
+            else {
+                insertarTablaSimbolosAmbitos(tabla_main, "main", $1.lexema, tipo_clase, $1.tipo, $1.direcciones, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, NINGUNO, MIEMBRO_NO_UNICO, 0, 0, 0, 0, 0, 0, NULL);
+                declarar_variable(fout, $1.lexema, $1.tipo, 1);
+            }
         }
     }
 ;
@@ -616,6 +637,7 @@ asignacion: TOK_IDENTIFICADOR '=' exp
                 sprintf(msg, "Asignacion incompatible.\n");
                 yyerror(msg);
         }
+        asignarDestinoEnPila(fout, $3.direcciones);
     }
     |
     elemento_vector '=' TOK_INSTANCE_OF TOK_IDENTIFICADOR '(' lista_expresiones ')'
@@ -648,7 +670,13 @@ elemento_vector: TOK_IDENTIFICADOR '[' exp ']'
 
             $$.tipo = elem->tipo;
             $$.direcciones = 1;
-            //Comprobacion indice, 0<i<64
+
+            if ($3.valor_entero < 0 || $3.valor_entero > MAX_COLUMNAS_VECTOR) {
+                error_semantico = 1;
+                sprintf(msg, "Intento de indexacion de una variable que no es de tipo vector.\n");
+                yyerror(msg);
+            }
+            escribir_elemento_vector(fout, $1.lexema, elem->tamanio, $3.direcciones);
         }
         else {
                 error_semantico = 1;
